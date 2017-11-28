@@ -17,5 +17,6 @@ module.exports = {
     boxPoint: Box.boxPoint,
     boxBox: Box.boxBox,
 
-    lineLine: Line.lineLine
+    lineLine: Line.lineLine,
+    lineBox: Line.lineBox
 }

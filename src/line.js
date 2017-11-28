@@ -1,3 +1,5 @@
+const Box = require('./box')
+
 /**
  * line-line collision
  * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -22,6 +24,30 @@ function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
     return s >= 0 && s <= 1 && t >= 0 && t <= 1
 }
 
+/**
+ * line-box collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xb top-left of box
+ number @param {number} yb top-left of box
+ number @param {number} wb width of box
+ number @param {number} hb height of box
+ */
+function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+{
+    if (Box.boxPoint(xb, yb, wb, hb, x1, y1) || Box.boxPoint(xb, yb, wb, hb, x2, y2))
+    {
+        return true
+    }
+    return lineLine(x1, y1, x2, y2, xb, yb, xb + wb, yb) ||
+        lineLine(x1, y1, x2, y2, xb + wb, yb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb + hb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
+}
+
 module.exports = {
-    lineLine
+    lineLine,
+    lineBox
 }

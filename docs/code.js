@@ -7,7 +7,7 @@ let renderer, ease
 setupRenderer()
 
 const options = { reverse: true, repeat: true, ease: 'easeInOutSine' }
-const TIME = 2000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
+const TIME = 3000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
 let x = SHAPE, y = SHAPE
 
 circlePoint(); next()
@@ -20,6 +20,7 @@ polygonPolygon(); next()
 boxPoint(); next()
 boxBox(); next()
 lineLine(); next()
+lineBox(); next()
 
 function circlePoint()
 {
@@ -161,6 +162,17 @@ function lineLine()
                 .lineTo(l2.x2, l2.y2)
         })
     text('lineLine')
+}
+
+function lineBox()
+{
+    const adjust = -SIZE * 0.1
+    const l = { x1: x + SIZE / 2 - adjust, y1: y, x2: x + SIZE / 2 + adjust, y2: y + SIZE }
+    const line = drawLine(l)
+    const box1 = drawBox({ x, y, w: SHAPE, h: SHAPE })
+    const to = ease.to(box1, { x: x + SIZE, y: y + SIZE }, TIME, options)
+    to.on('each', () => box1.tint = line.tint = Intersects.lineBox(l.x1, l.y1, l.x2, l.y2, box1.x, box1.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00)
+    text('lineBox')
 }
 
 function drawCircle(x, y, r, color)
