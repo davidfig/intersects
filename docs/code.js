@@ -160,6 +160,7 @@ function lineLine()
                 .moveTo(l2.x1, l2.y1)
                 .lineTo(l2.x2, l2.y2)
         })
+    text('lineLine')
 }
 
 function drawCircle(x, y, r, color)
