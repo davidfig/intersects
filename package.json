@@ -1,17 +1,17 @@
 {
   "name": "simple-intersect",
   "version": "1.0.0",
-  "description": "simple shape intersectection library",
+  "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons",
   "main": "index.js",
   "scripts": {
     "test": "budo docs/code.js:index.js --dir docs",
     "build": "browserify docs/code.js -o docs/index.js",
     "prepublishOnly": "npm build && npm docs",
-    "docs": "markdown-api README.md "
+    "docs": "markdown-api README.md src/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/davidfig/intersects.git"
+    "url": "git+ssh://git@github.com/davidfig/simple-intersect.git"
   },
   "author": "david figatner",
   "license": "MIT",
