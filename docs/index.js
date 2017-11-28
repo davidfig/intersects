@@ -18,6 +18,7 @@ circleBox(); next()
 circlePolygon(); next()
 polygonPoint(); next()
 polygonPolygon(); next()
+polygonBox(); next()
 boxPoint(); next()
 boxBox(); next()
 lineLine(); next()
@@ -128,6 +129,32 @@ function polygonPolygon()
             p1.tint = p2.tint = Intersects.polygonPolygon(points1, points2) ? 0xff0000 : 0x00ff00
         })
     text('polygonPolygon')
+}
+
+function polygonBox()
+{
+    const p1 = drawBox({ x: 0, y: 0, w: SHAPE, h: SHAPE })
+    p1.rotation = Math.PI / 4
+    p1.anchor.set(0.5)
+    p1.position.set(x, y)
+    const p2 = drawBox({ x: 0, y: 0, w: SHAPE, h: SHAPE })
+    p2.position.set(x + SIZE, y + SIZE)
+    p2.tint = p1.tint = 0x0000ff
+    ease.to(p1, {x: x + SIZE, y: y + SIZE, rotation: -Math.PI / 4}, TIME, options)
+    const to = ease.to(p2, { x, y }, TIME, options)
+    to.on('each',
+        function()
+        {
+            const half = p1.texture.width / 2
+            const vertices = [p1.toGlobal({ x: -half, y: -half }), p1.toGlobal({ x: half, y: -half }), p1.toGlobal({ x: half, y: half }), p1.toGlobal({ x: -half, y: half })]
+            const points1 = []
+            for (let vertex of vertices)
+            {
+                points1.push(vertex.x, vertex.y)
+            }
+            p1.tint = p2.tint = Intersects.polygonBox(points1, p2.x, p2.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00
+        })
+    text('polygonBox')
 }
 
 function polygonPoint()
@@ -280,6 +307,7 @@ module.exports = {
     polygonPoint: Polygon.polygonPoint,
     polygonLine: Polygon.polygonLine,
     polygonPolygon: Polygon.polygonPolygon,
+    polygonBox: Polygon.polygonBox,
 
     boxPoint: Box.boxPoint,
     boxBox: Box.boxBox,
@@ -61517,11 +61545,32 @@ class Renderer extends Loop
 
 module.exports = Renderer
 },{"exists":7,"pixi.js":334,"yy-fps":387,"yy-loop":388}],393:[function(require,module,exports){
+/**
+ * box-point collision
+ * @param {number} x1 top-left corner of box
+ * @param {number} y1 top-left corner of box
+ * @param {number} w1 width of box
+ * @param {number} h1 height of box
+ * @param {number} x2 of point
+ * @param {number} y2 of point
+ * @return {boolean}
+ */
 function boxPoint(x1, y1, w1, h1, x2, y2)
 {
     return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
 }
 
+/**
+ * box-box collision
+ * @param {number} x1 top-left corner of first box
+ * @param {number} y1 top-left corner of first box
+ * @param {number} w1 width of first box
+ * @param {number} h1 height of first box
+ * @param {number} x2 top-left corner of second box
+ * @param {number} y2 top-left corner of second box
+ * @param {number} w2 width of second box
+ * @param {number} h2 height of second box
+ */
 function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
 {
     return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2
@@ -61742,6 +61791,15 @@ function polygonPoint(points, x, y)
     return c
 }
 
+/**
+ * polygon-line collisions
+ * @param {number[]} points in polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
 function polygonLine(points, x1, y1, x2, y2)
 {
     const length = points.length
@@ -61762,6 +61820,20 @@ function polygonLine(points, x1, y1, x2, y2)
         }
     }
     return false
+}
+
+/**
+ * polygon-box collision
+ * @param {number[]} points  in polygon
+ * @param {number} x of box
+ * @param {number} y of box
+ * @param {number} w of box
+ * @param {number} h of box
+ */
+function polygonBox(points, x, y, w, h)
+{
+    const points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
+    return polygonPolygon(points, points2)
 }
 
 /**
@@ -61822,7 +61894,8 @@ function polygonPolygon(points1, points2)
 module.exports = {
     polygonPoint,
     polygonLine,
-    polygonPolygon
+    polygonPolygon,
+    polygonBox
 }
 },{"./line":395}],397:[function(require,module,exports){
 

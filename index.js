@@ -13,6 +13,7 @@ module.exports = {
     polygonPoint: Polygon.polygonPoint,
     polygonLine: Polygon.polygonLine,
     polygonPolygon: Polygon.polygonPolygon,
+    polygonBox: Polygon.polygonBox,
 
     boxPoint: Box.boxPoint,
     boxBox: Box.boxBox,

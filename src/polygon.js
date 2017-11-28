@@ -21,6 +21,15 @@ function polygonPoint(points, x, y)
     return c
 }
 
+/**
+ * polygon-line collisions
+ * @param {number[]} points in polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
 function polygonLine(points, x1, y1, x2, y2)
 {
     const length = points.length
@@ -41,6 +50,20 @@ function polygonLine(points, x1, y1, x2, y2)
         }
     }
     return false
+}
+
+/**
+ * polygon-box collision
+ * @param {number[]} points  in polygon
+ * @param {number} x of box
+ * @param {number} y of box
+ * @param {number} w of box
+ * @param {number} h of box
+ */
+function polygonBox(points, x, y, w, h)
+{
+    const points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
+    return polygonPolygon(points, points2)
 }
 
 /**
@@ -101,5 +124,6 @@ function polygonPolygon(points1, points2)
 module.exports = {
     polygonPoint,
     polygonLine,
-    polygonPolygon
+    polygonPolygon,
+    polygonBox
 }

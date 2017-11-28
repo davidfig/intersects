@@ -17,6 +17,7 @@ circleBox(); next()
 circlePolygon(); next()
 polygonPoint(); next()
 polygonPolygon(); next()
+polygonBox(); next()
 boxPoint(); next()
 boxBox(); next()
 lineLine(); next()
@@ -127,6 +128,32 @@ function polygonPolygon()
             p1.tint = p2.tint = Intersects.polygonPolygon(points1, points2) ? 0xff0000 : 0x00ff00
         })
     text('polygonPolygon')
+}
+
+function polygonBox()
+{
+    const p1 = drawBox({ x: 0, y: 0, w: SHAPE, h: SHAPE })
+    p1.rotation = Math.PI / 4
+    p1.anchor.set(0.5)
+    p1.position.set(x, y)
+    const p2 = drawBox({ x: 0, y: 0, w: SHAPE, h: SHAPE })
+    p2.position.set(x + SIZE, y + SIZE)
+    p2.tint = p1.tint = 0x0000ff
+    ease.to(p1, {x: x + SIZE, y: y + SIZE, rotation: -Math.PI / 4}, TIME, options)
+    const to = ease.to(p2, { x, y }, TIME, options)
+    to.on('each',
+        function()
+        {
+            const half = p1.texture.width / 2
+            const vertices = [p1.toGlobal({ x: -half, y: -half }), p1.toGlobal({ x: half, y: -half }), p1.toGlobal({ x: half, y: half }), p1.toGlobal({ x: -half, y: half })]
+            const points1 = []
+            for (let vertex of vertices)
+            {
+                points1.push(vertex.x, vertex.y)
+            }
+            p1.tint = p2.tint = Intersects.polygonBox(points1, p2.x, p2.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00
+        })
+    text('polygonBox')
 }
 
 function polygonPoint()

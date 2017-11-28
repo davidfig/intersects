@@ -13,6 +13,30 @@ https://davidfig.github.io/simple-intersect/
 
 # API 
 ```js
+/**
+ * box-point collision
+ * @param {number} x1 top-left corner of box
+ * @param {number} y1 top-left corner of box
+ * @param {number} w1 width of box
+ * @param {number} h1 height of box
+ * @param {number} x2 of point
+ * @param {number} y2 of point
+ * @return {boolean}
+ */
+function boxPoint(x1, y1, w1, h1, x2, y2)
+
+/**
+ * box-box collision
+ * @param {number} x1 top-left corner of first box
+ * @param {number} y1 top-left corner of first box
+ * @param {number} w1 width of first box
+ * @param {number} h1 height of first box
+ * @param {number} x2 top-left corner of second box
+ * @param {number} y2 top-left corner of second box
+ * @param {number} w2 width of second box
+ * @param {number} h2 height of second box
+ */
+function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
 
 /**
  * circle-point collision
@@ -109,6 +133,27 @@ function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
  * @param {number} y of point
  */
 function polygonPoint(points, x, y)
+
+/**
+ * polygon-line collisions
+ * @param {number[]} points in polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
+function polygonLine(points, x1, y1, x2, y2)
+
+/**
+ * polygon-box collision
+ * @param {number[]} points  in polygon
+ * @param {number} x of box
+ * @param {number} y of box
+ * @param {number} w of box
+ * @param {number} h of box
+ */
+function polygonBox(points, x, y, w, h)
 
 /**
  * polygon-polygon collision
