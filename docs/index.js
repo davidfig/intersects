@@ -8,7 +8,7 @@ let renderer, ease
 setupRenderer()
 
 const options = { reverse: true, repeat: true, ease: 'easeInOutSine' }
-const TIME = 2000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
+const TIME = 3000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
 let x = SHAPE, y = SHAPE
 
 circlePoint(); next()
@@ -21,6 +21,7 @@ polygonPolygon(); next()
 boxPoint(); next()
 boxBox(); next()
 lineLine(); next()
+lineBox(); next()
 
 function circlePoint()
 {
@@ -161,6 +162,18 @@ function lineLine()
                 .moveTo(l2.x1, l2.y1)
                 .lineTo(l2.x2, l2.y2)
         })
+    text('lineLine')
+}
+
+function lineBox()
+{
+    const adjust = -SIZE * 0.1
+    const l = { x1: x + SIZE / 2 - adjust, y1: y, x2: x + SIZE / 2 + adjust, y2: y + SIZE }
+    const line = drawLine(l)
+    const box1 = drawBox({ x, y, w: SHAPE, h: SHAPE })
+    const to = ease.to(box1, { x: x + SIZE, y: y + SIZE }, TIME, options)
+    to.on('each', () => box1.tint = line.tint = Intersects.lineBox(l.x1, l.y1, l.x2, l.y2, box1.x, box1.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00)
+    text('lineBox')
 }
 
 function drawCircle(x, y, r, color)
@@ -271,7 +284,8 @@ module.exports = {
     boxPoint: Box.boxPoint,
     boxBox: Box.boxBox,
 
-    lineLine: Line.lineLine
+    lineLine: Line.lineLine,
+    lineBox: Line.lineBox
 }
 },{"./src/box":393,"./src/circle":394,"./src/line":395,"./src/polygon":396}],4:[function(require,module,exports){
 /**
@@ -61651,6 +61665,8 @@ module.exports = {
     circlePolygon
 }
 },{"./polygon":396}],395:[function(require,module,exports){
+const Box = require('./box')
+
 /**
  * line-line collision
  * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -61675,10 +61691,34 @@ function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
     return s >= 0 && s <= 1 && t >= 0 && t <= 1
 }
 
-module.exports = {
-    lineLine
+/**
+ * line-box collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xb top-left of box
+ number @param {number} yb top-left of box
+ number @param {number} wb width of box
+ number @param {number} hb height of box
+ */
+function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+{
+    if (Box.boxPoint(xb, yb, wb, hb, x1, y1) || Box.boxPoint(xb, yb, wb, hb, x2, y2))
+    {
+        return true
+    }
+    return lineLine(x1, y1, x2, y2, xb, yb, xb + wb, yb) ||
+        lineLine(x1, y1, x2, y2, xb + wb, yb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb + hb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
 }
-},{}],396:[function(require,module,exports){
+
+module.exports = {
+    lineLine,
+    lineBox
+}
+},{"./box":393}],396:[function(require,module,exports){
 const Line = require('./line')
 
 /**

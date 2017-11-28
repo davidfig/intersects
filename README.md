@@ -90,6 +90,19 @@ function circlePolygon(x1, y1, r1, points)
 function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
 
 /**
+ * line-box collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xb top-left of box
+ number @param {number} yb top-left of box
+ number @param {number} wb width of box
+ number @param {number} hb height of box
+ */
+function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+
+/**
  * polygon-point collision
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x of point
