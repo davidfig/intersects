@@ -6,7 +6,7 @@
   "scripts": {
     "test": "budo docs/code.js:index.js --dir docs",
     "build": "browserify docs/code.js -o docs/index.js",
-    "prepublishOnly": "npm build && npm docs",
+    "prepublishOnly": "npm run build && npm run docs",
     "docs": "markdown-api README.md src/*.js"
   },
   "repository": {
