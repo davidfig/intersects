@@ -1,6 +1,5 @@
 const Line = require('./line')
 const Polygon = require('./polygon')
-const Circle = require('./circle')
 
 /**
  * box-point collision
@@ -74,7 +73,24 @@ function boxPolygon(xb, yb, wb, hb, points)
  */
 function boxCircle(xb, yb, wb, hb, xc, yc, rc)
 {
-    return Circle.circleBox(xc, yc, rc, xb, yb, wb, hb)
+    const hw = wb / 2
+    const hh = hb / 2
+    const distX = Math.abs(xc - (xb + wb / 2))
+    const distY = Math.abs(yc - (yb + hb / 2))
+
+    if (distX > hw + rc || distY > hh + rc)
+    {
+        return false
+    }
+
+    if (distX <= hw || distY <= hh)
+    {
+        return true
+    }
+
+    const x = distX - hw
+    const y = distY - hh
+    return x * x + y * y <= rc * rc
 }
 
 module.exports = {

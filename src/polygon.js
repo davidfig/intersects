@@ -1,5 +1,4 @@
 const Line = require('./line')
-const Circle = require('./circle')
 
 /**
  * polygon-point collision
@@ -24,7 +23,7 @@ function polygonPoint(points, x, y)
 
 /**
  * polygon-line collisions
- * @param {number[]} points in polygon
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x1 first point in line
  * @param {number} y1 first point in line
  * @param {number} x2 second point in line
@@ -33,29 +32,12 @@ function polygonPoint(points, x, y)
  */
 function polygonLine(points, x1, y1, x2, y2)
 {
-    const length = points.length
-
-    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
-    if (polygonPoint(points, x1, y1))
-    {
-        return true
-    }
-
-    // check for intersections for all of the sides
-    for (let i = 0; i < length; i += 2)
-    {
-        const j = (i + 2) % length
-        if (Line.lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
-        {
-            return true
-        }
-    }
-    return false
+    return Line.linePolygon(x1, y1, x2, y2, points)
 }
 
 /**
  * polygon-box collision
- * @param {number[]} points  in polygon
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x of box
  * @param {number} y of box
  * @param {number} w of box
@@ -70,8 +52,8 @@ function polygonBox(points, x, y, w, h)
 /**
  * polygon-polygon collision
  * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1
- * @param {number[]} points2
+ * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
+ * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
  * @return {boolean}
  */
 function polygonPolygon(points1, points2)
@@ -124,14 +106,26 @@ function polygonPolygon(points1, points2)
 
 /**
  * polygon-circle collision
- * @param {number[]} points
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} xc center of circle
  * @param {number} yc center of circle
  * @param {number} rc radius of circle
  */
 function polygonCircle(points, xc, yc, rc)
 {
-    return Circle.circlePolygon(xc, yc, rc, points)
+    if (polygonPoint(points, xc, yc))
+    {
+        return true
+    }
+    const count = points.length
+    for (let i = 0; i < count - 2; i += 2)
+    {
+        if (Line.lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
+        {
+            return true
+        }
+    }
+    return Line.lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
 }
 
 module.exports = {

@@ -1,7 +1,3 @@
-const Box = require('./box')
-const Polygon = require('./polygon')
-const Circle = require('./circle')
-
 /**
  * line-line collision
  * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -39,7 +35,12 @@ function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
  */
 function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
 {
-    if (Box.boxPoint(xb, yb, wb, hb, x1, y1) || Box.boxPoint(xb, yb, wb, hb, x2, y2))
+    function boxPoint(x1, y1, w1, h1, x2, y2)
+    {
+        return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
+    }
+
+    if (boxPoint(xb, yb, wb, hb, x1, y1) || boxPoint(xb, yb, wb, hb, x2, y2))
     {
         return true
     }
@@ -61,7 +62,21 @@ function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
  */
 function lineCircle(x1, y1, x2, y2, xc, yc, rc)
 {
-    return Circle.circleLine(xc, yc, rc, x1, y1, x2, y2)
+    function dot(v1, v2)
+    {
+        return (v1[0] * v2[0]) + (v1[1] * v2[1])
+    }
+
+    const ac = [xc - x1, yc - y1]
+    const ab = [x2 - x1, y2 - y1]
+    const ab2 = dot(ab, ab)
+    const acab = dot(ac, ab)
+    let t = acab / ab2
+    t = (t < 0) ? 0 : t
+    t = (t > 1) ? 1 : t
+    let h = [(ab[0] * t + x1) - xc, (ab[1] * t + y1) - yc]
+    const h2 = dot(h, h)
+    return h2 <= rc * rc
 }
 
 /**
@@ -74,7 +89,24 @@ function lineCircle(x1, y1, x2, y2, xc, yc, rc)
  */
 function linePolygon(x1, y1, x2, y2, points)
 {
-    return Polygon.polygonLine(points, x1, y1, x2, y2)
+    const length = points.length
+
+    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
+    if (polygonPoint(points, x1, y1))
+    {
+        return true
+    }
+
+    // check for intersections for all of the sides
+    for (let i = 0; i < length; i += 2)
+    {
+        const j = (i + 2) % length
+        if (Line.lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
+        {
+            return true
+        }
+    }
+    return false
 }
 
 module.exports = {
