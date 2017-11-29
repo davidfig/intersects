@@ -76,10 +76,10 @@ function circlePolygon()
 
 function boxPoint()
 {
-    const c = drawCircle(x, y, DOT)
-    c.tint = 0
     const b = { x: x + SIZE / 2 - SHAPE / 2, y: y + SIZE / 2 - SHAPE / 2, w: SHAPE, h: SHAPE }
     const box = drawBox(b)
+    const c = drawCircle(x, y, DOT)
+    c.tint = 0
     const to = ease.to(c, { x: x + SIZE, y: y + SIZE }, TIME, options)
     to.on('each', () => box.tint = Intersects.boxPoint(b.x, b.y, b.w, b.h, c.x, c.y) ? 0xff0000 : 0x00ff00)
     text('boxPoint')
@@ -296,6 +296,7 @@ const Circle = require('./src/circle')
 const Polygon = require('./src/polygon')
 const Box = require('./src/box')
 const Line = require('./src/line')
+const Point = require('./src/point')
 
 module.exports = {
     circlePoint: Circle.circlePoint,
@@ -308,14 +309,24 @@ module.exports = {
     polygonLine: Polygon.polygonLine,
     polygonPolygon: Polygon.polygonPolygon,
     polygonBox: Polygon.polygonBox,
+    polygonCircle: Polygon.polygonCircle,
 
     boxPoint: Box.boxPoint,
     boxBox: Box.boxBox,
+    boxLine: Box.boxLine,
+    boxPolygon: Box.boxPolygon,
+    boxCircle: Box.boxCircle,
+
+    pointBox: Point.pointBox,
+    pointPolygon: Point.pointPolygon,
+    pointCircle: Point.pointCircle,
 
     lineLine: Line.lineLine,
-    lineBox: Line.lineBox
+    lineBox: Line.lineBox,
+    linePolygon: Line.linePolygon,
+    lineCircle: Line.lineCircle
 }
-},{"./src/box":393,"./src/circle":394,"./src/line":395,"./src/polygon":396}],4:[function(require,module,exports){
+},{"./src/box":393,"./src/circle":394,"./src/line":395,"./src/point":396,"./src/polygon":397}],4:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -33277,7 +33288,7 @@ var SpriteMaskFilter = function (_Filter) {
 
 exports.default = SpriteMaskFilter;
 
-},{"../../../../math":249,"../../../../textures/TextureMatrix":295,"../Filter":265,"path":398}],269:[function(require,module,exports){
+},{"../../../../math":249,"../../../../textures/TextureMatrix":295,"../Filter":265,"path":399}],269:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36976,7 +36987,7 @@ function generateSampleSrc(maxTextures) {
     return src;
 }
 
-},{"../../Shader":223,"path":398}],287:[function(require,module,exports){
+},{"../../Shader":223,"path":399}],287:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42294,7 +42305,7 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":404}],304:[function(require,module,exports){
+},{"url":405}],304:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46740,7 +46751,7 @@ exports.default = TilingSpriteRenderer;
 
 core.WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-},{"../../core":244,"../../core/const":225,"path":398}],322:[function(require,module,exports){
+},{"../../core":244,"../../core/const":225,"path":399}],322:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46824,7 +46835,7 @@ var AlphaFilter = function (_core$Filter) {
 
 exports.default = AlphaFilter;
 
-},{"../../core":244,"path":398}],323:[function(require,module,exports){
+},{"../../core":244,"path":399}],323:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47987,7 +47998,7 @@ var ColorMatrixFilter = function (_core$Filter) {
 exports.default = ColorMatrixFilter;
 ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
-},{"../../core":244,"path":398}],330:[function(require,module,exports){
+},{"../../core":244,"path":399}],330:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48097,7 +48108,7 @@ var DisplacementFilter = function (_core$Filter) {
 
 exports.default = DisplacementFilter;
 
-},{"../../core":244,"path":398}],331:[function(require,module,exports){
+},{"../../core":244,"path":399}],331:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48151,7 +48162,7 @@ var FXAAFilter = function (_core$Filter) {
 
 exports.default = FXAAFilter;
 
-},{"../../core":244,"path":398}],332:[function(require,module,exports){
+},{"../../core":244,"path":399}],332:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48327,7 +48338,7 @@ var NoiseFilter = function (_core$Filter) {
 
 exports.default = NoiseFilter;
 
-},{"../../core":244,"path":398}],334:[function(require,module,exports){
+},{"../../core":244,"path":399}],334:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -50947,7 +50958,7 @@ function parse(resource, texture) {
     resource.bitmapFont = _extras.BitmapText.registerFont(resource.data, texture);
 }
 
-},{"../core":244,"../extras":320,"path":398,"resource-loader":373}],342:[function(require,module,exports){
+},{"../core":244,"../extras":320,"path":399,"resource-loader":373}],342:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51305,7 +51316,7 @@ function getResourcePath(resource, baseUrl) {
     return _url2.default.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
 }
 
-},{"../core":244,"resource-loader":373,"url":404}],345:[function(require,module,exports){
+},{"../core":244,"resource-loader":373,"url":405}],345:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52955,7 +52966,7 @@ exports.default = MeshRenderer;
 
 core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 
-},{"../../core":244,"../Mesh":346,"path":398,"pixi-gl-core":208}],353:[function(require,module,exports){
+},{"../../core":244,"../Mesh":346,"path":399,"pixi-gl-core":208}],353:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -58300,7 +58311,7 @@ if ((typeof module) == 'object' && module.exports) {
   Math    // math: package containing random, pow, and seedrandom
 );
 
-},{"crypto":397}],383:[function(require,module,exports){
+},{"crypto":398}],383:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -61545,6 +61556,10 @@ class Renderer extends Loop
 
 module.exports = Renderer
 },{"exists":7,"pixi.js":334,"yy-fps":387,"yy-loop":388}],393:[function(require,module,exports){
+const Line = require('./line')
+const Polygon = require('./polygon')
+const Circle = require('./circle')
+
 /**
  * box-point collision
  * @param {number} x1 top-left corner of box
@@ -61576,11 +61591,58 @@ function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
     return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2
 }
 
+/**
+ * box-line collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
+ */
+function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
+{
+    return Line.lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+}
+
+/**
+ * box-polygon collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number[]} points of polygon
+ */
+function boxPolygon(xb, yb, wb, hb, points)
+{
+    return Polygon.polygonBox(points, xb, yb, wb, hb)
+}
+
+/**
+ * box-circle collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+function boxCircle(xb, yb, wb, hb, xc, yc, rc)
+{
+    return Circle.circleBox(xc, yc, rc, xb, yb, wb, hb)
+}
+
 module.exports = {
     boxPoint,
-    boxBox
+    boxBox,
+    boxLine,
+    boxPolygon,
+    boxCircle
 }
-},{}],394:[function(require,module,exports){
+},{"./circle":394,"./line":395,"./polygon":397}],394:[function(require,module,exports){
 const Polygon = require ('./polygon')
 
 /**
@@ -61713,8 +61775,10 @@ module.exports = {
     circleBox,
     circlePolygon
 }
-},{"./polygon":396}],395:[function(require,module,exports){
+},{"./polygon":397}],395:[function(require,module,exports){
 const Box = require('./box')
+const Polygon = require('./polygon')
+const Circle = require('./circle')
 
 /**
  * line-line collision
@@ -61763,12 +61827,85 @@ function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
         lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
 }
 
+/**
+ * line-circle collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xc center of circle
+ number @param {number} yc center of circle
+ number @param {number} rc radius of circle
+ */
+function lineCircle(x1, y1, x2, y2, xc, yc, rc)
+{
+    return Circle.circleLine(xc, yc, rc, x1, y1, x2, y2)
+}
+
+/**
+ * line-polygon collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number[]} points of polygon
+ */
+function linePolygon(x1, y1, x2, y2, points)
+{
+    return Polygon.polygonLine(points, x1, y1, x2, y2)
+}
+
 module.exports = {
     lineLine,
-    lineBox
+    lineBox,
+    linePolygon,
+    lineCircle
 }
-},{"./box":393}],396:[function(require,module,exports){
+},{"./box":393,"./circle":394,"./polygon":397}],396:[function(require,module,exports){
+const Box = require('./box')
+const Polygon = require('./polygon')
+const Circle = require('./circle')
+
+/**
+ * point-box collision
+ * @param {number} x1 point
+ * @param {number} y1 point
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @return {boolean}
+ */
+function pointBox(x1, y1, xb, yb, wb, hb)
+{
+    return Box.boxPoint(xb, yb, wb, hb, x1, y1)
+}
+
+/**
+ * point-polygon collision
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number[]} points
+ * @return {boolean}
+ */
+function pointPolygon(x1, y1, points)
+{
+    return Polygon.polygonPoint(points, x1, y1)
+}
+
+function pointCircle(x1, y1, xc, yc, rc)
+{
+    return Circle.circlePoint(xc, yc, rc, x1, y1)
+}
+
+module.exports = {
+    pointBox,
+    pointPolygon,
+    pointCircle
+}
+},{"./box":393,"./circle":394,"./polygon":397}],397:[function(require,module,exports){
 const Line = require('./line')
+const Circle = require('./circle')
 
 /**
  * polygon-point collision
@@ -61891,15 +62028,28 @@ function polygonPolygon(points1, points2)
     return true
 }
 
+/**
+ * polygon-circle collision
+ * @param {number[]} points
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+function polygonCircle(points, xc, yc, rc)
+{
+    return Circle.circlePolygon(xc, yc, rc, points)
+}
+
 module.exports = {
     polygonPoint,
     polygonLine,
     polygonPolygon,
-    polygonBox
+    polygonBox,
+    polygonCircle
 }
-},{"./line":395}],397:[function(require,module,exports){
+},{"./circle":394,"./line":395}],398:[function(require,module,exports){
 
-},{}],398:[function(require,module,exports){
+},{}],399:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -62127,7 +62277,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":399}],399:[function(require,module,exports){
+},{"_process":400}],400:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -62313,7 +62463,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],400:[function(require,module,exports){
+},{}],401:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -62850,7 +63000,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],401:[function(require,module,exports){
+},{}],402:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -62936,7 +63086,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],402:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -63023,13 +63173,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],403:[function(require,module,exports){
+},{}],404:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":401,"./encode":402}],404:[function(require,module,exports){
+},{"./decode":402,"./encode":403}],405:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -63763,7 +63913,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":405,"punycode":400,"querystring":403}],405:[function(require,module,exports){
+},{"./util":406,"punycode":401,"querystring":404}],406:[function(require,module,exports){
 'use strict';
 
 module.exports = {

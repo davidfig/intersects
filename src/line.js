@@ -1,4 +1,6 @@
 const Box = require('./box')
+const Polygon = require('./polygon')
+const Circle = require('./circle')
 
 /**
  * line-line collision
@@ -47,7 +49,37 @@ function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
         lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
 }
 
+/**
+ * line-circle collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xc center of circle
+ number @param {number} yc center of circle
+ number @param {number} rc radius of circle
+ */
+function lineCircle(x1, y1, x2, y2, xc, yc, rc)
+{
+    return Circle.circleLine(xc, yc, rc, x1, y1, x2, y2)
+}
+
+/**
+ * line-polygon collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number[]} points of polygon
+ */
+function linePolygon(x1, y1, x2, y2, points)
+{
+    return Polygon.polygonLine(points, x1, y1, x2, y2)
+}
+
 module.exports = {
     lineLine,
-    lineBox
+    lineBox,
+    linePolygon,
+    lineCircle
 }

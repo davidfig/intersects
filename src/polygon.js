@@ -1,4 +1,5 @@
 const Line = require('./line')
+const Circle = require('./circle')
 
 /**
  * polygon-point collision
@@ -121,9 +122,22 @@ function polygonPolygon(points1, points2)
     return true
 }
 
+/**
+ * polygon-circle collision
+ * @param {number[]} points
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+function polygonCircle(points, xc, yc, rc)
+{
+    return Circle.circlePolygon(xc, yc, rc, points)
+}
+
 module.exports = {
     polygonPoint,
     polygonLine,
     polygonPolygon,
-    polygonBox
+    polygonBox,
+    polygonCircle
 }

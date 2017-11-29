@@ -39,6 +39,41 @@ function boxPoint(x1, y1, w1, h1, x2, y2)
 function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
 
 /**
+ * box-line collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
+ */
+function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
+
+/**
+ * box-polygon collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number[]} points of polygon
+ */
+function boxPolygon(xb, yb, wb, hb, points)
+
+/**
+ * box-circle collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+function boxCircle(xb, yb, wb, hb, xc, yc, rc)
+
+/**
  * circle-point collision
  * @param {number} x1 center of circle
  * @param {number} y1 center of circle
@@ -127,6 +162,49 @@ function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
 function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
 
 /**
+ * line-circle collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xc center of circle
+ number @param {number} yc center of circle
+ number @param {number} rc radius of circle
+ */
+function lineCircle(x1, y1, x2, y2, xc, yc, rc)
+
+/**
+ * line-polygon collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number[]} points of polygon
+ */
+function linePolygon(x1, y1, x2, y2, points)
+
+/**
+ * point-box collision
+ * @param {number} x1 point
+ * @param {number} y1 point
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @return {boolean}
+ */
+function pointBox(x1, y1, xb, yb, wb, hb)
+
+/**
+ * point-polygon collision
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number[]} points
+ * @return {boolean}
+ */
+function pointPolygon(x1, y1, points)
+
+/**
  * polygon-point collision
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x of point
@@ -163,5 +241,14 @@ function polygonBox(points, x, y, w, h)
  * @return {boolean}
  */
 function polygonPolygon(points1, points2)
+
+/**
+ * polygon-circle collision
+ * @param {number[]} points
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+function polygonCircle(points, xc, yc, rc)
 
 ```

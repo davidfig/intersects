@@ -75,10 +75,10 @@ function circlePolygon()
 
 function boxPoint()
 {
-    const c = drawCircle(x, y, DOT)
-    c.tint = 0
     const b = { x: x + SIZE / 2 - SHAPE / 2, y: y + SIZE / 2 - SHAPE / 2, w: SHAPE, h: SHAPE }
     const box = drawBox(b)
+    const c = drawCircle(x, y, DOT)
+    c.tint = 0
     const to = ease.to(c, { x: x + SIZE, y: y + SIZE }, TIME, options)
     to.on('each', () => box.tint = Intersects.boxPoint(b.x, b.y, b.w, b.h, c.x, c.y) ? 0xff0000 : 0x00ff00)
     text('boxPoint')
