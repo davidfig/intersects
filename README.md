@@ -99,39 +99,39 @@ function circleCircle(x1, y1, r1, x2, y2, r2)
 /**
  * circle-line collision
  * from http://stackoverflow.com/a/10392860/1955997
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 first point of line
- * @param {number} y2 first point of line
- * @param {number} x3 second point of line
- * @param {number} y3 second point of line
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
  * @return {boolean}
  */
-function circleLine(x1, y1, r1, x2, y2, x3, y3)
+function circleLine(xc, yc, rc, x1, y1, x2, y2)
 
 /**
  * circle-box (axis-oriented rectangle) collision
  * from http://stackoverflow.com/a/402010/1955997
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 top-left corner of rectangle
- * @param {number} y2 top-left corner of rectangle
- * @param {number} w2 width of rectangle
- * @param {number} h2 height of rectangle
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} xb top-left corner of rectangle
+ * @param {number} yb top-left corner of rectangle
+ * @param {number} wb width of rectangle
+ * @param {number} hb height of rectangle
  */
-function circleBox(x1, y1, r1, x2, y2, w2, h2)
+function circleBox(xc, yc, rc, xb, yb, wb, hb)
 
 /**
  * circle-polygon collision
  * from http://stackoverflow.com/a/402019/1955997
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  */
-function circlePolygon(x1, y1, r1, points)
+function circlePolygon(xc, yc, rc, points)
 
 /**
  * line-line collision
@@ -214,7 +214,7 @@ function polygonPoint(points, x, y)
 
 /**
  * polygon-line collisions
- * @param {number[]} points in polygon
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x1 first point in line
  * @param {number} y1 first point in line
  * @param {number} x2 second point in line
@@ -225,7 +225,7 @@ function polygonLine(points, x1, y1, x2, y2)
 
 /**
  * polygon-box collision
- * @param {number[]} points  in polygon
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x of box
  * @param {number} y of box
  * @param {number} w of box
@@ -236,15 +236,15 @@ function polygonBox(points, x, y, w, h)
 /**
  * polygon-polygon collision
  * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1
- * @param {number[]} points2
+ * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
+ * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
  * @return {boolean}
  */
 function polygonPolygon(points1, points2)
 
 /**
  * polygon-circle collision
- * @param {number[]} points
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} xc center of circle
  * @param {number} yc center of circle
  * @param {number} rc radius of circle

@@ -11,6 +11,9 @@ const options = { reverse: true, repeat: true, ease: 'easeInOutSine' }
 const TIME = 3000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
 let x = SHAPE, y = SHAPE
 
+// set to true to test the reverse (e.g., pointCircle instead of circlePoint)
+const REVERSE = false
+
 circlePoint(); next()
 circleCircle(); next()
 circleLine(); next()
@@ -29,7 +32,14 @@ function circlePoint()
     const circle = drawCircle(x + SIZE / 2, y + SIZE / 2, RADIUS)
     const point = drawCircle(x, y, DOT, 0)
     const to = ease.to(point, { x: x + SIZE, y: y + SIZE }, TIME, { ease, repeat: true, reverse: true })
-    to.on('each', () => circle.tint = Intersects.circlePoint(circle.x, circle.y, RADIUS, point.x, point.y) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => circle.tint = Intersects.pointCircle(point.x, point.y, circle.x, circle.y, RADIUS) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => circle.tint = Intersects.circlePoint(circle.x, circle.y, RADIUS, point.x, point.y) ? 0xff0000 : 0x00ff00)
+    }
     text('circlePoint')
 }
 
@@ -50,7 +60,14 @@ function circleLine()
     const l = { x1: x + SIZE / 2 - adjust, y1: y, x2: x + SIZE / 2 + adjust, y2: y + SIZE }
     const line = drawLine(l)
     const to = ease.to(circle, { x: x + SIZE, y: y + SIZE }, TIME, options)
-    to.on('each', () => line.tint = circle.tint = Intersects.circleLine(circle.x, circle.y, RADIUS, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => line.tint = circle.tint = Intersects.lineCircle(l.x1, l.y1, l.x2, l.y2, circle.x, circle.y, RADIUS) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => line.tint = circle.tint = Intersects.circleLine(circle.x, circle.y, RADIUS, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00)
+    }
     text('circleLine')
 }
 
@@ -60,7 +77,14 @@ function circleBox()
     const b = { x: x + SIZE / 2 - SHAPE / 2, y: y + SIZE / 2 - SHAPE / 2, w: SHAPE, h: SHAPE }
     const box = drawBox(b)
     const to = ease.to(c, { x: x + SIZE, y: y + SIZE }, TIME, options)
-    to.on('each', () => box.tint = c.tint = Intersects.circleBox(c.x, c.y, RADIUS, b.x, b.y, b.w, b.h) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => box.tint = c.tint = Intersects.boxCircle(b.x, b.y, b.w, b.h, c.x, c.y, RADIUS) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => box.tint = c.tint = Intersects.circleBox(c.x, c.y, RADIUS, b.x, b.y, b.w, b.h) ? 0xff0000 : 0x00ff00)
+    }
     text('circleBox')
 }
 
@@ -70,7 +94,14 @@ function circlePolygon()
     const points = [x + 30, y + 30, x + SIZE - 35, y + 15, x + SIZE - 15, y + SIZE - 40]
     const polygon = drawPolygon(points)
     const to = ease.to(c, { x: x + SIZE, y: y + SIZE }, TIME, options)
-    to.on('each', () => polygon.tint = c.tint = Intersects.circlePolygon(c.x, c.y, RADIUS, points) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => polygon.tint = c.tint = Intersects.polygonCircle(points, c.x, c.y, RADIUS) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => polygon.tint = c.tint = Intersects.circlePolygon(c.x, c.y, RADIUS, points) ? 0xff0000 : 0x00ff00)
+    }
     text('circlePolygon')
 }
 
@@ -81,7 +112,14 @@ function boxPoint()
     const c = drawCircle(x, y, DOT)
     c.tint = 0
     const to = ease.to(c, { x: x + SIZE, y: y + SIZE }, TIME, options)
-    to.on('each', () => box.tint = Intersects.boxPoint(b.x, b.y, b.w, b.h, c.x, c.y) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => box.tint = Intersects.pointBox(c.x, c.y, b.x, b.y, b.w, b.h) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => box.tint = Intersects.boxPoint(b.x, b.y, b.w, b.h, c.x, c.y) ? 0xff0000 : 0x00ff00)
+    }
     text('boxPoint')
 }
 
@@ -152,7 +190,14 @@ function polygonBox()
             {
                 points1.push(vertex.x, vertex.y)
             }
-            p1.tint = p2.tint = Intersects.polygonBox(points1, p2.x, p2.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00
+            if (REVERSE)
+            {
+                p1.tint = p2.tint = Intersects.boxPolygon(p2.x, p2.y, SHAPE, SHAPE, points1) ? 0xff0000 : 0x00ff00
+            }
+            else
+            {
+                p1.tint = p2.tint = Intersects.polygonBox(points1, p2.x, p2.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00
+            }
         })
     text('polygonBox')
 }
@@ -166,7 +211,14 @@ function polygonPoint()
     const c = drawCircle(x, y, DOT)
     c.tint = 0
     const to = ease.to(c, { x: x + SIZE, y: y + SIZE }, TIME, options)
-    to.on('each', () => polygon.tint = Intersects.polygonPoint(points, c.x, c.y) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => polygon.tint = Intersects.pointPolygon(c.x, c.y, points) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => polygon.tint = Intersects.polygonPoint(points, c.x, c.y) ? 0xff0000 : 0x00ff00)
+    }
     text('polygonPoint')
 }
 
@@ -199,7 +251,14 @@ function lineBox()
     const line = drawLine(l)
     const box1 = drawBox({ x, y, w: SHAPE, h: SHAPE })
     const to = ease.to(box1, { x: x + SIZE, y: y + SIZE }, TIME, options)
-    to.on('each', () => box1.tint = line.tint = Intersects.lineBox(l.x1, l.y1, l.x2, l.y2, box1.x, box1.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00)
+    if (REVERSE)
+    {
+        to.on('each', () => box1.tint = line.tint = Intersects.boxLine(box1.x, box1.y, SHAPE, SHAPE, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => box1.tint = line.tint = Intersects.lineBox(l.x1, l.y1, l.x2, l.y2, box1.x, box1.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00)
+    }
     text('lineBox')
 }
 
@@ -61558,7 +61617,6 @@ module.exports = Renderer
 },{"exists":7,"pixi.js":334,"yy-fps":387,"yy-loop":388}],393:[function(require,module,exports){
 const Line = require('./line')
 const Polygon = require('./polygon')
-const Circle = require('./circle')
 
 /**
  * box-point collision
@@ -61632,7 +61690,24 @@ function boxPolygon(xb, yb, wb, hb, points)
  */
 function boxCircle(xb, yb, wb, hb, xc, yc, rc)
 {
-    return Circle.circleBox(xc, yc, rc, xb, yb, wb, hb)
+    const hw = wb / 2
+    const hh = hb / 2
+    const distX = Math.abs(xc - (xb + wb / 2))
+    const distY = Math.abs(yc - (yb + hb / 2))
+
+    if (distX > hw + rc || distY > hh + rc)
+    {
+        return false
+    }
+
+    if (distX <= hw || distY <= hh)
+    {
+        return true
+    }
+
+    const x = distX - hw
+    const y = distY - hh
+    return x * x + y * y <= rc * rc
 }
 
 module.exports = {
@@ -61642,8 +61717,10 @@ module.exports = {
     boxPolygon,
     boxCircle
 }
-},{"./circle":394,"./line":395,"./polygon":397}],394:[function(require,module,exports){
-const Polygon = require ('./polygon')
+},{"./line":395,"./polygon":397}],394:[function(require,module,exports){
+const Polygon = require('./polygon')
+const Line = require('./line')
+const Box = require('./box')
 
 /**
  * circle-point collision
@@ -61682,90 +61759,47 @@ function circleCircle(x1, y1, r1, x2, y2, r2)
 /**
  * circle-line collision
  * from http://stackoverflow.com/a/10392860/1955997
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 first point of line
- * @param {number} y2 first point of line
- * @param {number} x3 second point of line
- * @param {number} y3 second point of line
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
  * @return {boolean}
  */
-function circleLine(x1, y1, r1, x2, y2, x3, y3)
+function circleLine(xc, yc, rc, x1, y1, x2, y2)
 {
-    function dot(v1, v2)
-    {
-        return (v1[0] * v2[0]) + (v1[1] * v2[1])
-    }
-
-    const ac = [x1 - x2, y1 - y2]
-    const ab = [x3 - x2, y3 - y2]
-    const ab2 = dot(ab, ab)
-    const acab = dot(ac, ab)
-    let t = acab / ab2
-    t = (t < 0) ? 0 : t
-    t = (t > 1) ? 1 : t
-    let h = [(ab[0] * t + x2) - x1, (ab[1] * t + y2) - y1]
-    const h2 = dot(h, h)
-    return h2 <= r1 * r1
+    return Line.lineCircle(x1, y1, x2, y2, xc, yc, rc)
 }
 
 /**
  * circle-box (axis-oriented rectangle) collision
  * from http://stackoverflow.com/a/402010/1955997
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 top-left corner of rectangle
- * @param {number} y2 top-left corner of rectangle
- * @param {number} w2 width of rectangle
- * @param {number} h2 height of rectangle
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} xb top-left corner of rectangle
+ * @param {number} yb top-left corner of rectangle
+ * @param {number} wb width of rectangle
+ * @param {number} hb height of rectangle
  */
-function circleBox(x1, y1, r1, x2, y2, w2, h2)
+function circleBox(xc, yc, rc, xb, yb, wb, hb)
 {
-    const hw = w2 / 2
-    const hh = h2 / 2
-    const distX = Math.abs(x1 - (x2 + w2 / 2))
-    const distY = Math.abs(y1 - (y2 + h2 / 2))
-
-    if (distX > hw + r1 || distY > hh + r1)
-    {
-        return false
-    }
-
-    if (distX <= hw || distY <= hh)
-    {
-        return true
-    }
-
-    const x = distX - hw
-    const y = distY - hh
-    return x * x + y * y <= r1 * r1
+    return Box.boxCircle(xb, yb, wb, hb, xc, yc, rc)
 }
 
 /**
  * circle-polygon collision
  * from http://stackoverflow.com/a/402019/1955997
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  */
-function circlePolygon(x1, y1, r1, points)
+function circlePolygon(xc, yc, rc, points)
 {
-    if (Polygon.polygonPoint(points, x1, y1))
-    {
-        return true
-    }
-    const count = points.length
-    for (let i = 0; i < count - 2; i += 2)
-    {
-        if (circleLine(x1, y1, r1, points[i], points[i + 1], points[i + 2], points[i + 3]))
-        {
-            return true
-        }
-    }
-    return circleLine(x1, y1, r1, points[0], points[1], points[count - 2], points[count - 1])
+    return Polygon.polygonCircle(points, xc, yc, rc)
 }
 
 module.exports = {
@@ -61775,11 +61809,7 @@ module.exports = {
     circleBox,
     circlePolygon
 }
-},{"./polygon":397}],395:[function(require,module,exports){
-const Box = require('./box')
-const Polygon = require('./polygon')
-const Circle = require('./circle')
-
+},{"./box":393,"./line":395,"./polygon":397}],395:[function(require,module,exports){
 /**
  * line-line collision
  * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -61817,7 +61847,12 @@ function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
  */
 function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
 {
-    if (Box.boxPoint(xb, yb, wb, hb, x1, y1) || Box.boxPoint(xb, yb, wb, hb, x2, y2))
+    function boxPoint(x1, y1, w1, h1, x2, y2)
+    {
+        return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
+    }
+
+    if (boxPoint(xb, yb, wb, hb, x1, y1) || boxPoint(xb, yb, wb, hb, x2, y2))
     {
         return true
     }
@@ -61839,7 +61874,21 @@ function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
  */
 function lineCircle(x1, y1, x2, y2, xc, yc, rc)
 {
-    return Circle.circleLine(xc, yc, rc, x1, y1, x2, y2)
+    function dot(v1, v2)
+    {
+        return (v1[0] * v2[0]) + (v1[1] * v2[1])
+    }
+
+    const ac = [xc - x1, yc - y1]
+    const ab = [x2 - x1, y2 - y1]
+    const ab2 = dot(ab, ab)
+    const acab = dot(ac, ab)
+    let t = acab / ab2
+    t = (t < 0) ? 0 : t
+    t = (t > 1) ? 1 : t
+    let h = [(ab[0] * t + x1) - xc, (ab[1] * t + y1) - yc]
+    const h2 = dot(h, h)
+    return h2 <= rc * rc
 }
 
 /**
@@ -61852,7 +61901,24 @@ function lineCircle(x1, y1, x2, y2, xc, yc, rc)
  */
 function linePolygon(x1, y1, x2, y2, points)
 {
-    return Polygon.polygonLine(points, x1, y1, x2, y2)
+    const length = points.length
+
+    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
+    if (polygonPoint(points, x1, y1))
+    {
+        return true
+    }
+
+    // check for intersections for all of the sides
+    for (let i = 0; i < length; i += 2)
+    {
+        const j = (i + 2) % length
+        if (Line.lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
+        {
+            return true
+        }
+    }
+    return false
 }
 
 module.exports = {
@@ -61861,7 +61927,7 @@ module.exports = {
     linePolygon,
     lineCircle
 }
-},{"./box":393,"./circle":394,"./polygon":397}],396:[function(require,module,exports){
+},{}],396:[function(require,module,exports){
 const Box = require('./box')
 const Polygon = require('./polygon')
 const Circle = require('./circle')
@@ -61905,7 +61971,6 @@ module.exports = {
 }
 },{"./box":393,"./circle":394,"./polygon":397}],397:[function(require,module,exports){
 const Line = require('./line')
-const Circle = require('./circle')
 
 /**
  * polygon-point collision
@@ -61930,7 +61995,7 @@ function polygonPoint(points, x, y)
 
 /**
  * polygon-line collisions
- * @param {number[]} points in polygon
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x1 first point in line
  * @param {number} y1 first point in line
  * @param {number} x2 second point in line
@@ -61939,29 +62004,12 @@ function polygonPoint(points, x, y)
  */
 function polygonLine(points, x1, y1, x2, y2)
 {
-    const length = points.length
-
-    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
-    if (polygonPoint(points, x1, y1))
-    {
-        return true
-    }
-
-    // check for intersections for all of the sides
-    for (let i = 0; i < length; i += 2)
-    {
-        const j = (i + 2) % length
-        if (Line.lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
-        {
-            return true
-        }
-    }
-    return false
+    return Line.linePolygon(x1, y1, x2, y2, points)
 }
 
 /**
  * polygon-box collision
- * @param {number[]} points  in polygon
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x of box
  * @param {number} y of box
  * @param {number} w of box
@@ -61976,8 +62024,8 @@ function polygonBox(points, x, y, w, h)
 /**
  * polygon-polygon collision
  * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1
- * @param {number[]} points2
+ * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
+ * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
  * @return {boolean}
  */
 function polygonPolygon(points1, points2)
@@ -62030,14 +62078,26 @@ function polygonPolygon(points1, points2)
 
 /**
  * polygon-circle collision
- * @param {number[]} points
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} xc center of circle
  * @param {number} yc center of circle
  * @param {number} rc radius of circle
  */
 function polygonCircle(points, xc, yc, rc)
 {
-    return Circle.circlePolygon(xc, yc, rc, points)
+    if (polygonPoint(points, xc, yc))
+    {
+        return true
+    }
+    const count = points.length
+    for (let i = 0; i < count - 2; i += 2)
+    {
+        if (Line.lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
+        {
+            return true
+        }
+    }
+    return Line.lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
 }
 
 module.exports = {
@@ -62047,7 +62107,7 @@ module.exports = {
     polygonBox,
     polygonCircle
 }
-},{"./circle":394,"./line":395}],398:[function(require,module,exports){
+},{"./line":395}],398:[function(require,module,exports){
 
 },{}],399:[function(require,module,exports){
 (function (process){
