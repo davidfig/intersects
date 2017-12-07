@@ -333,7 +333,7 @@ function setupRenderer()
 
 require('./highlight')
 
-},{"..":3,"./highlight":2,"pixi-ease":191,"pixi.js":334,"yy-renderer":392}],2:[function(require,module,exports){
+},{"..":3,"./highlight":2,"pixi-ease":191,"pixi.js":334,"yy-renderer":394}],2:[function(require,module,exports){
 // shows the code in the demo
 window.onload = function()
 {
@@ -385,7 +385,7 @@ module.exports = {
     linePolygon: Line.linePolygon,
     lineCircle: Line.lineCircle
 }
-},{"./src/box":393,"./src/circle":394,"./src/line":395,"./src/point":396,"./src/polygon":397}],4:[function(require,module,exports){
+},{"./src/box":395,"./src/circle":396,"./src/line":397,"./src/point":398,"./src/polygon":399}],4:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -1242,7 +1242,7 @@ var has = Object.prototype.hasOwnProperty
  * An `Events` instance is a plain object whose properties are event names.
  *
  * @constructor
- * @api private
+ * @private
  */
 function Events() {}
 
@@ -1267,10 +1267,10 @@ if (Object.create) {
  * Representation of a single event listener.
  *
  * @param {Function} fn The listener function.
- * @param {Mixed} context The context to invoke the listener with.
+ * @param {*} context The context to invoke the listener with.
  * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
  * @constructor
- * @api private
+ * @private
  */
 function EE(fn, context, once) {
   this.fn = fn;
@@ -1279,11 +1279,49 @@ function EE(fn, context, once) {
 }
 
 /**
+ * Add a listener for a given event.
+ *
+ * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+ * @param {(String|Symbol)} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {*} context The context to invoke the listener with.
+ * @param {Boolean} once Specify if the listener is a one-time listener.
+ * @returns {EventEmitter}
+ * @private
+ */
+function addListener(emitter, event, fn, context, once) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('The listener must be a function');
+  }
+
+  var listener = new EE(fn, context || emitter, once)
+    , evt = prefix ? prefix + event : event;
+
+  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
+  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
+  else emitter._events[evt] = [emitter._events[evt], listener];
+
+  return emitter;
+}
+
+/**
+ * Clear event by name.
+ *
+ * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+ * @param {(String|Symbol)} evt The Event name.
+ * @private
+ */
+function clearEvent(emitter, evt) {
+  if (--emitter._eventsCount === 0) emitter._events = new Events();
+  else delete emitter._events[evt];
+}
+
+/**
  * Minimal `EventEmitter` interface that is molded against the Node.js
  * `EventEmitter` interface.
  *
  * @constructor
- * @api public
+ * @public
  */
 function EventEmitter() {
   this._events = new Events();
@@ -1295,7 +1333,7 @@ function EventEmitter() {
  * listeners.
  *
  * @returns {Array}
- * @api public
+ * @public
  */
 EventEmitter.prototype.eventNames = function eventNames() {
   var names = []
@@ -1318,32 +1356,46 @@ EventEmitter.prototype.eventNames = function eventNames() {
 /**
  * Return the listeners registered for a given event.
  *
- * @param {String|Symbol} event The event name.
- * @param {Boolean} exists Only check if there are listeners.
- * @returns {Array|Boolean}
- * @api public
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Array} The registered listeners.
+ * @public
  */
-EventEmitter.prototype.listeners = function listeners(event, exists) {
+EventEmitter.prototype.listeners = function listeners(event) {
   var evt = prefix ? prefix + event : event
-    , available = this._events[evt];
+    , handlers = this._events[evt];
 
-  if (exists) return !!available;
-  if (!available) return [];
-  if (available.fn) return [available.fn];
+  if (!handlers) return [];
+  if (handlers.fn) return [handlers.fn];
 
-  for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
-    ee[i] = available[i].fn;
+  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+    ee[i] = handlers[i].fn;
   }
 
   return ee;
 };
 
 /**
+ * Return the number of listeners listening to a given event.
+ *
+ * @param {(String|Symbol)} event The event name.
+ * @returns {Number} The number of listeners.
+ * @public
+ */
+EventEmitter.prototype.listenerCount = function listenerCount(event) {
+  var evt = prefix ? prefix + event : event
+    , listeners = this._events[evt];
+
+  if (!listeners) return 0;
+  if (listeners.fn) return 1;
+  return listeners.length;
+};
+
+/**
  * Calls each of the listeners registered for a given event.
  *
- * @param {String|Symbol} event The event name.
+ * @param {(String|Symbol)} event The event name.
  * @returns {Boolean} `true` if the event had listeners, else `false`.
- * @api public
+ * @public
  */
 EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
   var evt = prefix ? prefix + event : event;
@@ -1400,60 +1452,45 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
 /**
  * Add a listener for a given event.
  *
- * @param {String|Symbol} event The event name.
+ * @param {(String|Symbol)} event The event name.
  * @param {Function} fn The listener function.
- * @param {Mixed} [context=this] The context to invoke the listener with.
+ * @param {*} [context=this] The context to invoke the listener with.
  * @returns {EventEmitter} `this`.
- * @api public
+ * @public
  */
 EventEmitter.prototype.on = function on(event, fn, context) {
-  var listener = new EE(fn, context || this)
-    , evt = prefix ? prefix + event : event;
-
-  if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;
-  else if (!this._events[evt].fn) this._events[evt].push(listener);
-  else this._events[evt] = [this._events[evt], listener];
-
-  return this;
+  return addListener(this, event, fn, context, false);
 };
 
 /**
  * Add a one-time listener for a given event.
  *
- * @param {String|Symbol} event The event name.
+ * @param {(String|Symbol)} event The event name.
  * @param {Function} fn The listener function.
- * @param {Mixed} [context=this] The context to invoke the listener with.
+ * @param {*} [context=this] The context to invoke the listener with.
  * @returns {EventEmitter} `this`.
- * @api public
+ * @public
  */
 EventEmitter.prototype.once = function once(event, fn, context) {
-  var listener = new EE(fn, context || this, true)
-    , evt = prefix ? prefix + event : event;
-
-  if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;
-  else if (!this._events[evt].fn) this._events[evt].push(listener);
-  else this._events[evt] = [this._events[evt], listener];
-
-  return this;
+  return addListener(this, event, fn, context, true);
 };
 
 /**
  * Remove the listeners of a given event.
  *
- * @param {String|Symbol} event The event name.
+ * @param {(String|Symbol)} event The event name.
  * @param {Function} fn Only remove the listeners that match this function.
- * @param {Mixed} context Only remove the listeners that have this context.
+ * @param {*} context Only remove the listeners that have this context.
  * @param {Boolean} once Only remove one-time listeners.
  * @returns {EventEmitter} `this`.
- * @api public
+ * @public
  */
 EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
   var evt = prefix ? prefix + event : event;
 
   if (!this._events[evt]) return this;
   if (!fn) {
-    if (--this._eventsCount === 0) this._events = new Events();
-    else delete this._events[evt];
+    clearEvent(this, evt);
     return this;
   }
 
@@ -1461,19 +1498,18 @@ EventEmitter.prototype.removeListener = function removeListener(event, fn, conte
 
   if (listeners.fn) {
     if (
-         listeners.fn === fn
-      && (!once || listeners.once)
-      && (!context || listeners.context === context)
+      listeners.fn === fn &&
+      (!once || listeners.once) &&
+      (!context || listeners.context === context)
     ) {
-      if (--this._eventsCount === 0) this._events = new Events();
-      else delete this._events[evt];
+      clearEvent(this, evt);
     }
   } else {
     for (var i = 0, events = [], length = listeners.length; i < length; i++) {
       if (
-           listeners[i].fn !== fn
-        || (once && !listeners[i].once)
-        || (context && listeners[i].context !== context)
+        listeners[i].fn !== fn ||
+        (once && !listeners[i].once) ||
+        (context && listeners[i].context !== context)
       ) {
         events.push(listeners[i]);
       }
@@ -1483,8 +1519,7 @@ EventEmitter.prototype.removeListener = function removeListener(event, fn, conte
     // Reset the array, or remove it completely if we have no more listeners.
     //
     if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
-    else if (--this._eventsCount === 0) this._events = new Events();
-    else delete this._events[evt];
+    else clearEvent(this, evt);
   }
 
   return this;
@@ -1493,19 +1528,16 @@ EventEmitter.prototype.removeListener = function removeListener(event, fn, conte
 /**
  * Remove all listeners, or those of the specified event.
  *
- * @param {String|Symbol} [event] The event name.
+ * @param {(String|Symbol)} [event] The event name.
  * @returns {EventEmitter} `this`.
- * @api public
+ * @public
  */
 EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
   var evt;
 
   if (event) {
     evt = prefix ? prefix + event : event;
-    if (this._events[evt]) {
-      if (--this._eventsCount === 0) this._events = new Events();
-      else delete this._events[evt];
-    }
+    if (this._events[evt]) clearEvent(this, evt);
   } else {
     this._events = new Events();
     this._eventsCount = 0;
@@ -1519,13 +1551,6 @@ EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
 //
 EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
 EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-//
-// This function doesn't apply anymore.
-//
-EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
-  return this;
-};
 
 //
 // Expose the prefix.
@@ -19245,7 +19270,7 @@ module.exports = class face extends wait
         }
     }
 }
-},{"./wait":201,"yy-angle":384}],194:[function(require,module,exports){
+},{"./wait":201,"yy-angle":385}],194:[function(require,module,exports){
 const Loop = require('yy-loop')
 
 const Angle = require('./angle')
@@ -19396,7 +19421,7 @@ module.exports = class List extends Loop
      */
     // timeout(callback, time)
 }
-},{"./angle":192,"./face":193,"./load":195,"./movie":196,"./shake":197,"./target":198,"./tint":199,"./to":200,"./wait":201,"yy-loop":388}],195:[function(require,module,exports){
+},{"./angle":192,"./face":193,"./load":195,"./movie":196,"./shake":197,"./target":198,"./tint":199,"./to":200,"./wait":201,"yy-loop":389}],195:[function(require,module,exports){
 const wait = require('./wait')
 const to = require('./to')
 const tint = require('./tint')
@@ -19855,7 +19880,7 @@ module.exports = class tint extends wait
         }
     }
 }
-},{"./wait":201,"yy-color":385}],200:[function(require,module,exports){
+},{"./wait":201,"yy-color":386}],200:[function(require,module,exports){
 const wait = require('./wait')
 
 /** animate any numeric parameter of an object or array of objects */
@@ -22938,7 +22963,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.6.1';
+var VERSION = exports.VERSION = '4.6.2';
 
 /**
  * Two Pi.
@@ -24921,7 +24946,7 @@ var DisplayObject = function (_EventEmitter) {
 exports.default = DisplayObject;
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
-},{"../const":225,"../math":249,"../settings":280,"./Bounds":226,"./Transform":229,"./TransformStatic":231,"eventemitter3":6}],229:[function(require,module,exports){
+},{"../const":225,"../math":249,"../settings":280,"./Bounds":226,"./Transform":229,"./TransformStatic":231,"eventemitter3":368}],229:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30576,17 +30601,19 @@ var SystemRenderer = function (_EventEmitter) {
    * @param {PIXI.DisplayObject} displayObject - The displayObject the object will be generated from
    * @param {number} scaleMode - Should be one of the scaleMode consts
    * @param {number} resolution - The resolution / device pixel ratio of the texture being generated
+   * @param {PIXI.Rectangle} [region] - The region of the displayObject, that shall be rendered,
+   *        if no region is specified, defaults to the local bounds of the displayObject.
    * @return {PIXI.Texture} a texture of the graphics object
    */
 
 
-  SystemRenderer.prototype.generateTexture = function generateTexture(displayObject, scaleMode, resolution) {
-    var bounds = displayObject.getLocalBounds();
+  SystemRenderer.prototype.generateTexture = function generateTexture(displayObject, scaleMode, resolution, region) {
+    region = region || displayObject.getLocalBounds();
 
-    var renderTexture = _RenderTexture2.default.create(bounds.width | 0, bounds.height | 0, scaleMode, resolution);
+    var renderTexture = _RenderTexture2.default.create(region.width | 0, region.height | 0, scaleMode, resolution);
 
-    tempMatrix.tx = -bounds.x;
-    tempMatrix.ty = -bounds.y;
+    tempMatrix.tx = -region.x;
+    tempMatrix.ty = -region.y;
 
     this.render(displayObject, renderTexture, false, tempMatrix, true);
 
@@ -30678,7 +30705,7 @@ var SystemRenderer = function (_EventEmitter) {
 
 exports.default = SystemRenderer;
 
-},{"../const":225,"../display/Container":227,"../math":249,"../settings":280,"../textures/RenderTexture":292,"../utils":304,"eventemitter3":6}],256:[function(require,module,exports){
+},{"../const":225,"../display/Container":227,"../math":249,"../settings":280,"../textures/RenderTexture":292,"../utils":304,"eventemitter3":368}],256:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32547,8 +32574,8 @@ var WebGLRenderer = function (_SystemRenderer) {
     WebGLRenderer.prototype.reset = function reset() {
         this.setObjectRenderer(this.emptyRenderer);
 
+        this.bindVao(null);
         this._activeShader = null;
-        this._activeVao = null;
         this._activeRenderTarget = this.rootRenderTarget;
 
         for (var i = 0; i < this.boundTextures.length; i++) {
@@ -33347,7 +33374,7 @@ var SpriteMaskFilter = function (_Filter) {
 
 exports.default = SpriteMaskFilter;
 
-},{"../../../../math":249,"../../../../textures/TextureMatrix":295,"../Filter":265,"path":399}],269:[function(require,module,exports){
+},{"../../../../math":249,"../../../../textures/TextureMatrix":295,"../Filter":265,"path":401}],269:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37046,7 +37073,7 @@ function generateSampleSrc(maxTextures) {
     return src;
 }
 
-},{"../../Shader":223,"path":399}],287:[function(require,module,exports){
+},{"../../Shader":223,"path":401}],287:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -39814,7 +39841,7 @@ var BaseTexture = function (_EventEmitter) {
 
 exports.default = BaseTexture;
 
-},{"../settings":280,"../utils":304,"../utils/determineCrossOrigin":303,"bit-twiddle":4,"eventemitter3":6}],292:[function(require,module,exports){
+},{"../settings":280,"../utils":304,"../utils/determineCrossOrigin":303,"bit-twiddle":4,"eventemitter3":368}],292:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -40922,7 +40949,7 @@ Texture.WHITE = createWhiteTexture();
 removeAllHandlers(Texture.WHITE);
 removeAllHandlers(Texture.WHITE.baseTexture);
 
-},{"../math":249,"../settings":280,"../utils":304,"./BaseTexture":291,"./TextureUvs":296,"./VideoBaseTexture":297,"eventemitter3":6}],295:[function(require,module,exports){
+},{"../math":249,"../settings":280,"../utils":304,"./BaseTexture":291,"./TextureUvs":296,"./VideoBaseTexture":297,"eventemitter3":368}],295:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42364,7 +42391,7 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":405}],304:[function(require,module,exports){
+},{"url":407}],304:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42838,7 +42865,7 @@ function premultiplyTintToRgba(tint, alpha, out, premultiply) {
     return out;
 }
 
-},{"../const":225,"../settings":280,"./mapPremultipliedBlendModes":305,"./mixin":307,"./pluginTarget":308,"eventemitter3":6,"ismobilejs":186,"remove-array-items":368}],305:[function(require,module,exports){
+},{"../const":225,"../settings":280,"./mapPremultipliedBlendModes":305,"./mixin":307,"./pluginTarget":308,"eventemitter3":368,"ismobilejs":186,"remove-array-items":369}],305:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46810,7 +46837,7 @@ exports.default = TilingSpriteRenderer;
 
 core.WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-},{"../../core":244,"../../core/const":225,"path":399}],322:[function(require,module,exports){
+},{"../../core":244,"../../core/const":225,"path":401}],322:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46894,7 +46921,7 @@ var AlphaFilter = function (_core$Filter) {
 
 exports.default = AlphaFilter;
 
-},{"../../core":244,"path":399}],323:[function(require,module,exports){
+},{"../../core":244,"path":401}],323:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48057,7 +48084,7 @@ var ColorMatrixFilter = function (_core$Filter) {
 exports.default = ColorMatrixFilter;
 ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
-},{"../../core":244,"path":399}],330:[function(require,module,exports){
+},{"../../core":244,"path":401}],330:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48167,7 +48194,7 @@ var DisplacementFilter = function (_core$Filter) {
 
 exports.default = DisplacementFilter;
 
-},{"../../core":244,"path":399}],331:[function(require,module,exports){
+},{"../../core":244,"path":401}],331:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48221,7 +48248,7 @@ var FXAAFilter = function (_core$Filter) {
 
 exports.default = FXAAFilter;
 
-},{"../../core":244,"path":399}],332:[function(require,module,exports){
+},{"../../core":244,"path":401}],332:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48397,7 +48424,7 @@ var NoiseFilter = function (_core$Filter) {
 
 exports.default = NoiseFilter;
 
-},{"../../core":244,"path":399}],334:[function(require,module,exports){
+},{"../../core":244,"path":401}],334:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -49536,7 +49563,6 @@ var InteractionManager = function (_EventEmitter) {
      *
      * @param {HTMLCanvasElement} element - the DOM element which will receive mouse and touch events.
      * @param {number} [resolution=1] - The resolution / device pixel ratio of the new element (relative to the canvas).
-     * @private
      */
 
 
@@ -50580,7 +50606,7 @@ exports.default = InteractionManager;
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":244,"./InteractionData":335,"./InteractionEvent":336,"./InteractionTrackingData":338,"./interactiveTarget":340,"eventemitter3":6}],338:[function(require,module,exports){
+},{"../core":244,"./InteractionData":335,"./InteractionEvent":336,"./InteractionTrackingData":338,"./interactiveTarget":340,"eventemitter3":368}],338:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -51017,7 +51043,7 @@ function parse(resource, texture) {
     resource.bitmapFont = _extras.BitmapText.registerFont(resource.data, texture);
 }
 
-},{"../core":244,"../extras":320,"path":399,"resource-loader":373}],342:[function(require,module,exports){
+},{"../core":244,"../extras":320,"path":401,"resource-loader":374}],342:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51145,7 +51171,7 @@ AppPrototype.destroy = function destroy(removeView) {
     this._parentDestroy(removeView);
 };
 
-},{"../core/Application":222,"./bitmapFontParser":341,"./loader":343,"./spritesheetParser":344,"./textureParser":345,"resource-loader":373}],343:[function(require,module,exports){
+},{"../core/Application":222,"./bitmapFontParser":341,"./loader":343,"./spritesheetParser":344,"./textureParser":345,"resource-loader":374}],343:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51316,7 +51342,7 @@ var Resource = _resourceLoader2.default.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":341,"./spritesheetParser":344,"./textureParser":345,"eventemitter3":6,"resource-loader":373,"resource-loader/lib/middlewares/parsing/blob":374}],344:[function(require,module,exports){
+},{"./bitmapFontParser":341,"./spritesheetParser":344,"./textureParser":345,"eventemitter3":368,"resource-loader":374,"resource-loader/lib/middlewares/parsing/blob":375}],344:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51375,7 +51401,7 @@ function getResourcePath(resource, baseUrl) {
     return _url2.default.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
 }
 
-},{"../core":244,"resource-loader":373,"url":405}],345:[function(require,module,exports){
+},{"../core":244,"resource-loader":374,"url":407}],345:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51398,7 +51424,7 @@ var _Texture2 = _interopRequireDefault(_Texture);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../core/textures/Texture":294,"resource-loader":373}],346:[function(require,module,exports){
+},{"../core/textures/Texture":294,"resource-loader":374}],346:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53025,7 +53051,7 @@ exports.default = MeshRenderer;
 
 core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 
-},{"../../core":244,"../Mesh":346,"path":399,"pixi-gl-core":208}],353:[function(require,module,exports){
+},{"../../core":244,"../Mesh":346,"path":401,"pixi-gl-core":208}],353:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53048,9 +53074,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
- * so use when you need a lot of sprites or particles. The tradeoff of the ParticleContainer is that advanced
- * functionality will not work. ParticleContainer implements only the basic object transform (position, scale, rotation).
- * Any other functionality like tinting, masking, etc will not work on sprites in this batch.
+ * so use when you need a lot of sprites or particles. The tradeoff of the ParticleContainer is that most advanced
+ * functionality will not work. ParticleContainer implements the basic object transform (position, scale, rotation)
+ * and some advanced functionality like tint (as of v4.5.6).
+ * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
  *
  * It's extremely easy to use :
  *
@@ -55228,6 +55255,319 @@ function findGraphics(item, queue) {
 core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
 
 },{"../../core":244,"../BasePrepare":362}],368:[function(require,module,exports){
+'use strict';
+
+var has = Object.prototype.hasOwnProperty
+  , prefix = '~';
+
+/**
+ * Constructor to create a storage for our `EE` objects.
+ * An `Events` instance is a plain object whose properties are event names.
+ *
+ * @constructor
+ * @api private
+ */
+function Events() {}
+
+//
+// We try to not inherit from `Object.prototype`. In some engines creating an
+// instance in this way is faster than calling `Object.create(null)` directly.
+// If `Object.create(null)` is not supported we prefix the event names with a
+// character to make sure that the built-in object properties are not
+// overridden or used as an attack vector.
+//
+if (Object.create) {
+  Events.prototype = Object.create(null);
+
+  //
+  // This hack is needed because the `__proto__` property is still inherited in
+  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+  //
+  if (!new Events().__proto__) prefix = false;
+}
+
+/**
+ * Representation of a single event listener.
+ *
+ * @param {Function} fn The listener function.
+ * @param {Mixed} context The context to invoke the listener with.
+ * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+ * @constructor
+ * @api private
+ */
+function EE(fn, context, once) {
+  this.fn = fn;
+  this.context = context;
+  this.once = once || false;
+}
+
+/**
+ * Minimal `EventEmitter` interface that is molded against the Node.js
+ * `EventEmitter` interface.
+ *
+ * @constructor
+ * @api public
+ */
+function EventEmitter() {
+  this._events = new Events();
+  this._eventsCount = 0;
+}
+
+/**
+ * Return an array listing the events for which the emitter has registered
+ * listeners.
+ *
+ * @returns {Array}
+ * @api public
+ */
+EventEmitter.prototype.eventNames = function eventNames() {
+  var names = []
+    , events
+    , name;
+
+  if (this._eventsCount === 0) return names;
+
+  for (name in (events = this._events)) {
+    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+  }
+
+  if (Object.getOwnPropertySymbols) {
+    return names.concat(Object.getOwnPropertySymbols(events));
+  }
+
+  return names;
+};
+
+/**
+ * Return the listeners registered for a given event.
+ *
+ * @param {String|Symbol} event The event name.
+ * @param {Boolean} exists Only check if there are listeners.
+ * @returns {Array|Boolean}
+ * @api public
+ */
+EventEmitter.prototype.listeners = function listeners(event, exists) {
+  var evt = prefix ? prefix + event : event
+    , available = this._events[evt];
+
+  if (exists) return !!available;
+  if (!available) return [];
+  if (available.fn) return [available.fn];
+
+  for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
+    ee[i] = available[i].fn;
+  }
+
+  return ee;
+};
+
+/**
+ * Calls each of the listeners registered for a given event.
+ *
+ * @param {String|Symbol} event The event name.
+ * @returns {Boolean} `true` if the event had listeners, else `false`.
+ * @api public
+ */
+EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return false;
+
+  var listeners = this._events[evt]
+    , len = arguments.length
+    , args
+    , i;
+
+  if (listeners.fn) {
+    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+    switch (len) {
+      case 1: return listeners.fn.call(listeners.context), true;
+      case 2: return listeners.fn.call(listeners.context, a1), true;
+      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+    }
+
+    for (i = 1, args = new Array(len -1); i < len; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    listeners.fn.apply(listeners.context, args);
+  } else {
+    var length = listeners.length
+      , j;
+
+    for (i = 0; i < length; i++) {
+      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+      switch (len) {
+        case 1: listeners[i].fn.call(listeners[i].context); break;
+        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+        default:
+          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+            args[j - 1] = arguments[j];
+          }
+
+          listeners[i].fn.apply(listeners[i].context, args);
+      }
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Add a listener for a given event.
+ *
+ * @param {String|Symbol} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {Mixed} [context=this] The context to invoke the listener with.
+ * @returns {EventEmitter} `this`.
+ * @api public
+ */
+EventEmitter.prototype.on = function on(event, fn, context) {
+  var listener = new EE(fn, context || this)
+    , evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;
+  else if (!this._events[evt].fn) this._events[evt].push(listener);
+  else this._events[evt] = [this._events[evt], listener];
+
+  return this;
+};
+
+/**
+ * Add a one-time listener for a given event.
+ *
+ * @param {String|Symbol} event The event name.
+ * @param {Function} fn The listener function.
+ * @param {Mixed} [context=this] The context to invoke the listener with.
+ * @returns {EventEmitter} `this`.
+ * @api public
+ */
+EventEmitter.prototype.once = function once(event, fn, context) {
+  var listener = new EE(fn, context || this, true)
+    , evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;
+  else if (!this._events[evt].fn) this._events[evt].push(listener);
+  else this._events[evt] = [this._events[evt], listener];
+
+  return this;
+};
+
+/**
+ * Remove the listeners of a given event.
+ *
+ * @param {String|Symbol} event The event name.
+ * @param {Function} fn Only remove the listeners that match this function.
+ * @param {Mixed} context Only remove the listeners that have this context.
+ * @param {Boolean} once Only remove one-time listeners.
+ * @returns {EventEmitter} `this`.
+ * @api public
+ */
+EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return this;
+  if (!fn) {
+    if (--this._eventsCount === 0) this._events = new Events();
+    else delete this._events[evt];
+    return this;
+  }
+
+  var listeners = this._events[evt];
+
+  if (listeners.fn) {
+    if (
+         listeners.fn === fn
+      && (!once || listeners.once)
+      && (!context || listeners.context === context)
+    ) {
+      if (--this._eventsCount === 0) this._events = new Events();
+      else delete this._events[evt];
+    }
+  } else {
+    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+      if (
+           listeners[i].fn !== fn
+        || (once && !listeners[i].once)
+        || (context && listeners[i].context !== context)
+      ) {
+        events.push(listeners[i]);
+      }
+    }
+
+    //
+    // Reset the array, or remove it completely if we have no more listeners.
+    //
+    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
+    else if (--this._eventsCount === 0) this._events = new Events();
+    else delete this._events[evt];
+  }
+
+  return this;
+};
+
+/**
+ * Remove all listeners, or those of the specified event.
+ *
+ * @param {String|Symbol} [event] The event name.
+ * @returns {EventEmitter} `this`.
+ * @api public
+ */
+EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+  var evt;
+
+  if (event) {
+    evt = prefix ? prefix + event : event;
+    if (this._events[evt]) {
+      if (--this._eventsCount === 0) this._events = new Events();
+      else delete this._events[evt];
+    }
+  } else {
+    this._events = new Events();
+    this._eventsCount = 0;
+  }
+
+  return this;
+};
+
+//
+// Alias methods names because people roll like that.
+//
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+//
+// This function doesn't apply anymore.
+//
+EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
+  return this;
+};
+
+//
+// Expose the prefix.
+//
+EventEmitter.prefixed = prefix;
+
+//
+// Allow `EventEmitter` to be imported as module namespace.
+//
+EventEmitter.EventEmitter = EventEmitter;
+
+//
+// Expose the module.
+//
+if ('undefined' !== typeof module) {
+  module.exports = EventEmitter;
+}
+
+},{}],369:[function(require,module,exports){
 'use strict'
 
 /**
@@ -55257,7 +55597,7 @@ module.exports = function removeItems(arr, startIdx, removeCount)
   arr.length = len
 }
 
-},{}],369:[function(require,module,exports){
+},{}],370:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -55875,7 +56215,7 @@ var Loader = function () {
 
 exports.default = Loader;
 
-},{"./Resource":370,"./async":371,"mini-signals":187,"parse-uri":189}],370:[function(require,module,exports){
+},{"./Resource":371,"./async":372,"mini-signals":187,"parse-uri":189}],371:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57031,7 +57371,7 @@ function reqType(xhr) {
     return xhr.toString().replace('object ', '');
 }
 
-},{"mini-signals":187,"parse-uri":189}],371:[function(require,module,exports){
+},{"mini-signals":187,"parse-uri":189}],372:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57240,7 +57580,7 @@ function queue(worker, concurrency) {
     return q;
 }
 
-},{}],372:[function(require,module,exports){
+},{}],373:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57308,7 +57648,7 @@ function encodeBinary(input) {
     return output;
 }
 
-},{}],373:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 'use strict';
 
 // import Loader from './Loader';
@@ -57332,7 +57672,7 @@ module.exports = Loader;
 // export default Loader;
 module.exports.default = Loader;
 
-},{"./Loader":369,"./Resource":370,"./async":371,"./b64":372}],374:[function(require,module,exports){
+},{"./Loader":370,"./Resource":371,"./async":372,"./b64":373}],375:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57420,7 +57760,7 @@ function blobMiddlewareFactory() {
     };
 }
 
-},{"../../Resource":370,"../../b64":372}],375:[function(require,module,exports){
+},{"../../Resource":371,"../../b64":373}],376:[function(require,module,exports){
 // A library of seedable RNGs implemented in Javascript.
 //
 // Usage:
@@ -57482,7 +57822,7 @@ sr.tychei = tychei;
 
 module.exports = sr;
 
-},{"./lib/alea":376,"./lib/tychei":377,"./lib/xor128":378,"./lib/xor4096":379,"./lib/xorshift7":380,"./lib/xorwow":381,"./seedrandom":382}],376:[function(require,module,exports){
+},{"./lib/alea":377,"./lib/tychei":378,"./lib/xor128":379,"./lib/xor4096":380,"./lib/xorshift7":381,"./lib/xorwow":382,"./seedrandom":383}],377:[function(require,module,exports){
 // A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
 // http://baagoe.com/en/RandomMusings/javascript/
 // https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
@@ -57598,7 +57938,7 @@ if (module && module.exports) {
 
 
 
-},{}],377:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 // A Javascript implementaion of the "Tyche-i" prng algorithm by
 // Samuel Neves and Filipe Araujo.
 // See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
@@ -57703,7 +58043,7 @@ if (module && module.exports) {
 
 
 
-},{}],378:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 // A Javascript implementaion of the "xor128" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -57786,7 +58126,7 @@ if (module && module.exports) {
 
 
 
-},{}],379:[function(require,module,exports){
+},{}],380:[function(require,module,exports){
 // A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
 //
 // This fast non-cryptographic random number generator is designed for
@@ -57934,7 +58274,7 @@ if (module && module.exports) {
   (typeof define) == 'function' && define   // present with an AMD loader
 );
 
-},{}],380:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 // A Javascript implementaion of the "xorshift7" algorithm by
 // François Panneton and Pierre L'ecuyer:
 // "On the Xorgshift Random Number Generators"
@@ -58033,7 +58373,7 @@ if (module && module.exports) {
 );
 
 
-},{}],381:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 // A Javascript implementaion of the "xorwow" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -58121,7 +58461,7 @@ if (module && module.exports) {
 
 
 
-},{}],382:[function(require,module,exports){
+},{}],383:[function(require,module,exports){
 /*
 Copyright 2014 David Bau.
 
@@ -58370,7 +58710,7 @@ if ((typeof module) == 'object' && module.exports) {
   Math    // math: package containing random, pow, and seedrandom
 );
 
-},{"crypto":398}],383:[function(require,module,exports){
+},{"crypto":400}],384:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -59567,7 +59907,7 @@ else {
 
 })(Math);
 
-},{}],384:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 // angle.js <https://github.com/davidfig/anglejs>
 // Released under MIT license <https://github.com/davidfig/angle/blob/master/LICENSE>
 // Author: David Figatner
@@ -59843,7 +60183,7 @@ module.exports = {
     equals,
     explain
 }
-},{}],385:[function(require,module,exports){
+},{}],386:[function(require,module,exports){
 /**
  * @file color.js
  * @author David Figatner
@@ -60152,7 +60492,7 @@ class Color
 };
 
 module.exports = new Color();
-},{"yy-random":391}],386:[function(require,module,exports){
+},{"yy-random":393}],387:[function(require,module,exports){
 // yy-counter
 // In-browser counter to watch changeable values like counters or FPS
 // David Figatner
@@ -60270,7 +60610,7 @@ module.exports = class Counter
         this.div.innerHTML = s
     }
 }
-},{}],387:[function(require,module,exports){
+},{}],388:[function(require,module,exports){
 const Color = require('tinycolor2')
 const Counter = require('yy-counter')
 
@@ -60502,9 +60842,11 @@ module.exports = class FPS
         }
     }
 }
-},{"tinycolor2":383,"yy-counter":386}],388:[function(require,module,exports){
+},{"tinycolor2":384,"yy-counter":387}],389:[function(require,module,exports){
 module.exports = require('./src/loop')
-},{"./src/loop":390}],389:[function(require,module,exports){
+},{"./src/loop":392}],390:[function(require,module,exports){
+arguments[4][368][0].apply(exports,arguments)
+},{"dup":368}],391:[function(require,module,exports){
 const Events = require('eventemitter3')
 
 /** Entry class for Loop */
@@ -60585,7 +60927,7 @@ class Entry extends Events
 }
 
 module.exports = Entry
-},{"eventemitter3":6}],390:[function(require,module,exports){
+},{"eventemitter3":390}],392:[function(require,module,exports){
 /* Copyright (c) 2017 YOPEY YOPEY LLC */
 
 const Events = require('eventemitter3')
@@ -60784,7 +61126,7 @@ const Entry = require('./entry')
 
 Loop.entry = Entry
 module.exports = Loop
-},{"./entry":389,"eventemitter3":6}],391:[function(require,module,exports){
+},{"./entry":391,"eventemitter3":390}],393:[function(require,module,exports){
 // yy-random
 // by David Figatner
 // MIT license
@@ -61210,7 +61552,7 @@ class Random
 }
 
 module.exports = new Random()
-},{"seedrandom":375}],392:[function(require,module,exports){
+},{"seedrandom":376}],394:[function(require,module,exports){
 // yy-renderer
 // by David Figatner
 // (c) YOPEY YOPEY LLC 2017
@@ -61614,7 +61956,7 @@ class Renderer extends Loop
 }
 
 module.exports = Renderer
-},{"exists":7,"pixi.js":334,"yy-fps":387,"yy-loop":388}],393:[function(require,module,exports){
+},{"exists":7,"pixi.js":334,"yy-fps":388,"yy-loop":389}],395:[function(require,module,exports){
 const Line = require('./line')
 const Polygon = require('./polygon')
 
@@ -61717,7 +62059,7 @@ module.exports = {
     boxPolygon,
     boxCircle
 }
-},{"./line":395,"./polygon":397}],394:[function(require,module,exports){
+},{"./line":397,"./polygon":399}],396:[function(require,module,exports){
 const Polygon = require('./polygon')
 const Line = require('./line')
 const Box = require('./box')
@@ -61809,7 +62151,7 @@ module.exports = {
     circleBox,
     circlePolygon
 }
-},{"./box":393,"./line":395,"./polygon":397}],395:[function(require,module,exports){
+},{"./box":395,"./line":397,"./polygon":399}],397:[function(require,module,exports){
 /**
  * line-line collision
  * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -61927,7 +62269,7 @@ module.exports = {
     linePolygon,
     lineCircle
 }
-},{}],396:[function(require,module,exports){
+},{}],398:[function(require,module,exports){
 const Box = require('./box')
 const Polygon = require('./polygon')
 const Circle = require('./circle')
@@ -61969,7 +62311,7 @@ module.exports = {
     pointPolygon,
     pointCircle
 }
-},{"./box":393,"./circle":394,"./polygon":397}],397:[function(require,module,exports){
+},{"./box":395,"./circle":396,"./polygon":399}],399:[function(require,module,exports){
 const Line = require('./line')
 
 /**
@@ -62107,9 +62449,9 @@ module.exports = {
     polygonBox,
     polygonCircle
 }
-},{"./line":395}],398:[function(require,module,exports){
+},{"./line":397}],400:[function(require,module,exports){
 
-},{}],399:[function(require,module,exports){
+},{}],401:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -62337,7 +62679,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":400}],400:[function(require,module,exports){
+},{"_process":402}],402:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -62523,7 +62865,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],401:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 ;(function(root) {
@@ -63060,7 +63402,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],402:[function(require,module,exports){
+},{}],404:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -63146,7 +63488,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],403:[function(require,module,exports){
+},{}],405:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -63233,13 +63575,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],404:[function(require,module,exports){
+},{}],406:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":402,"./encode":403}],405:[function(require,module,exports){
+},{"./decode":404,"./encode":405}],407:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -63973,7 +64315,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":406,"punycode":401,"querystring":404}],406:[function(require,module,exports){
+},{"./util":408,"punycode":403,"querystring":406}],408:[function(require,module,exports){
 'use strict';
 
 module.exports = {
