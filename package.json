@@ -1,6 +1,6 @@
 {
   "name": "simple-intersect",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons",
   "main": "index.js",
   "scripts": {
