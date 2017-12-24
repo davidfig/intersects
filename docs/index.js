@@ -62233,6 +62233,21 @@ function lineCircle(x1, y1, x2, y2, xc, yc, rc)
     return h2 <= rc * rc
 }
 
+function polygonPoint(points, x, y)
+{
+    const length = points.length
+    let c = false
+    for (let i = 0, j = length - 2; i < length; i += 2)
+    {
+        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
+        {
+            c = !c
+        }
+        j = i
+    }
+    return c
+}
+
 /**
  * line-polygon collision
  number @param {number} x1 point 1 of line
@@ -62255,7 +62270,7 @@ function linePolygon(x1, y1, x2, y2, points)
     for (let i = 0; i < length; i += 2)
     {
         const j = (i + 2) % length
-        if (Line.lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
+        if (lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
         {
             return true
         }
