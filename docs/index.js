@@ -1,4 +1,217 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+'use strict'
+
+/**
+ * box-box collision
+ * @param {number} x1 top-left corner of first box
+ * @param {number} y1 top-left corner of first box
+ * @param {number} w1 width of first box
+ * @param {number} h1 height of first box
+ * @param {number} x2 top-left corner of second box
+ * @param {number} y2 top-left corner of second box
+ * @param {number} w2 width of second box
+ * @param {number} h2 height of second box
+ */
+module.exports = function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
+{
+    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2
+}
+
+},{}],2:[function(require,module,exports){
+'use strict'
+
+/**
+ * box-circle collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+module.exports = function boxCircle(xb, yb, wb, hb, xc, yc, rc)
+{
+    var hw = wb / 2
+    var hh = hb / 2
+    var distX = Math.abs(xc - (xb + wb / 2))
+    var distY = Math.abs(yc - (yb + hb / 2))
+
+    if (distX > hw + rc || distY > hh + rc)
+    {
+        return false
+    }
+
+    if (distX <= hw || distY <= hh)
+    {
+        return true
+    }
+
+    var x = distX - hw
+    var y = distY - hh
+    return x * x + y * y <= rc * rc
+}
+
+},{}],3:[function(require,module,exports){
+'use strict'
+
+var lineBox = require('./line-box')
+
+/**
+ * box-line collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
+ */
+module.exports = function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
+{
+    return lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+}
+
+},{"./line-box":14}],4:[function(require,module,exports){
+'use strict'
+
+/**
+ * box-point collision
+ * @param {number} x1 top-left corner of box
+ * @param {number} y1 top-left corner of box
+ * @param {number} w1 width of box
+ * @param {number} h1 height of box
+ * @param {number} x2 of point
+ * @param {number} y2 of point
+ * @return {boolean}
+ */
+module.exports = function boxPoint(x1, y1, w1, h1, x2, y2)
+{
+    return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
+}
+
+},{}],5:[function(require,module,exports){
+'use strict'
+
+var polygonBox = require('./polygon-box')
+
+/**
+ * box-polygon collision
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @param {number[]} points of polygon
+ */
+module.exports = function boxPolygon(xb, yb, wb, hb, points)
+{
+    return polygonBox(points, xb, yb, wb, hb)
+}
+
+},{"./polygon-box":421}],6:[function(require,module,exports){
+'use strict'
+
+var boxCircle = require('./box-circle')
+
+/**
+ * circle-box (axis-oriented rectangle) collision
+ * from http://stackoverflow.com/a/402010/1955997
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} xb top-left corner of rectangle
+ * @param {number} yb top-left corner of rectangle
+ * @param {number} wb width of rectangle
+ * @param {number} hb height of rectangle
+ */
+module.exports = function circleBox(xc, yc, rc, xb, yb, wb, hb)
+{
+    return boxCircle(xb, yb, wb, hb, xc, yc, rc)
+}
+
+},{"./box-circle":2}],7:[function(require,module,exports){
+'use strict'
+
+
+/**
+ * circle-circle collision
+ * @param {number} x1 center of circle 1
+ * @param {number} y1 center of circle 1
+ * @param {number} r1 radius of circle 1
+ * @param {number} x2 center of circle 2
+ * @param {number} y2 center of circle 2
+ * @param {number} r2 radius of circle 2
+ * @return {boolean}
+ */
+module.exports = function circleCircle(x1, y1, r1, x2, y2, r2)
+{
+    var x = x1 - x2
+    var y = y2 - y1
+    var radii = r1 + r2
+    return x * x + y * y <= radii * radii
+}
+
+},{}],8:[function(require,module,exports){
+'use strict'
+
+var lineCircle = require('./line-circle')
+
+/**
+ * circle-line collision
+ * from http://stackoverflow.com/a/10392860/1955997
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number} x1 first point of line
+ * @param {number} y1 first point of line
+ * @param {number} x2 second point of line
+ * @param {number} y2 second point of line
+ * @return {boolean}
+ */
+module.exports = function circleLine(xc, yc, rc, x1, y1, x2, y2)
+{
+    return lineCircle(x1, y1, x2, y2, xc, yc, rc)
+}
+
+},{"./line-circle":15}],9:[function(require,module,exports){
+'use strict'
+
+/**
+ * circle-point collision
+ * @param {number} x1 center of circle
+ * @param {number} y1 center of circle
+ * @param {radius} r1 radius of circle
+ * @param {number} x2 point
+ * @param {number} y2 point
+ * @return {boolean}
+ */
+module.exports = function circlePoint(x1, y1, r1, x2, y2)
+{
+    var x = x2 - x1
+    var y = y2 - y1
+    return x * x + y * y <= r1 * r1
+}
+
+},{}],10:[function(require,module,exports){
+'use strict'
+
+var polygonCircle = require('./polygon-circle')
+
+/**
+ * circle-polygon collision
+ * from http://stackoverflow.com/a/402019/1955997
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {radius} rc radius of circle
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ */
+module.exports = function circlePolygon(xc, yc, rc, points)
+{
+    return polygonCircle(points, xc, yc, rc)
+}
+
+},{"./polygon-circle":422}],11:[function(require,module,exports){
 const PIXI = require('pixi.js')
 const Renderer = require('yy-renderer')
 const Ease = require('pixi-ease')
@@ -319,8 +532,6 @@ function next()
     }
 }
 
-ease.start()
-
 function setupRenderer()
 {
     renderer = new Renderer({ debug: true, transparent: true, autoresize: true, alwaysRender: true })
@@ -333,7 +544,7 @@ function setupRenderer()
 
 require('./highlight')
 
-},{"..":3,"./highlight":2,"pixi-ease":191,"pixi.js":334,"yy-renderer":394}],2:[function(require,module,exports){
+},{"..":13,"./highlight":12,"pixi-ease":209,"pixi.js":350,"yy-renderer":417}],12:[function(require,module,exports){
 // shows the code in the demo
 window.onload = function()
 {
@@ -350,42 +561,163 @@ window.onload = function()
 
 // for eslint
 /* globals window, XMLHttpRequest, document */
-},{"highlight.js":9}],3:[function(require,module,exports){
-const Circle = require('./src/circle')
-const Polygon = require('./src/polygon')
-const Box = require('./src/box')
-const Line = require('./src/line')
-const Point = require('./src/point')
+},{"highlight.js":24}],13:[function(require,module,exports){
+'use strict'
 
 module.exports = {
-    circlePoint: Circle.circlePoint,
-    circleCircle: Circle.circleCircle,
-    circleLine: Circle.circleLine,
-    circleBox: Circle.circleBox,
-    circlePolygon: Circle.circlePolygon,
+    circlePoint: require('./circle-point'),
+    circleCircle: require('./circle-circle'),
+    circleLine: require('./circle-line'),
+    circleBox: require('./circle-box'),
+    circlePolygon: require('./circle-polygon'),
 
-    polygonPoint: Polygon.polygonPoint,
-    polygonLine: Polygon.polygonLine,
-    polygonPolygon: Polygon.polygonPolygon,
-    polygonBox: Polygon.polygonBox,
-    polygonCircle: Polygon.polygonCircle,
+    polygonPoint: require('./polygon-point'),
+    polygonLine: require('./polygon-line'),
+    polygonPolygon: require('./polygon-polygon'),
+    polygonBox: require('./polygon-box'),
+    polygonCircle: require('./polygon-circle'),
 
-    boxPoint: Box.boxPoint,
-    boxBox: Box.boxBox,
-    boxLine: Box.boxLine,
-    boxPolygon: Box.boxPolygon,
-    boxCircle: Box.boxCircle,
+    boxPoint: require('./box-point'),
+    boxBox: require('./box-box'),
+    boxLine: require('./box-line'),
+    boxPolygon: require('./box-polygon'),
+    boxCircle: require('./box-circle'),
 
-    pointBox: Point.pointBox,
-    pointPolygon: Point.pointPolygon,
-    pointCircle: Point.pointCircle,
+    pointBox: require('./point-box'),
+    pointPolygon: require('./point-polygon'),
+    pointCircle: require('./point-circle'),
 
-    lineLine: Line.lineLine,
-    lineBox: Line.lineBox,
-    linePolygon: Line.linePolygon,
-    lineCircle: Line.lineCircle
+    lineLine: require('./line-line'),
+    lineBox: require('./line-box'),
+    linePolygon: require('./line-polygon'),
+    lineCircle: require('./line-circle')
 }
-},{"./src/box":395,"./src/circle":396,"./src/line":397,"./src/point":398,"./src/polygon":399}],4:[function(require,module,exports){
+
+},{"./box-box":1,"./box-circle":2,"./box-line":3,"./box-point":4,"./box-polygon":5,"./circle-box":6,"./circle-circle":7,"./circle-line":8,"./circle-point":9,"./circle-polygon":10,"./line-box":14,"./line-circle":15,"./line-line":16,"./line-polygon":17,"./point-box":418,"./point-circle":419,"./point-polygon":420,"./polygon-box":421,"./polygon-circle":422,"./polygon-line":423,"./polygon-point":424,"./polygon-polygon":425}],14:[function(require,module,exports){
+'use strict'
+
+var boxPoint = require('./box-point')
+var lineLine = require('./line-line')
+
+/**
+ * line-box collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xb top-left of box
+ number @param {number} yb top-left of box
+ number @param {number} wb width of box
+ number @param {number} hb height of box
+ */
+module.exports = function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+{
+    if (boxPoint(xb, yb, wb, hb, x1, y1) || boxPoint(xb, yb, wb, hb, x2, y2))
+    {
+        return true
+    }
+    return lineLine(x1, y1, x2, y2, xb, yb, xb + wb, yb) ||
+        lineLine(x1, y1, x2, y2, xb + wb, yb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb + hb, xb + wb, yb + hb) ||
+        lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
+}
+
+},{"./box-point":4,"./line-line":16}],15:[function(require,module,exports){
+'use strict'
+
+/**
+ * line-circle collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number} xc center of circle
+ number @param {number} yc center of circle
+ number @param {number} rc radius of circle
+ */
+module.exports = function lineCircle(x1, y1, x2, y2, xc, yc, rc)
+{
+    var ac = [xc - x1, yc - y1]
+    var ab = [x2 - x1, y2 - y1]
+    var ab2 = dot(ab, ab)
+    var acab = dot(ac, ab)
+    var t = acab / ab2
+    t = (t < 0) ? 0 : t
+    t = (t > 1) ? 1 : t
+    var h = [(ab[0] * t + x1) - xc, (ab[1] * t + y1) - yc]
+    var h2 = dot(h, h)
+    return h2 <= rc * rc
+}
+
+function dot(v1, v2)
+{
+    return (v1[0] * v2[0]) + (v1[1] * v2[1])
+}
+
+},{}],16:[function(require,module,exports){
+'use strict'
+
+/**
+ * line-line collision
+ * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+ * @param {number} x1 first point in line 1
+ * @param {number} y1 first point in line 1
+ * @param {number} x2 second point in line 1
+ * @param {number} y2 second point in line 1
+ * @param {number} x3 first point in line 2
+ * @param {number} y3 first point in line 2
+ * @param {number} x4 second point in line 2
+ * @param {number} y4 second point in line 2
+ * @return {boolean}
+ */
+module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
+{
+    var s1_x = x2 - x1
+    var s1_y = y2 - y1
+    var s2_x = x4 - x3
+    var s2_y = y4 - y3
+    var s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
+    var t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
+    return s >= 0 && s <= 1 && t >= 0 && t <= 1
+}
+
+},{}],17:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+var lineLine = require('./line-line')
+
+/**
+ * line-polygon collision
+ number @param {number} x1 point 1 of line
+ number @param {number} y1 point 1 of line
+ number @param {number} x2 point 2 of line
+ number @param {number} y2 point 2 of line
+ number @param {number[]} points of polygon
+ */
+module.exports = function linePolygon(x1, y1, x2, y2, points)
+{
+    var length = points.length
+
+    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
+    if (polygonPoint(points, x1, y1))
+    {
+        return true
+    }
+
+    // check for intersections for all of the sides
+    for (var i = 0; i < length; i += 2)
+    {
+        var j = (i + 2) % length
+        if (lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
+        {
+            return true
+        }
+    }
+    return false
+}
+
+},{"./line-line":16,"./polygon-point":424}],18:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -591,7 +923,9 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],5:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+
+},{}],20:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -768,24 +1102,36 @@ function isEarHashed(ear, minX, minY, invSize) {
     var minZ = zOrder(minTX, minTY, minX, minY, invSize),
         maxZ = zOrder(maxTX, maxTY, minX, minY, invSize);
 
-    // first look for points inside the triangle in increasing z-order
-    var p = ear.nextZ;
+    var p = ear.prevZ,
+        n = ear.nextZ;
 
-    while (p && p.z <= maxZ) {
+    // look for points inside the triangle in both directions
+    while (p && p.z >= minZ && n && n.z <= maxZ) {
         if (p !== ear.prev && p !== ear.next &&
             pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
             area(p.prev, p, p.next) >= 0) return false;
-        p = p.nextZ;
+        p = p.prevZ;
+
+        if (n !== ear.prev && n !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
+            area(n.prev, n, n.next) >= 0) return false;
+        n = n.nextZ;
     }
 
-    // then look for points in decreasing z-order
-    p = ear.prevZ;
-
+    // look for remaining points in decreasing z-order
     while (p && p.z >= minZ) {
         if (p !== ear.prev && p !== ear.next &&
             pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
             area(p.prev, p, p.next) >= 0) return false;
         p = p.prevZ;
+    }
+
+    // look for remaining points in increasing z-order
+    while (n && n.z <= maxZ) {
+        if (n !== ear.prev && n !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
+            area(n.prev, n, n.next) >= 0) return false;
+        n = n.nextZ;
     }
 
     return true;
@@ -1231,7 +1577,7 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],6:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty
@@ -1569,7 +1915,7 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],7:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = exists;
 
 module.exports.allExist = allExist;
@@ -1582,7 +1928,7 @@ function allExist (/* vals */) {
   var vals = Array.prototype.slice.call(arguments);
   return vals.every(exists);
 }
-},{}],8:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /*
 Syntax highlighting with language autodetection.
 https://highlightjs.org/
@@ -2400,7 +2746,7 @@ https://highlightjs.org/
   return hljs;
 }));
 
-},{}],9:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var hljs = require('./highlight');
 
 hljs.registerLanguage('1c', require('./languages/1c'));
@@ -2581,7 +2927,7 @@ hljs.registerLanguage('xquery', require('./languages/xquery'));
 hljs.registerLanguage('zephir', require('./languages/zephir'));
 
 module.exports = hljs;
-},{"./highlight":8,"./languages/1c":10,"./languages/abnf":11,"./languages/accesslog":12,"./languages/actionscript":13,"./languages/ada":14,"./languages/apache":15,"./languages/applescript":16,"./languages/arduino":17,"./languages/armasm":18,"./languages/asciidoc":19,"./languages/aspectj":20,"./languages/autohotkey":21,"./languages/autoit":22,"./languages/avrasm":23,"./languages/awk":24,"./languages/axapta":25,"./languages/bash":26,"./languages/basic":27,"./languages/bnf":28,"./languages/brainfuck":29,"./languages/cal":30,"./languages/capnproto":31,"./languages/ceylon":32,"./languages/clean":33,"./languages/clojure":35,"./languages/clojure-repl":34,"./languages/cmake":36,"./languages/coffeescript":37,"./languages/coq":38,"./languages/cos":39,"./languages/cpp":40,"./languages/crmsh":41,"./languages/crystal":42,"./languages/cs":43,"./languages/csp":44,"./languages/css":45,"./languages/d":46,"./languages/dart":47,"./languages/delphi":48,"./languages/diff":49,"./languages/django":50,"./languages/dns":51,"./languages/dockerfile":52,"./languages/dos":53,"./languages/dsconfig":54,"./languages/dts":55,"./languages/dust":56,"./languages/ebnf":57,"./languages/elixir":58,"./languages/elm":59,"./languages/erb":60,"./languages/erlang":62,"./languages/erlang-repl":61,"./languages/excel":63,"./languages/fix":64,"./languages/flix":65,"./languages/fortran":66,"./languages/fsharp":67,"./languages/gams":68,"./languages/gauss":69,"./languages/gcode":70,"./languages/gherkin":71,"./languages/glsl":72,"./languages/go":73,"./languages/golo":74,"./languages/gradle":75,"./languages/groovy":76,"./languages/haml":77,"./languages/handlebars":78,"./languages/haskell":79,"./languages/haxe":80,"./languages/hsp":81,"./languages/htmlbars":82,"./languages/http":83,"./languages/hy":84,"./languages/inform7":85,"./languages/ini":86,"./languages/irpf90":87,"./languages/java":88,"./languages/javascript":89,"./languages/jboss-cli":90,"./languages/json":91,"./languages/julia":93,"./languages/julia-repl":92,"./languages/kotlin":94,"./languages/lasso":95,"./languages/ldif":96,"./languages/leaf":97,"./languages/less":98,"./languages/lisp":99,"./languages/livecodeserver":100,"./languages/livescript":101,"./languages/llvm":102,"./languages/lsl":103,"./languages/lua":104,"./languages/makefile":105,"./languages/markdown":106,"./languages/mathematica":107,"./languages/matlab":108,"./languages/maxima":109,"./languages/mel":110,"./languages/mercury":111,"./languages/mipsasm":112,"./languages/mizar":113,"./languages/mojolicious":114,"./languages/monkey":115,"./languages/moonscript":116,"./languages/n1ql":117,"./languages/nginx":118,"./languages/nimrod":119,"./languages/nix":120,"./languages/nsis":121,"./languages/objectivec":122,"./languages/ocaml":123,"./languages/openscad":124,"./languages/oxygene":125,"./languages/parser3":126,"./languages/perl":127,"./languages/pf":128,"./languages/php":129,"./languages/pony":130,"./languages/powershell":131,"./languages/processing":132,"./languages/profile":133,"./languages/prolog":134,"./languages/protobuf":135,"./languages/puppet":136,"./languages/purebasic":137,"./languages/python":138,"./languages/q":139,"./languages/qml":140,"./languages/r":141,"./languages/rib":142,"./languages/roboconf":143,"./languages/routeros":144,"./languages/rsl":145,"./languages/ruby":146,"./languages/ruleslanguage":147,"./languages/rust":148,"./languages/scala":149,"./languages/scheme":150,"./languages/scilab":151,"./languages/scss":152,"./languages/shell":153,"./languages/smali":154,"./languages/smalltalk":155,"./languages/sml":156,"./languages/sqf":157,"./languages/sql":158,"./languages/stan":159,"./languages/stata":160,"./languages/step21":161,"./languages/stylus":162,"./languages/subunit":163,"./languages/swift":164,"./languages/taggerscript":165,"./languages/tap":166,"./languages/tcl":167,"./languages/tex":168,"./languages/thrift":169,"./languages/tp":170,"./languages/twig":171,"./languages/typescript":172,"./languages/vala":173,"./languages/vbnet":174,"./languages/vbscript":176,"./languages/vbscript-html":175,"./languages/verilog":177,"./languages/vhdl":178,"./languages/vim":179,"./languages/x86asm":180,"./languages/xl":181,"./languages/xml":182,"./languages/xquery":183,"./languages/yaml":184,"./languages/zephir":185}],10:[function(require,module,exports){
+},{"./highlight":23,"./languages/1c":25,"./languages/abnf":26,"./languages/accesslog":27,"./languages/actionscript":28,"./languages/ada":29,"./languages/apache":30,"./languages/applescript":31,"./languages/arduino":32,"./languages/armasm":33,"./languages/asciidoc":34,"./languages/aspectj":35,"./languages/autohotkey":36,"./languages/autoit":37,"./languages/avrasm":38,"./languages/awk":39,"./languages/axapta":40,"./languages/bash":41,"./languages/basic":42,"./languages/bnf":43,"./languages/brainfuck":44,"./languages/cal":45,"./languages/capnproto":46,"./languages/ceylon":47,"./languages/clean":48,"./languages/clojure":50,"./languages/clojure-repl":49,"./languages/cmake":51,"./languages/coffeescript":52,"./languages/coq":53,"./languages/cos":54,"./languages/cpp":55,"./languages/crmsh":56,"./languages/crystal":57,"./languages/cs":58,"./languages/csp":59,"./languages/css":60,"./languages/d":61,"./languages/dart":62,"./languages/delphi":63,"./languages/diff":64,"./languages/django":65,"./languages/dns":66,"./languages/dockerfile":67,"./languages/dos":68,"./languages/dsconfig":69,"./languages/dts":70,"./languages/dust":71,"./languages/ebnf":72,"./languages/elixir":73,"./languages/elm":74,"./languages/erb":75,"./languages/erlang":77,"./languages/erlang-repl":76,"./languages/excel":78,"./languages/fix":79,"./languages/flix":80,"./languages/fortran":81,"./languages/fsharp":82,"./languages/gams":83,"./languages/gauss":84,"./languages/gcode":85,"./languages/gherkin":86,"./languages/glsl":87,"./languages/go":88,"./languages/golo":89,"./languages/gradle":90,"./languages/groovy":91,"./languages/haml":92,"./languages/handlebars":93,"./languages/haskell":94,"./languages/haxe":95,"./languages/hsp":96,"./languages/htmlbars":97,"./languages/http":98,"./languages/hy":99,"./languages/inform7":100,"./languages/ini":101,"./languages/irpf90":102,"./languages/java":103,"./languages/javascript":104,"./languages/jboss-cli":105,"./languages/json":106,"./languages/julia":108,"./languages/julia-repl":107,"./languages/kotlin":109,"./languages/lasso":110,"./languages/ldif":111,"./languages/leaf":112,"./languages/less":113,"./languages/lisp":114,"./languages/livecodeserver":115,"./languages/livescript":116,"./languages/llvm":117,"./languages/lsl":118,"./languages/lua":119,"./languages/makefile":120,"./languages/markdown":121,"./languages/mathematica":122,"./languages/matlab":123,"./languages/maxima":124,"./languages/mel":125,"./languages/mercury":126,"./languages/mipsasm":127,"./languages/mizar":128,"./languages/mojolicious":129,"./languages/monkey":130,"./languages/moonscript":131,"./languages/n1ql":132,"./languages/nginx":133,"./languages/nimrod":134,"./languages/nix":135,"./languages/nsis":136,"./languages/objectivec":137,"./languages/ocaml":138,"./languages/openscad":139,"./languages/oxygene":140,"./languages/parser3":141,"./languages/perl":142,"./languages/pf":143,"./languages/php":144,"./languages/pony":145,"./languages/powershell":146,"./languages/processing":147,"./languages/profile":148,"./languages/prolog":149,"./languages/protobuf":150,"./languages/puppet":151,"./languages/purebasic":152,"./languages/python":153,"./languages/q":154,"./languages/qml":155,"./languages/r":156,"./languages/rib":157,"./languages/roboconf":158,"./languages/routeros":159,"./languages/rsl":160,"./languages/ruby":161,"./languages/ruleslanguage":162,"./languages/rust":163,"./languages/scala":164,"./languages/scheme":165,"./languages/scilab":166,"./languages/scss":167,"./languages/shell":168,"./languages/smali":169,"./languages/smalltalk":170,"./languages/sml":171,"./languages/sqf":172,"./languages/sql":173,"./languages/stan":174,"./languages/stata":175,"./languages/step21":176,"./languages/stylus":177,"./languages/subunit":178,"./languages/swift":179,"./languages/taggerscript":180,"./languages/tap":181,"./languages/tcl":182,"./languages/tex":183,"./languages/thrift":184,"./languages/tp":185,"./languages/twig":186,"./languages/typescript":187,"./languages/vala":188,"./languages/vbnet":189,"./languages/vbscript":191,"./languages/vbscript-html":190,"./languages/verilog":192,"./languages/vhdl":193,"./languages/vim":194,"./languages/x86asm":195,"./languages/xl":196,"./languages/xml":197,"./languages/xquery":198,"./languages/yaml":199,"./languages/zephir":200}],25:[function(require,module,exports){
 module.exports = function(hljs){
 
   // общий паттерн для определения идентификаторов
@@ -3091,7 +3437,7 @@ module.exports = function(hljs){
     ]  
   }
 };
-},{}],11:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = function(hljs) {
     var regexes = {
         ruleDeclaration: "^[a-zA-Z][a-zA-Z0-9-]*",
@@ -3162,7 +3508,7 @@ module.exports = function(hljs) {
       ]
     };
 };
-},{}],12:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -3200,7 +3546,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],13:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z_$][a-zA-Z0-9_$]*';
   var IDENT_FUNC_RETURN_TYPE_RE = '([*]|[a-zA-Z_$][a-zA-Z0-9_$]*)';
@@ -3274,7 +3620,7 @@ module.exports = function(hljs) {
     illegal: /#/
   };
 };
-},{}],14:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = // We try to support full Ada2012
 //
 // We highlight all appearances of types, keywords, literals (string, char, number, bool)
@@ -3447,7 +3793,7 @@ function(hljs) {
         ]
     };
 };
-},{}],15:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {
@@ -3493,7 +3839,7 @@ module.exports = function(hljs) {
     illegal: /\S/
   };
 };
-},{}],16:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = function(hljs) {
   var STRING = hljs.inherit(hljs.QUOTE_STRING_MODE, {illegal: ''});
   var PARAMS = {
@@ -3579,7 +3925,7 @@ module.exports = function(hljs) {
     illegal: '//|->|=>|\\[\\['
   };
 };
-},{}],17:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP = hljs.getLanguage('cpp').exports;
 	return {
@@ -3679,7 +4025,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],18:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = function(hljs) {
     //local labels: %?[FB]?[AT]?\d{1,2}\w+
   return {
@@ -3771,7 +4117,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],19:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['adoc'],
@@ -3959,7 +4305,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],20:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = function (hljs) {
   var KEYWORDS =
     'false synchronized int abstract float private char boolean static null if const ' +
@@ -4104,7 +4450,7 @@ module.exports = function (hljs) {
     ]
   };
 };
-},{}],21:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = function(hljs) {
   var BACKTICK_ESCAPE = {
     begin: '`[\\s\\S]'
@@ -4163,7 +4509,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],22:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = function(hljs) {
     var KEYWORDS = 'ByRef Case Const ContinueCase ContinueLoop ' +
         'Default Dim Do Else ElseIf EndFunc EndIf EndSelect ' +
@@ -4299,7 +4645,7 @@ module.exports = function(hljs) {
         ]
     }
 };
-},{}],23:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -4361,7 +4707,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],24:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     className: 'variable',
@@ -4414,7 +4760,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],25:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: 'false int abstract private char boolean static null if for true ' +
@@ -4445,7 +4791,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],26:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -4520,7 +4866,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],27:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -4571,7 +4917,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],28:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = function(hljs){
   return {
     contains: [
@@ -4600,7 +4946,7 @@ module.exports = function(hljs){
     ]
   };
 };
-},{}],29:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 module.exports = function(hljs){
   var LITERAL = {
     className: 'literal',
@@ -4637,7 +4983,7 @@ module.exports = function(hljs){
     ]
   };
 };
-},{}],30:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'div mod in and or not xor asserterror begin case do downto else end exit for if of repeat then to ' +
@@ -4717,7 +5063,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],31:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['capnp'],
@@ -4766,7 +5112,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],32:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function(hljs) {
   // 2.3. Identifiers and keywords
   var KEYWORDS =
@@ -4833,7 +5179,7 @@ module.exports = function(hljs) {
     ].concat(EXPRESSIONS)
   };
 };
-},{}],33:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['clean','icl','dcl'],
@@ -4858,7 +5204,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],34:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -4873,7 +5219,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],35:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     'builtin-name':
@@ -4969,7 +5315,7 @@ module.exports = function(hljs) {
     contains: [LIST, STRING, HINT, HINT_COL, COMMENT, KEY, COLLECTION, NUMBER, LITERAL]
   }
 };
-},{}],36:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['cmake.in'],
@@ -5007,7 +5353,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],37:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -5153,7 +5499,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],38:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -5220,7 +5566,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],39:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 module.exports = function cos (hljs) {
 
   var STRINGS = {
@@ -5344,7 +5690,7 @@ module.exports = function cos (hljs) {
     ]
   };
 };
-},{}],40:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP_PRIMITIVE_TYPES = {
     className: 'keyword',
@@ -5519,7 +5865,7 @@ module.exports = function(hljs) {
     }
   };
 };
-},{}],41:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = function(hljs) {
   var RESOURCES = 'primitive rsc_template';
 
@@ -5613,7 +5959,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],42:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUM_SUFFIX = '(_[uif](8|16|32|64))?';
   var CRYSTAL_IDENT_RE = '[a-zA-Z_]\\w*[!?=]?';
@@ -5807,7 +6153,7 @@ module.exports = function(hljs) {
     contains: CRYSTAL_DEFAULT_CONTAINS
   };
 };
-},{}],43:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -5984,7 +6330,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],44:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: false,
@@ -6006,7 +6352,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],45:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var RULE = {
@@ -6111,7 +6457,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],46:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = /**
  * Known issues:
  *
@@ -6369,7 +6715,7 @@ function(hljs) {
     ]
   };
 };
-},{}],47:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 module.exports = function (hljs) {
   var SUBST = {
     className: 'subst',
@@ -6470,7 +6816,7 @@ module.exports = function (hljs) {
     ]
   }
 };
-},{}],48:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS =
     'exports register file shl array record property for mod while set ally label uses raise not ' +
@@ -6539,7 +6885,7 @@ module.exports = function(hljs) {
     ].concat(COMMENT_MODES)
   };
 };
-},{}],49:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['patch'],
@@ -6579,7 +6925,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],50:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 module.exports = function(hljs) {
   var FILTER = {
     begin: /\|[A-Za-z]+:?/,
@@ -6643,7 +6989,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['bind', 'zone'],
@@ -6672,7 +7018,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],52:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['docker'],
@@ -6694,7 +7040,7 @@ module.exports = function(hljs) {
     illegal: '</'
   }
 };
-},{}],53:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT = hljs.COMMENT(
     /^\s*@?rem\b/, /$/,
@@ -6746,7 +7092,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],54:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = function(hljs) {
   var QUOTED_PROPERTY = {
     className: 'string',
@@ -6793,7 +7139,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],55:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = function(hljs) {
   var STRINGS = {
     className: 'string',
@@ -6917,7 +7263,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],56:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports = function(hljs) {
   var EXPRESSION_KEYWORDS = 'if eq ne lt lte gt gte select default math sep';
   return {
@@ -6949,7 +7295,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],57:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports = function(hljs) {
     var commentMode = hljs.COMMENT(/\(\*/, /\*\)/);
 
@@ -6982,7 +7328,7 @@ module.exports = function(hljs) {
         ]
     };
 };
-},{}],58:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports = function(hljs) {
   var ELIXIR_IDENT_RE = '[a-zA-Z_][a-zA-Z0-9_]*(\\!|\\?)?';
   var ELIXIR_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
@@ -7079,7 +7425,7 @@ module.exports = function(hljs) {
     contains: ELIXIR_DEFAULT_CONTAINS
   };
 };
-},{}],59:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT = {
     variants: [
@@ -7163,7 +7509,7 @@ module.exports = function(hljs) {
     illegal: /;/
   };
 };
-},{}],60:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     subLanguage: 'xml',
@@ -7178,7 +7524,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],61:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -7224,7 +7570,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],62:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports = function(hljs) {
   var BASIC_ATOM_RE = '[a-z\'][a-zA-Z0-9_\']*';
   var FUNCTION_NAME_RE = '(' + BASIC_ATOM_RE + ':' + BASIC_ATOM_RE + '|' + BASIC_ATOM_RE + ')';
@@ -7370,7 +7716,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],63:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['xlsx', 'xls'],
@@ -7418,7 +7764,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],64:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -7447,7 +7793,7 @@ module.exports = function(hljs) {
     case_insensitive: true
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = function (hljs) {
 
     var CHAR = {
@@ -7492,7 +7838,7 @@ module.exports = function (hljs) {
         ]
     };
 };
-},{}],66:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = function(hljs) {
   var PARAMS = {
     className: 'params',
@@ -7563,7 +7909,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],67:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports = function(hljs) {
   var TYPEPARAM = {
     begin: '<', end: '>',
@@ -7622,7 +7968,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],68:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports = function (hljs) {
   var KEYWORDS = {
     'keyword':
@@ -7776,7 +8122,7 @@ module.exports = function (hljs) {
     ]
   };
 };
-},{}],69:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword: 'and bool break call callexe checkinterrupt clear clearg closeall cls comlog compile ' +
@@ -8000,7 +8346,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],70:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports = function(hljs) {
     var GCODE_IDENT_RE = '[A-Z_][A-Z0-9_.]*';
     var GCODE_CLOSE_RE = '\\%';
@@ -8067,7 +8413,7 @@ module.exports = function(hljs) {
         ].concat(GCODE_CODE)
     };
 };
-},{}],71:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 module.exports = function (hljs) {
   return {
     aliases: ['feature'],
@@ -8104,7 +8450,7 @@ module.exports = function (hljs) {
     ]
   };
 };
-},{}],72:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -8221,7 +8567,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],73:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 module.exports = function(hljs) {
   var GO_KEYWORDS = {
     keyword:
@@ -8275,7 +8621,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],74:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports = function(hljs) {
     return {
       keywords: {
@@ -8298,7 +8644,7 @@ module.exports = function(hljs) {
       ]
     }
 };
-},{}],75:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -8333,7 +8679,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],76:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 module.exports = function(hljs) {
     return {
         keywords: {
@@ -8427,7 +8773,7 @@ module.exports = function(hljs) {
         illegal: /#|<\//
     }
 };
-},{}],77:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 module.exports = // TODO support filter tags like :javascript, support inline HTML
 function(hljs) {
   return {
@@ -8534,7 +8880,7 @@ function(hljs) {
     ]
   };
 };
-},{}],78:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 module.exports = function(hljs) {
   var BUILT_INS = {'builtin-name': 'each in with if else unless bindattr action collection debugger log outlet template unbound view yield'};
   return {
@@ -8568,7 +8914,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],79:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT = {
     variants: [
@@ -8690,7 +9036,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],80:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z_$][a-zA-Z0-9_$]*';
   var IDENT_FUNC_RETURN_TYPE_RE = '([*]|[a-zA-Z_$][a-zA-Z0-9_$]*)';
@@ -8802,7 +9148,7 @@ module.exports = function(hljs) {
     illegal: /<\//
   };
 };
-},{}],81:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -8848,7 +9194,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],82:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 module.exports = function(hljs) {
   var BUILT_INS = 'action collection component concat debugger each each-in else get hash if input link-to loc log mut outlet partial query-params render textarea unbound unless with yield view';
 
@@ -8919,7 +9265,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],83:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 module.exports = function(hljs) {
   var VERSION = 'HTTP/[0-9\\.]+';
   return {
@@ -8960,7 +9306,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],84:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 module.exports = function(hljs) {
   var keywords = {
     'builtin-name':
@@ -9062,7 +9408,7 @@ module.exports = function(hljs) {
     contains: [SHEBANG, LIST, STRING, HINT, HINT_COL, COMMENT, KEY, COLLECTION, NUMBER, LITERAL]
   }
 };
-},{}],85:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 module.exports = function(hljs) {
   var START_BRACKET = '\\[';
   var END_BRACKET = '\\]';
@@ -9119,7 +9465,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],86:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 module.exports = function(hljs) {
   var STRING = {
     className: "string",
@@ -9185,7 +9531,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],87:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 module.exports = function(hljs) {
   var PARAMS = {
     className: 'params',
@@ -9261,7 +9607,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],88:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 module.exports = function(hljs) {
   var JAVA_IDENT_RE = '[\u00C0-\u02B8a-zA-Z_$][\u00C0-\u02B8a-zA-Z_$0-9]*';
   var GENERIC_IDENT_RE = JAVA_IDENT_RE + '(<' + JAVA_IDENT_RE + '(\\s*,\\s*' + JAVA_IDENT_RE + ')*>)?';
@@ -9369,7 +9715,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],89:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[A-Za-z$_][0-9A-Za-z$_]*';
   var KEYWORDS = {
@@ -9540,7 +9886,7 @@ module.exports = function(hljs) {
     illegal: /#(?!!)/
   };
 };
-},{}],90:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 module.exports = function (hljs) {
   var PARAM = {
     begin: /[\w-]+ *=/, returnBegin: true,
@@ -9587,7 +9933,7 @@ module.exports = function (hljs) {
     ]
   }
 };
-},{}],91:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -9624,7 +9970,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],92:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -9648,7 +9994,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],93:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 module.exports = function(hljs) {
   // Since there are numerous special names in Julia, it is too much trouble
   // to maintain them by hand. Hence these names (i.e. keywords, literals and
@@ -9810,7 +10156,7 @@ module.exports = function(hljs) {
 
   return DEFAULT;
 };
-},{}],94:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -9984,7 +10330,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],95:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 module.exports = function(hljs) {
   var LASSO_IDENT_RE = '[a-zA-Z_][\\w.]*';
   var LASSO_ANGLE_RE = '<\\?(lasso(script)?|=)';
@@ -10147,7 +10493,7 @@ module.exports = function(hljs) {
     ].concat(LASSO_CODE)
   };
 };
-},{}],96:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -10170,7 +10516,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],97:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 module.exports = function (hljs) {
   return {
     contains: [
@@ -10210,7 +10556,7 @@ module.exports = function (hljs) {
     ]
   };
 };
-},{}],98:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE        = '[\\w-]+'; // yes, Less identifiers may begin with a digit
   var INTERP_IDENT_RE = '(' + IDENT_RE + '|@{' + IDENT_RE + '})';
@@ -10350,7 +10696,7 @@ module.exports = function(hljs) {
     contains: RULES
   };
 };
-},{}],99:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 module.exports = function(hljs) {
   var LISP_IDENT_RE = '[a-zA-Z_\\-\\+\\*\\/\\<\\=\\>\\&\\#][a-zA-Z0-9_\\-\\+\\*\\/\\<\\=\\>\\&\\#!]*';
   var MEC_RE = '\\|[^]*?\\|';
@@ -10453,7 +10799,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],100:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     begin: '\\b[gtps][A-Z]+[A-Za-z0-9_\\-]*\\b|\\$_[A-Z]+',
@@ -10610,7 +10956,7 @@ module.exports = function(hljs) {
     illegal: ';$|^\\[|^=|&|{'
   };
 };
-},{}],101:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -10759,7 +11105,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],102:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 module.exports = function(hljs) {
   var identifier = '([-a-zA-Z$._][\\w\\-$.]*)';
   return {
@@ -10848,7 +11194,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],103:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 module.exports = function(hljs) {
 
     var LSL_STRING_ESCAPE_CHARS = {
@@ -10931,7 +11277,7 @@ module.exports = function(hljs) {
         ]
     };
 };
-},{}],104:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 module.exports = function(hljs) {
   var OPENING_LONG_BRACKET = '\\[=*\\[';
   var CLOSING_LONG_BRACKET = '\\]=*\\]';
@@ -10997,7 +11343,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],105:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 module.exports = function(hljs) {
   /* Variables: simple (eg $(var)) and special (eg $@) */
   var VARIABLE = {
@@ -11078,7 +11424,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],106:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['md', 'mkdown', 'mkd'],
@@ -11186,7 +11532,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],107:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['mma'],
@@ -11244,7 +11590,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],108:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMON_CONTAINS = [
     hljs.C_NUMBER_MODE,
@@ -11332,7 +11678,7 @@ module.exports = function(hljs) {
     ].concat(COMMON_CONTAINS)
   };
 };
-},{}],109:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = 'if then else elseif for thru do while unless step in and or not';
   var LITERALS = 'true false unknown inf minf ind und %e %i %pi %phi %gamma';
@@ -11738,7 +12084,7 @@ module.exports = function(hljs) {
     illegal: /@/
   }
 };
-},{}],110:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords:
@@ -11963,7 +12309,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],111:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -12045,7 +12391,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],112:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 module.exports = function(hljs) {
     //local labels: %?[FB]?[AT]?\d{1,2}\w+
   return {
@@ -12131,7 +12477,7 @@ module.exports = function(hljs) {
     illegal: '\/'
   };
 };
-},{}],113:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords:
@@ -12150,7 +12496,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],114:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     subLanguage: 'xml',
@@ -12175,7 +12521,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],115:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUMBER = {
     className: 'number', relevance: 0,
@@ -12250,7 +12596,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],116:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -12362,7 +12708,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],117:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -12431,7 +12777,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],118:[function(require,module,exports){
+},{}],133:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -12524,7 +12870,7 @@ module.exports = function(hljs) {
     illegal: '[^\\s\\}]'
   };
 };
-},{}],119:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['nim'],
@@ -12579,7 +12925,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],120:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 module.exports = function(hljs) {
   var NIX_KEYWORDS = {
     keyword:
@@ -12628,7 +12974,7 @@ module.exports = function(hljs) {
     contains: EXPRESSIONS
   };
 };
-},{}],121:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 module.exports = function(hljs) {
   var CONSTANTS = {
     className: 'variable',
@@ -12734,7 +13080,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],122:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 module.exports = function(hljs) {
   var API_CLASS = {
     className: 'built_in',
@@ -12825,7 +13171,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],123:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 module.exports = function(hljs) {
   /* missing support for heredoc-like string (OCaml 4.0.2+) */
   return {
@@ -12896,7 +13242,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],124:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 module.exports = function(hljs) {
 	var SPECIAL_VARS = {
 		className: 'keyword',
@@ -12953,7 +13299,7 @@ module.exports = function(hljs) {
 		]
 	}
 };
-},{}],125:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 module.exports = function(hljs) {
   var OXYGENE_KEYWORDS = 'abstract add and array as asc aspect assembly async begin break block by case class concat const copy constructor continue '+
     'create default delegate desc distinct div do downto dynamic each else empty end ensure enum equals event except exit extension external false '+
@@ -13023,7 +13369,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],126:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 module.exports = function(hljs) {
   var CURLY_SUBCOMMENT = hljs.COMMENT(
     '{',
@@ -13071,7 +13417,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],127:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 module.exports = function(hljs) {
   var PERL_KEYWORDS = 'getpwent getservent quotemeta msgrcv scalar kill dbmclose undef lc ' +
     'ma syswrite tr send umask sysopen shmwrite vec qx utime local oct semctl localtime ' +
@@ -13228,7 +13574,7 @@ module.exports = function(hljs) {
     contains: PERL_DEFAULT_CONTAINS
   };
 };
-},{}],128:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 module.exports = function(hljs) {
   var MACRO = {
     className: 'variable',
@@ -13280,7 +13626,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],129:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 module.exports = function(hljs) {
   var VARIABLE = {
     begin: '\\$+[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*'
@@ -13407,7 +13753,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],130:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -13498,7 +13844,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],131:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 module.exports = function(hljs) {
   var BACKTICK_ESCAPE = {
     begin: '`[\\s\\S]',
@@ -13579,7 +13925,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],132:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -13627,7 +13973,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],133:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -13657,7 +14003,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],134:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var ATOM = {
@@ -13745,7 +14091,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],135:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -13781,7 +14127,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],136:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var PUPPET_KEYWORDS = {
@@ -13896,7 +14242,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],137:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 module.exports = // Base deafult colors in PB IDE: background: #FFFFDF; foreground: #000000;
 
 function(hljs) {
@@ -13954,7 +14300,7 @@ function(hljs) {
     ]
   };
 };
-},{}],138:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -14070,7 +14416,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],139:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 module.exports = function(hljs) {
   var Q_KEYWORDS = {
   keyword:
@@ -14093,7 +14439,7 @@ module.exports = function(hljs) {
      ]
   };
 };
-},{}],140:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
       keyword:
@@ -14262,7 +14608,7 @@ module.exports = function(hljs) {
     illegal: /#/
   };
 };
-},{}],141:[function(require,module,exports){
+},{}],156:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '([a-zA-Z]|\\.[a-zA-Z.])[a-zA-Z0-9._]*';
 
@@ -14332,7 +14678,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],142:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords:
@@ -14359,7 +14705,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],143:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENTIFIER = '[a-zA-Z-_][^\\n{]+\\{';
 
@@ -14426,7 +14772,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],144:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 module.exports = // Colors from RouterOS terminal:
 //   green        - #0E9A00
 //   teal         - #0C9A9A
@@ -14585,7 +14931,7 @@ function(hljs) {
     ]
   };
 };
-},{}],145:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -14621,7 +14967,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],146:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 module.exports = function(hljs) {
   var RUBY_METHOD_RE = '[a-zA-Z_]\\w*[!?=]?|[-+~]\\@|<<|>>|=~|===?|<=>|[<>]=?|\\*\\*|[-/+%^&*~`|]|\\[\\]=?';
   var RUBY_KEYWORDS = {
@@ -14798,7 +15144,7 @@ module.exports = function(hljs) {
     contains: COMMENT_MODES.concat(IRB_DEFAULT).concat(RUBY_DEFAULT_CONTAINS)
   };
 };
-},{}],147:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -14859,7 +15205,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],148:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 module.exports = function(hljs) {
   var NUM_SUFFIX = '([ui](8|16|32|64|128|size)|f(32|64))\?';
   var KEYWORDS =
@@ -14967,7 +15313,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],149:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var ANNOTATION = { className: 'meta', begin: '@[A-Za-z]+' };
@@ -15082,7 +15428,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],150:[function(require,module,exports){
+},{}],165:[function(require,module,exports){
 module.exports = function(hljs) {
   var SCHEME_IDENT_RE = '[^\\(\\)\\[\\]\\{\\}",\'`;#|\\\\\\s]+';
   var SCHEME_SIMPLE_NUMBER_RE = '(\\-|\\+)?\\d+([./]\\d+)?';
@@ -15226,7 +15572,7 @@ module.exports = function(hljs) {
     contains: [SHEBANG, NUMBER, STRING, QUOTED_IDENT, QUOTED_LIST, LIST].concat(COMMENT_MODES)
   };
 };
-},{}],151:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMON_CONTAINS = [
@@ -15280,7 +15626,7 @@ module.exports = function(hljs) {
     ].concat(COMMON_CONTAINS)
   };
 };
-},{}],152:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var VARIABLE = {
@@ -15378,7 +15724,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],153:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['console'],
@@ -15393,7 +15739,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],154:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 module.exports = function(hljs) {
   var smali_instr_low_prio = ['add', 'and', 'cmp', 'cmpg', 'cmpl', 'const', 'div', 'double', 'float', 'goto', 'if', 'int', 'long', 'move', 'mul', 'neg', 'new', 'nop', 'not', 'or', 'rem', 'return', 'shl', 'shr', 'sput', 'sub', 'throw', 'ushr', 'xor'];
   var smali_instr_high_prio = ['aget', 'aput', 'array', 'check', 'execute', 'fill', 'filled', 'goto/16', 'goto/32', 'iget', 'instance', 'invoke', 'iput', 'monitor', 'packed', 'sget', 'sparse'];
@@ -15449,7 +15795,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],155:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR_IDENT_RE = '[a-z][a-zA-Z0-9_]*';
   var CHAR = {
@@ -15499,7 +15845,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],156:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['ml'],
@@ -15565,7 +15911,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],157:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 module.exports = function(hljs) {
   var CPP = hljs.getLanguage('cpp').exports;
 
@@ -15936,7 +16282,7 @@ module.exports = function(hljs) {
     illegal: /#/
   };
 };
-},{}],158:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMENT_MODE = hljs.COMMENT('--', '$');
   return {
@@ -16096,7 +16442,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],159:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     contains: [
@@ -16179,7 +16525,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],160:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['do', 'ado'],
@@ -16217,7 +16563,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],161:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 module.exports = function(hljs) {
   var STEP21_IDENT_RE = '[A-Z_][A-Z0-9_.]*';
   var STEP21_KEYWORDS = {
@@ -16264,7 +16610,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],162:[function(require,module,exports){
+},{}],177:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var VARIABLE = {
@@ -16718,7 +17064,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],163:[function(require,module,exports){
+},{}],178:[function(require,module,exports){
 module.exports = function(hljs) {
   var DETAILS = {
     className: 'string',
@@ -16752,7 +17098,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],164:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 module.exports = function(hljs) {
   var SWIFT_KEYWORDS = {
       keyword: '__COLUMN__ __FILE__ __FUNCTION__ __LINE__ as as! as? associativity ' +
@@ -16869,7 +17215,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],165:[function(require,module,exports){
+},{}],180:[function(require,module,exports){
 module.exports = function(hljs) {
 
   var COMMENT = {
@@ -16913,7 +17259,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],166:[function(require,module,exports){
+},{}],181:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -16949,7 +17295,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],167:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['tk'],
@@ -17010,7 +17356,7 @@ module.exports = function(hljs) {
     ]
   }
 };
-},{}],168:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 module.exports = function(hljs) {
   var COMMAND = {
     className: 'tag',
@@ -17072,7 +17418,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],169:[function(require,module,exports){
+},{}],184:[function(require,module,exports){
 module.exports = function(hljs) {
   var BUILT_IN_TYPES = 'bool byte i16 i32 i64 double string binary';
   return {
@@ -17107,7 +17453,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],170:[function(require,module,exports){
+},{}],185:[function(require,module,exports){
 module.exports = function(hljs) {
   var TPID = {
     className: 'number',
@@ -17191,7 +17537,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],171:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 module.exports = function(hljs) {
   var PARAMS = {
     className: 'params',
@@ -17257,7 +17603,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],172:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -17413,7 +17759,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],173:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -17463,7 +17809,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],174:[function(require,module,exports){
+},{}],189:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['vb'],
@@ -17519,7 +17865,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],175:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     subLanguage: 'xml',
@@ -17531,7 +17877,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],176:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['vbs'],
@@ -17570,7 +17916,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],177:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 module.exports = function(hljs) {
   var SV_KEYWORDS = {
     keyword:
@@ -17669,7 +18015,7 @@ module.exports = function(hljs) {
     ]
   }; // return
 };
-},{}],178:[function(require,module,exports){
+},{}],193:[function(require,module,exports){
 module.exports = function(hljs) {
   // Regular expression for VHDL numeric literals.
 
@@ -17730,7 +18076,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],179:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     lexemes: /[!#@\w]+/,
@@ -17836,7 +18182,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],180:[function(require,module,exports){
+},{}],195:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     case_insensitive: true,
@@ -17972,7 +18318,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],181:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
 module.exports = function(hljs) {
   var BUILTIN_MODULES =
     'ObjectLoader Animate MovieCredits Slides Filters Shading Materials LensFlare Mapping VLCAudioVideo ' +
@@ -18045,7 +18391,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],182:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var TAG_INTERNALS = {
@@ -18148,7 +18494,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],183:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = 'for let if while then else return where group by xquery encoding version' +
     'module namespace boundary-space preserve strip default collation base-uri ordering' +
@@ -18219,7 +18565,7 @@ module.exports = function(hljs) {
     contains: CONTAINS
   };
 };
-},{}],184:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = 'true false yes no null';
 
@@ -18307,7 +18653,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],185:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 module.exports = function(hljs) {
   var STRING = {
     className: 'string',
@@ -18414,7 +18760,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],186:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 /**
  * isMobile.js v0.4.1
  *
@@ -18553,7 +18899,7 @@ module.exports = function(hljs) {
 
 })(this);
 
-},{}],187:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -18720,7 +19066,7 @@ MiniSignal.MiniSignalBinding = MiniSignalBinding;
 exports['default'] = MiniSignal;
 module.exports = exports['default'];
 
-},{}],188:[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -18812,7 +19158,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],189:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 'use strict'
 
 module.exports = function parseURI (str, opts) {
@@ -18844,7 +19190,235 @@ module.exports = function parseURI (str, opts) {
   return uri
 }
 
-},{}],190:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require('_process'))
+},{"_process":386}],206:[function(require,module,exports){
 
 /*
 	Copyright © 2001 Robert Penner
@@ -19112,101 +19686,115 @@ module.exports = function parseURI (str, opts) {
 
 }).call(this);
 
-},{}],191:[function(require,module,exports){
-const list = require('./src/list')
+},{}],207:[function(require,module,exports){
+'use strict';
 
-module.exports = {
-    list,
-    wait: require('./src/wait'),
-    to: require('./src/to'),
-    shake: require('./src/shake'),
-    tint: require('./src/tint'),
-    face: require('./src/face'),
-    angle: require('./src/angle'),
-    target: require('./src/target'),
-    movie: require('./src/movie'),
-    load: require('./src/load'),
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    default: new list()
-}
-},{"./src/angle":192,"./src/face":193,"./src/list":194,"./src/load":195,"./src/movie":196,"./src/shake":197,"./src/target":198,"./src/tint":199,"./src/to":200,"./src/wait":201}],192:[function(require,module,exports){
-const wait = require('./wait')
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-/** animate object's {x, y} using an angle */
-module.exports = class angle extends wait
-{
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var wait = require('./wait');
+
+var angle = function (_wait) {
+    _inherits(angle, _wait);
+
     /**
+     * @private
+     * animate object's {x, y} using an angle
      * @param {object} object to animate
      * @param {number} angle in radians
      * @param {number} speed in pixels/millisecond
      * @param {number} [duration=0] in milliseconds; if 0, then continues forever
      * @param {object} [options] @see {@link Wait}
      */
-    constructor(object, angle, speed, duration, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'Angle'
-        if (options.load)
-        {
-            this.load(options.load)
+    function angle(object, _angle, speed, duration, options) {
+        _classCallCheck(this, angle);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (angle.__proto__ || Object.getPrototypeOf(angle)).call(this, object, options));
+
+        _this.type = 'Angle';
+        if (options.load) {
+            _this.load(options.load);
+        } else {
+            _this.angle = _angle;
+            _this.speed = speed;
+            _this.duration = duration || 0;
         }
-        else
-        {
-            this.angle = angle
-            this.speed = speed
-            this.duration = duration || 0
+        return _this;
+    }
+
+    _createClass(angle, [{
+        key: 'save',
+        value: function save() {
+            var save = _get(angle.prototype.__proto__ || Object.getPrototypeOf(angle.prototype), 'save', this).call(this);
+            save.angle = this.angle;
+            save.speed = this.speed;
+            return save;
         }
-    }
-
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(angle.prototype.__proto__ || Object.getPrototypeOf(angle.prototype), 'load', this).call(this, _load);
+            this.angle = _load.angle;
+            this.speed = _load.speed;
         }
-        const save = super.save()
-        save.angle = this.angle
-        save.speed = this.speed
-        return save
-    }
+    }, {
+        key: 'calculate',
+        value: function calculate(elapsed) {
+            this.object.x += this.cos * elapsed * this.speed;
+            this.object.y += this.sin * elapsed * this.speed;
+        }
+    }, {
+        key: 'reverse',
+        value: function reverse() {
+            this.angle += Math.PI;
+        }
+    }, {
+        key: 'angle',
+        get: function get() {
+            return this._angle;
+        },
+        set: function set(value) {
+            this._angle = value;
+            this.sin = Math.sin(this._angle);
+            this.cos = Math.cos(this._angle);
+        }
+    }]);
 
-    load(load)
-    {
-        super.load(load)
-        this.angle = load.angle
-        this.speed = load.speed
-    }
+    return angle;
+}(wait);
 
-    get angle()
-    {
-        return this._angle
-    }
-    set angle(value)
-    {
-        this._angle = value
-        this.sin = Math.sin(this._angle)
-        this.cos = Math.cos(this._angle)
-    }
+module.exports = angle;
 
-    calculate(elapsed)
-    {
-        this.object.x += this.cos * elapsed * this.speed
-        this.object.y += this.sin * elapsed * this.speed
-    }
+},{"./wait":217}],208:[function(require,module,exports){
+'use strict';
 
-    reverse()
-    {
-        this.angle += Math.PI
-    }
-}
-},{"./wait":201}],193:[function(require,module,exports){
-const Angle = require('yy-angle')
-const wait = require('./wait')
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Angle = require('yy-angle');
+var wait = require('./wait');
 
 /** Rotates an object to face the target */
-module.exports = class face extends wait
-{
+
+var face = function (_wait) {
+    _inherits(face, _wait);
+
     /**
      * @param {object} object
      * @param {Point} target
@@ -19214,262 +19802,499 @@ module.exports = class face extends wait
      * @param {object} [options] @see {@link Wait}
      * @param {boolean} [options.keepAlive] don't stop animation when complete
      */
-    constructor(object, target, speed, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'Face'
-        this.target = target
-        if (options.load)
-        {
-            this.load(options.load)
+    function face(object, target, speed, options) {
+        _classCallCheck(this, face);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (face.__proto__ || Object.getPrototypeOf(face)).call(this, object, options));
+
+        _this.type = 'Face';
+        _this.target = target;
+        if (options.load) {
+            _this.load(options.load);
+        } else {
+            _this.speed = speed;
         }
-        else
-        {
-            this.speed = speed
-        }
+        return _this;
     }
 
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
+    _createClass(face, [{
+        key: 'save',
+        value: function save() {
+            if (this.options.cancel) {
+                return null;
+            }
+            var save = _get(face.prototype.__proto__ || Object.getPrototypeOf(face.prototype), 'save', this).call(this);
+            save.speed = this.speed;
+            save.keepAlive = this.options.keepAlive;
+            return save;
         }
-        const save = super.save()
-        save.speed = this.speed
-        save.keepAlive = this.options.keepAlive
-        return save
-    }
-
-    load(load)
-    {
-        super.load(load)
-        this.speed = load.speed
-        this.options.keepAlive = load.keepAlive
-    }
-
-    calculate(elapsed)
-    {
-        var angle = Angle.angleTwoPoints(this.object.position, this.target)
-        var difference = Angle.differenceAngles(angle, this.object.rotation)
-        if (difference === 0)
-        {
-            this.emit('done', this.object)
-            if (!this.options.keepAlive)
-            {
-                return true
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(face.prototype.__proto__ || Object.getPrototypeOf(face.prototype), 'load', this).call(this, _load);
+            this.speed = _load.speed;
+            this.options.keepAlive = _load.keepAlive;
+        }
+    }, {
+        key: 'calculate',
+        value: function calculate(elapsed) {
+            var angle = Angle.angleTwoPoints(this.object.position, this.target);
+            var difference = Angle.differenceAngles(angle, this.object.rotation);
+            if (difference === 0) {
+                this.emit('done', this.object);
+                if (!this.options.keepAlive) {
+                    return true;
+                }
+            } else {
+                var sign = Angle.differenceAnglesSign(angle, this.object.rotation);
+                var change = this.speed * elapsed;
+                var delta = change > difference ? difference : change;
+                this.object.rotation += delta * sign;
             }
         }
-        else
-        {
-            var sign = Angle.differenceAnglesSign(angle, this.object.rotation)
-            var change = this.speed * elapsed
-            var delta = (change > difference) ? difference : change
-            this.object.rotation += delta * sign
-        }
-    }
-}
-},{"./wait":201,"yy-angle":385}],194:[function(require,module,exports){
-const Loop = require('yy-loop')
+    }]);
 
-const Angle = require('./angle')
-const Face = require('./face')
-const Load = require('./load')
-const Movie = require('./movie')
-const Shake = require('./shake')
-const Target = require('./target')
-const Tint = require('./tint')
-const To = require('./to')
-const Wait = require('./wait')
+    return face;
+}(wait);
 
-/** Helper list for multiple animations */
-module.exports = class List extends Loop
-{
+module.exports = face;
+
+},{"./wait":217,"yy-angle":409}],209:[function(require,module,exports){
+'use strict';
+
+var list = require('./list');
+
+module.exports = {
+    list: list,
+    wait: require('./wait'),
+    to: require('./to'),
+    shake: require('./shake'),
+    tint: require('./tint'),
+    face: require('./face'),
+    angle: require('./angle'),
+    target: require('./target'),
+    movie: require('./movie'),
+    load: require('./load')
+};
+
+},{"./angle":207,"./face":208,"./list":210,"./load":211,"./movie":212,"./shake":213,"./target":214,"./tint":215,"./to":216,"./wait":217}],210:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PIXI = require('pixi.js');
+var Events = require('eventemitter3');
+
+var Angle = require('./angle');
+var Face = require('./face');
+var Load = require('./load');
+var Movie = require('./movie');
+var Shake = require('./shake');
+var Target = require('./target');
+var Tint = require('./tint');
+var To = require('./to');
+var Wait = require('./wait');
+
+var Ease = function (_Events) {
+    _inherits(Ease, _Events);
+
     /**
-     * @param [options]
-     * @param {number} [options.maxFrameTime=1000 / 60] maximum time in milliseconds for a frame
-     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
-     * @event List#done(List) final animation completed in the list
-     * @event List#each(elapsed, List) each update
+     * Main class for creating eases
+     * @param {object} [options]
+     * @param {boolean} [options.noTicker] don't add the update function to PIXI.ticker
+     * @param {PIXI.ticker} [options.ticker=PIXI.ticker.shared] use this PIXI.ticker for the list
+     * @extends eventemitter
+     * @fire done
+     * @fire each
      */
-    constructor(options)
-    {
-        options = options || {}
-        super(options)
-        this.empty = true
+    function Ease(options) {
+        _classCallCheck(this, Ease);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (Ease.__proto__ || Object.getPrototypeOf(Ease)).call(this));
+
+        if (!options.noTicker) {
+            var ticker = options.ticker || PIXI.ticker.shared;
+            ticker.add(function () {
+                return _this.update(ticker.elapsedMS);
+            });
+        }
+        _this.list = [];
+        _this.empty = true;
+        _this.removeWaiting = [];
+        _this.removeAllWaiting = false;
+        return _this;
     }
 
     /**
      * Add animation(s) to animation list
-     * @param {object|object[]...} any animation class
+     * @param {(object|object[])} any animation class
+     * @return {object} first animation
      */
-    add()
-    {
-        for (let arg of arguments)
-        {
-            if (Array.isArray(arg))
-            {
-                for (let entry of arg)
-                {
-                    this.list.push(entry)
+
+
+    _createClass(Ease, [{
+        key: 'add',
+        value: function add() {
+            var first = void 0;
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = arguments[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var arg = _step.value;
+
+                    if (Array.isArray(arg)) {
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
+
+                        try {
+                            for (var _iterator2 = arg[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                var entry = _step2.value;
+
+                                if (!first) {
+                                    first = entry;
+                                }
+                                this.list.push(entry);
+                            }
+                        } catch (err) {
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                    _iterator2.return();
+                                }
+                            } finally {
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
+                                }
+                            }
+                        }
+                    } else {
+                        first = arg;
+                        this.list.push(arg);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
                 }
             }
-            else
-            {
-                this.list.push(arg)
+
+            this.empty = false;
+            return first;
+        }
+
+        /**
+         * remove animation(s)
+         * @param {object|array} animate - the animation (or array of animations) to remove; can be null
+         */
+
+    }, {
+        key: 'remove',
+        value: function remove(animate) {
+            if (this.inUpdate) {
+                this.removeWaiting.push(animate);
+            } else {
+                var index = this.list.indexOf(animate);
+                if (index !== -1) {
+                    this.list.splice(index, 1);
+                }
             }
         }
-        this.empty = false
-        return arguments[0]
-    }
 
-    /**
-     * remove animation(s)
-     * @param {object|array} animate - the animation (or array of animations) to remove; can be null
-     * @inherited from yy-loop
-     */
-    // remove(animate)
+        /**
+         * remove all animations from list
+         * @inherited from yy-loop
+         */
 
-    /**
-     * remove all animations from list
-     * @inherited from yy-loop
-     */
-    // removeAll()
-
-    /**
-     * update frame; can be called manually or automatically with start()
-     */
-    update()
-    {
-        super.update()
-        if (this.list.length === 0 && !this.empty)
-        {
-            this.emit('done', this)
-            this.empty = true
+    }, {
+        key: 'removeAll',
+        value: function removeAll() {
+            if (this.inUpdate) {
+                this.removeAllWaiting = true;
+            } else {
+                this.list = [];
+            }
         }
-    }
 
-    /**
-     * @type {number} number of animations
-     * @inherited yy-looop
-     */
-    // get count()
+        /**
+         * update frame
+         * this is automatically added to PIXI.ticker unless options.noTicker is set
+         * if using options.noTicker, this should be called manually
+         * @param {number} elasped time in MS since last update
+         */
 
-    /**
-     * @type {number} number of active animations
-     * @inherited yy-looop
-     */
-    // get countRunning()
+    }, {
+        key: 'update',
+        value: function update(elapsed) {
+            this.inUpdate = true;
+            for (var i = 0, _i = this.list.length; i < _i; i++) {
+                if (this.list[i] && this.list[i].update(elapsed)) {
+                    this.list.splice(i, 1);
+                    i--;
+                    _i--;
+                }
+            }
+            this.emit('each', this);
+            if (this.list.length === 0 && !this.empty) {
+                this.emit('done', this);
+                this.empty = true;
+            }
+            this.inUpdate = false;
+            if (this.removeAllWaiting) {
+                this.removeAll();
+                this.removeAllWaiting = false;
+            }
+            while (this.removeWaiting.length) {
+                this.remove(this.removeWaiting.pop());
+            }
+        }
 
-    /**
-     * starts an automatic requestAnimationFrame() loop based on yy-loop
-     * alternatively, you can call update() manually
-     * @inherited yy-loop
-     */
-    // start()
+        /**
+         * number of animations
+         * @type {number}
+         */
 
-    /**
-     * stops the automatic requestAnimationFrame() loop
-     * @inherited yy-loop
-     */
-    // stop()
+    }, {
+        key: 'to',
 
-    /** helper to add to the list a new Ease.to class; see Ease.to class below for parameters */
-    to() { return this.add(new To(...arguments)) }
 
-    /** helper to add to the list a new Ease.angle class; see Ease.to class below for parameters */
-    angle() { return this.add(new Angle(...arguments)) }
+        /**
+         * default options for all eases
+         * @typedef {object} EaseOptions
+         * @param {object} [EaseOptions.options]
+         * @param {number} [EaseOptions.options.wait=0] n milliseconds before starting animation (can also be used to pause animation for a length of time)
+         * @param {boolean} [EaseOptions.options.pause] start the animation paused
+         * @param {boolean|number} [EaseOptions.options.repeat] true: repeat animation forever n: repeat animation n times
+         * @param {boolean|number} [EaseOptions.options.reverse] true: reverse animation (if combined with repeat, then pulse) n: reverse animation n times
+         * @param {Function} [EaseOptions.options.load] loads an animation using an .save() object note the * parameters below cannot be loaded and must be re-set
+         * @param {string|Function} [EaseOptions.options.ease] name or function from easing.js (see http://easings.net for examples)
+         */
 
-    /** helper to add to the list a new Ease.face class; see Ease.to class below for parameters */
-    face() { return this.add(new Face(...arguments)) }
+        /**
+         * ease parameters of object
+         * @param {PIXI.DisplayObject} object to animate
+         * @param {object} goto - parameters to animate, e.g.: {alpha: 5, scale: {3, 5}, scale: 5, rotation: Math.PI}
+         * @param {number} duration - time to run
+         * @fires done
+         * @fires wait
+         * @fires first
+         * @fires each
+         * @fires loop
+         * @fires reverse
+         */
+        value: function to() {
+            return this.add(new (Function.prototype.bind.apply(To, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
 
-    /** helper to add to the list a new Ease.load class; see Ease.to class below for parameters */
-    load() { return this.add(new Load(...arguments)) }
+        /**
+         * animate object's {x, y} using an angle
+         * @param {object} object to animate
+         * @param {number} angle in radians
+         * @param {number} speed in pixels/millisecond
+         * @param {number} [duration=0] in milliseconds; if 0, then continues forever
+         * @param {object} [options] @see {@link Wait}
+         */
 
-    /** helper to add to the list a new Ease.movie class; see Ease.to class below for parameters */
-    movie() { return this.add(new Movie(...arguments)) }
+    }, {
+        key: 'angle',
+        value: function angle() {
+            return this.add(new (Function.prototype.bind.apply(Angle, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
 
-    /** helper to add to the list a new Ease.shake class; see Ease.to class below for parameters */
-    shake() { return this.add(new Shake(...arguments)) }
+        /** helper to add to the list a new Ease.face class; see Ease.to class below for parameters */
 
-    /** helper to add to the list a new Ease.target class; see Ease.to class below for parameters */
-    target() { return this.add(new Target(...arguments)) }
+    }, {
+        key: 'face',
+        value: function face() {
+            return this.add(new (Function.prototype.bind.apply(Face, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
 
-    /** helper to add to the list a new Ease.angle tint; see Ease.to class below for parameters */
-    tint() { return this.add(new Tint(...arguments)) }
+        /** helper to add to the list a new Ease.load class; see Ease.to class below for parameters */
 
-    /** helper to add to the list a new Ease.wait class; see Ease.to class below for parameters */
-    wait() { return this.add(new Wait(...arguments)) }
+    }, {
+        key: 'load',
+        value: function load() {
+            return this.add(new (Function.prototype.bind.apply(Load, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
 
-    /** Inherited functions from yy-loop */
+        /** helper to add to the list a new Ease.movie class; see Ease.to class below for parameters */
 
-    /**
-     * adds an interval
-     * @param {function} callback
-     * @param {number} time
-     * @param {number} count
-     * @inherited from yy-loop
-     */
-    // interval(callback, time, count)
+    }, {
+        key: 'movie',
+        value: function movie() {
+            return this.add(new (Function.prototype.bind.apply(Movie, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
 
-    /**
-     * adds a timeout
-     * @param {function} callback
-     * @param {number} time
-     * @inherited from yy-loop
-     */
-    // timeout(callback, time)
-}
-},{"./angle":192,"./face":193,"./load":195,"./movie":196,"./shake":197,"./target":198,"./tint":199,"./to":200,"./wait":201,"yy-loop":389}],195:[function(require,module,exports){
-const wait = require('./wait')
-const to = require('./to')
-const tint = require('./tint')
-const shake = require('./shake')
-const angle = require('./angle')
-const face = require('./face')
-const target = require('./target')
-const movie = require('./movie')
+        /** helper to add to the list a new Ease.shake class; see Ease.to class below for parameters */
+
+    }, {
+        key: 'shake',
+        value: function shake() {
+            return this.add(new (Function.prototype.bind.apply(Shake, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
+
+        /** helper to add to the list a new Ease.target class; see Ease.to class below for parameters */
+
+    }, {
+        key: 'target',
+        value: function target() {
+            return this.add(new (Function.prototype.bind.apply(Target, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
+
+        /** helper to add to the list a new Ease.angle tint; see Ease.to class below for parameters */
+
+    }, {
+        key: 'tint',
+        value: function tint() {
+            return this.add(new (Function.prototype.bind.apply(Tint, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
+
+        /** helper to add to the list a new Ease.wait class; see Ease.to class below for parameters */
+
+    }, {
+        key: 'wait',
+        value: function wait() {
+            return this.add(new (Function.prototype.bind.apply(Wait, [null].concat(Array.prototype.slice.call(arguments))))());
+        }
+    }, {
+        key: 'count',
+        get: function get() {
+            return this.list.length;
+        }
+
+        /**
+         * number of active animations
+         * @type {number}
+         */
+
+    }, {
+        key: 'countRunning',
+        get: function get() {
+            var count = 0;
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+                for (var _iterator3 = this.list[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var entry = _step3.value;
+
+                    if (!entry.pause) {
+                        count++;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError3 = true;
+                _iteratorError3 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                        _iterator3.return();
+                    }
+                } finally {
+                    if (_didIteratorError3) {
+                        throw _iteratorError3;
+                    }
+                }
+            }
+
+            return count;
+        }
+    }]);
+
+    return Ease;
+}(Events);
+
+module.exports = Ease;
+
+},{"./angle":207,"./face":208,"./load":211,"./movie":212,"./shake":213,"./target":214,"./tint":215,"./to":216,"./wait":217,"eventemitter3":21,"pixi.js":350}],211:[function(require,module,exports){
+'use strict';
+
+var wait = require('./wait');
+var to = require('./to');
+var tint = require('./tint');
+var shake = require('./shake');
+var angle = require('./angle');
+var face = require('./face');
+var target = require('./target');
+var movie = require('./movie');
 
 /**
  * restart an animation = requires a saved state
  * @param {object} object(s) to animate
  */
-module.exports = function load(object, load)
-{
-    if (!load)
-    {
-        return null
+function load(object, load) {
+    if (!load) {
+        return null;
     }
-    const options = { load }
-    switch (load.type)
-    {
+    var options = { load: load };
+    switch (load.type) {
         case 'Wait':
-            return new wait(object, options)
+            return new wait(object, options);
         case 'To':
-            return new to(object, null, null, options)
+            return new to(object, null, null, options);
         case 'Tint':
-            return new tint(object, null, null, options)
+            return new tint(object, null, null, options);
         case 'Shake':
-            return new shake(object, null, null, options)
+            return new shake(object, null, null, options);
         case 'Angle':
-            return new angle(object, null, null, null, options)
+            return new angle(object, null, null, null, options);
         case 'Face':
-            return new face(object[0], object[1], null, options)
+            return new face(object[0], object[1], null, options);
         case 'Target':
-            return new target(object[0], object[1], null, options)
+            return new target(object[0], object[1], null, options);
         case 'Movie':
-            return new movie(object, object[1], null, options)
+            return new movie(object, object[1], null, options);
     }
 }
-},{"./angle":192,"./face":193,"./movie":196,"./shake":197,"./target":198,"./tint":199,"./to":200,"./wait":201}],196:[function(require,module,exports){
-const wait = require('./wait')
+
+module.exports = load;
+
+},{"./angle":207,"./face":208,"./movie":212,"./shake":213,"./target":214,"./tint":215,"./to":216,"./wait":217}],212:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var wait = require('./wait');
 
 /**
  * animate a movie of textures
  */
-module.exports = class movie extends wait
-{
+
+var movie = function (_wait) {
+    _inherits(movie, _wait);
+
     /**
      * @param {object} object to animate
      * @param {PIXI.Texture[]} textures
@@ -19483,209 +20308,226 @@ module.exports = class movie extends wait
      * @param {Function} [options.load] loads an animation using a .save() object note the * parameters below cannot be loaded and must be re-set
      * @param {Function} [options.ease] function from easing.js (see http://easings.net for examples)
      * @emits {done} animation expires
-     * @emits {cancel} animation is cancelled
      * @emits {wait} each update during a wait
      * @emits {first} first update when animation starts
      * @emits {each} each update while animation is running
      * @emits {loop} when animation is repeated
      * @emits {reverse} when animation is reversed
      */
-    constructor(object, textures, duration, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'Movie'
-        if (Array.isArray(object))
-        {
-            this.list = object
-            this.object = this.list[0]
+    function movie(object, textures, duration, options) {
+        _classCallCheck(this, movie);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (movie.__proto__ || Object.getPrototypeOf(movie)).call(this, object, options));
+
+        _this.type = 'Movie';
+        if (Array.isArray(object)) {
+            _this.list = object;
+            _this.object = _this.list[0];
         }
-        this.ease = options.ease || this.noEase
-        if (options.load)
-        {
-            this.load(options.load)
+        if (options.load) {
+            _this.load(options.load);
+        } else {
+            _this.textures = textures;
+            _this.duration = duration;
+            _this.current = 0;
+            _this.length = textures.length;
+            _this.interval = duration / _this.length;
+            _this.isReverse = false;
+            _this.restart();
         }
-        else
-        {
-            this.textures = textures
-            this.duration = duration
-            this.current = 0
-            this.length = textures.length
-            this.interval = duration / this.length
-            this.isReverse = false
-            this.restart()
-        }
+        return _this;
     }
 
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
+    _createClass(movie, [{
+        key: 'save',
+        value: function save() {
+            var save = _get(movie.prototype.__proto__ || Object.getPrototypeOf(movie.prototype), 'save', this).call(this);
+            save.goto = this.goto;
+            save.current = this.current;
+            save.length = this.length;
+            save.interval = this.interval;
+            return save;
         }
-        const save = super.save()
-        save.goto = this.goto
-        save.current = this.current
-        save.length = this.length
-        save.interval = this.interval
-        return save
-    }
-
-    load(load)
-    {
-        super.load(load)
-        this.goto = load.goto
-        this.current = load.current
-        this.interval = load.current
-    }
-
-    restart()
-    {
-        this.current = 0
-        this.time = 0
-        this.isReverse = false
-    }
-
-    reverse()
-    {
-        this.isReverse = !this.isReverse
-    }
-
-    calculate()
-    {
-        let index = Math.round(this.ease(this.time, 0, this.length - 1, this.duration))
-        if (this.isReverse)
-        {
-            index = this.length - 1 - index
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(movie.prototype.__proto__ || Object.getPrototypeOf(movie.prototype), 'load', this).call(this, _load);
+            this.goto = _load.goto;
+            this.current = _load.current;
+            this.interval = _load.current;
         }
-        if (this.list)
-        {
-            for (let i = 0; i < this.list.length; i++)
-            {
-                this.list[i].texture = this.textures[index]
+    }, {
+        key: 'restart',
+        value: function restart() {
+            this.current = 0;
+            this.time = 0;
+            this.isReverse = false;
+        }
+    }, {
+        key: 'reverse',
+        value: function reverse() {
+            this.isReverse = !this.isReverse;
+        }
+    }, {
+        key: 'calculate',
+        value: function calculate() {
+            var index = Math.round(this.options.ease(this.time, 0, this.length - 1, this.duration));
+            if (this.isReverse) {
+                index = this.length - 1 - index;
+            }
+            if (this.list) {
+                for (var i = 0; i < this.list.length; i++) {
+                    this.list[i].texture = this.textures[index];
+                }
+            } else {
+                this.object.texture = this.textures[index];
             }
         }
-        else
-        {
-            this.object.texture = this.textures[index]
-        }
-    }
-}
-},{"./wait":201}],197:[function(require,module,exports){
-const wait = require('./wait')
+    }]);
+
+    return movie;
+}(wait);
+
+module.exports = movie;
+
+},{"./wait":217}],213:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var wait = require('./wait');
 
 /**
  * shakes an object or list of objects
  */
-module.exports = class shake extends wait
-{
+
+var shake = function (_wait) {
+    _inherits(shake, _wait);
+
     /**
      * @param {object|array} object or list of objects to shake
      * @param {number} amount to shake
      * @param {number} duration (in milliseconds) to shake
      * @param {object} options (see Animate.wait)
      */
-    constructor(object, amount, duration, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'Shake'
-        if (Array.isArray(object))
-        {
-            this.array = true
-            this.list = object
+    function shake(object, amount, duration, options) {
+        _classCallCheck(this, shake);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (shake.__proto__ || Object.getPrototypeOf(shake)).call(this, object, options));
+
+        _this.type = 'Shake';
+        if (Array.isArray(object)) {
+            _this.array = true;
+            _this.list = object;
         }
-        if (options.load)
-        {
-            this.load(options.load)
+        if (options.load) {
+            _this.load(options.load);
+        } else {
+            if (_this.list) {
+                _this.start = [];
+                for (var i = 0; i < object.length; i++) {
+                    var target = object[i];
+                    _this.start[i] = { x: target.x, y: target.y };
+                }
+            } else {
+                _this.start = { x: object.x, y: object.y };
+            }
+            _this.amount = amount;
+            _this.duration = duration;
         }
-        else
-        {
-            if (this.list)
-            {
-                this.start = []
-                for (let i = 0; i < object.length; i++)
-                {
-                    const target = object[i]
-                    this.start[i] = {x: target.x, y: target.y}
+        return _this;
+    }
+
+    _createClass(shake, [{
+        key: 'save',
+        value: function save() {
+            var save = _get(shake.prototype.__proto__ || Object.getPrototypeOf(shake.prototype), 'save', this).call(this);
+            save.start = this.start;
+            save.amount = this.amount;
+            return save;
+        }
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(shake.prototype.__proto__ || Object.getPrototypeOf(shake.prototype), 'load', this).call(this, _load);
+            this.start = _load.start;
+            this.amount = _load.amount;
+        }
+    }, {
+        key: 'calculate',
+        value: function calculate() /*elapsed*/{
+            var object = this.object;
+            var start = this.start;
+            var amount = this.amount;
+            if (this.array) {
+                var list = this.list;
+                for (var i = 0; i < list.length; i++) {
+                    var _object = list[i];
+                    var actual = start[i];
+                    _object.x = actual.x + Math.floor(Math.random() * amount * 2) - amount;
+                    _object.y = actual.y + Math.floor(Math.random() * amount * 2) - amount;
                 }
             }
-            else
-            {
-                this.start = {x: object.x, y: object.y}
-            }
-            this.amount = amount
-            this.duration = duration
+            object.x = start.x + Math.floor(Math.random() * amount * 2) - amount;
+            object.y = start.y + Math.floor(Math.random() * amount * 2) - amount;
         }
-    }
-
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
-        }
-        const save = super.save()
-        save.start = this.start
-        save.amount = this.amount
-        return save
-    }
-
-    load(load)
-    {
-        super.load(load)
-        this.start = load.start
-        this.amount = load.amount
-    }
-
-    calculate(/*elapsed*/)
-    {
-        const object = this.object
-        const start = this.start
-        const amount = this.amount
-        if (this.array)
-        {
-            const list = this.list
-            for (let i = 0; i < list.length; i++)
-            {
-                const object = list[i]
-                const actual = start[i]
-                object.x = actual.x + Math.floor(Math.random() * amount * 2) - amount
-                object.y = actual.y + Math.floor(Math.random() * amount * 2) - amount
+    }, {
+        key: 'done',
+        value: function done() {
+            var object = this.object;
+            var start = this.start;
+            if (this.array) {
+                var list = this.list;
+                for (var i = 0; i < list.length; i++) {
+                    var _object2 = list[i];
+                    var actual = start[i];
+                    _object2.x = actual.x;
+                    _object2.y = actual.y;
+                }
+            } else {
+                object.x = start.x;
+                object.y = start.y;
             }
         }
-        object.x = start.x + Math.floor(Math.random() * amount * 2) - amount
-        object.y = start.y + Math.floor(Math.random() * amount * 2) - amount
-    }
+    }]);
 
-    done()
-    {
-        const object = this.object
-        const start = this.start
-        if (this.array)
-        {
-            const list = this.list
-            for (let i = 0; i < list.length; i++)
-            {
-                const object = list[i]
-                const actual = start[i]
-                object.x = actual.x
-                object.y = actual.y
-            }
-        }
-        else
-        {
-            object.x = start.x
-            object.y = start.y
-        }
-    }
-}
-},{"./wait":201}],198:[function(require,module,exports){
-const wait = require('./wait')
+    return shake;
+}(wait);
+
+module.exports = shake;
+
+},{"./wait":217}],214:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var wait = require('./wait');
 
 /** move an object to a target's location */
-module.exports = class target extends wait
-{
+
+var target = function (_wait) {
+    _inherits(target, _wait);
+
     /**
      * move to a target
      * @param {object} object - object to animate
@@ -19694,199 +20536,251 @@ module.exports = class target extends wait
      * @param {object} [options] @see {@link Wait}
      * @param {boolean} [options.keepAlive] don't cancel the animation when target is reached
      */
-    constructor(object, target, speed, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'Target'
-        this.target = target
-        if (options.load)
-        {
-            this.load(options.load)
+    function target(object, _target, speed, options) {
+        _classCallCheck(this, target);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (target.__proto__ || Object.getPrototypeOf(target)).call(this, object, options));
+
+        _this.type = 'Target';
+        _this.target = _target;
+        if (options.load) {
+            _this.load(options.load);
+        } else {
+            _this.speed = speed;
         }
-        else
-        {
-            this.speed = speed
-        }
+        return _this;
     }
 
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
+    _createClass(target, [{
+        key: 'save',
+        value: function save() {
+            var save = _get(target.prototype.__proto__ || Object.getPrototypeOf(target.prototype), 'save', this).call(this);
+            save.speed = this.speed;
+            save.keepAlive = this.options.keepAlive;
+            return save;
         }
-        const save = super.save()
-        save.speed = this.speed
-        save.keepAlive = this.options.keepAlive
-        return save
-    }
-
-    load(load)
-    {
-        super.load(load)
-        this.speed = load.speed
-        this.options.keepAlive = load.keepAlive
-    }
-
-    calculate(elapsed)
-    {
-        const deltaX = this.target.x - this.object.x
-        const deltaY = this.target.y - this.object.y
-        if (deltaX === 0 && deltaY === 0)
-        {
-            this.emit('done', this.object)
-            if (!this.options.keepAlive)
-            {
-                return true
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(target.prototype.__proto__ || Object.getPrototypeOf(target.prototype), 'load', this).call(this, _load);
+            this.speed = _load.speed;
+            this.options.keepAlive = _load.keepAlive;
+        }
+    }, {
+        key: 'calculate',
+        value: function calculate(elapsed) {
+            var deltaX = this.target.x - this.object.x;
+            var deltaY = this.target.y - this.object.y;
+            if (deltaX === 0 && deltaY === 0) {
+                this.emit('done', this.object);
+                if (!this.options.keepAlive) {
+                    return true;
+                }
+            } else {
+                var angle = Math.atan2(deltaY, deltaX);
+                this.object.x += Math.cos(angle) * elapsed * this.speed;
+                this.object.y += Math.sin(angle) * elapsed * this.speed;
+                if (deltaX >= 0 !== this.target.x - this.object.x >= 0) {
+                    this.object.x = this.target.x;
+                }
+                if (deltaY >= 0 !== this.target.y - this.object.y >= 0) {
+                    this.object.y = this.target.y;
+                }
             }
         }
-        else
-        {
-            const angle = Math.atan2(deltaY, deltaX)
-            this.object.x += Math.cos(angle) * elapsed * this.speed
-            this.object.y += Math.sin(angle) * elapsed * this.speed
-            if ((deltaX >= 0) !== ((this.target.x - this.object.x) >= 0))
-            {
-                this.object.x = this.target.x
-            }
-            if ((deltaY >= 0) !== ((this.target.y - this.object.y) >= 0))
-            {
-                this.object.y = this.target.y
-            }
-        }
-    }
-}
-},{"./wait":201}],199:[function(require,module,exports){
-const Color = require('yy-color')
-const wait = require('./wait')
+    }]);
 
-/** changes the tint of an object */
-module.exports = class tint extends wait
-{
+    return target;
+}(wait);
+
+module.exports = target;
+
+},{"./wait":217}],215:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Color = require('yy-color');
+var wait = require('./wait');
+
+var tint = function (_wait) {
+    _inherits(tint, _wait);
+
     /**
      * @param {PIXI.DisplayObject|PIXI.DisplayObject[]} object
      * @param {number|number[]} tint
      * @param {number} [duration] in milliseconds
      * @param {object} [options] @see {@link Wait}
      */
-    constructor(object, tint, duration, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'Tint'
-        if (Array.isArray(object))
-        {
-            this.list = object
-            this.object = this.list[0]
+    function tint(object, _tint, duration, options) {
+        _classCallCheck(this, tint);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (tint.__proto__ || Object.getPrototypeOf(tint)).call(this, object, options));
+
+        _this.type = 'Tint';
+        if (Array.isArray(object)) {
+            _this.list = object;
+            _this.object = _this.list[0];
         }
-        this.duration = duration
-        this.ease = this.options.ease || this.noEase
-        if (options.load)
-        {
-            this.load(options.load)
+        _this.duration = duration;
+        if (options.load) {
+            _this.load(options.load);
+        } else if (Array.isArray(_tint)) {
+            _this.tints = [_this.object.tint].concat(_toConsumableArray(_tint));
+        } else {
+            _this.start = _this.object.tint;
+            _this.to = _tint;
         }
-        else if (Array.isArray(tint))
-        {
-            this.tints = [this.object.tint, ...tint]
-        }
-        else
-        {
-            this.start = this.object.tint
-            this.to = tint
-        }
+        return _this;
     }
 
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
+    _createClass(tint, [{
+        key: 'save',
+        value: function save() {
+            var save = _get(tint.prototype.__proto__ || Object.getPrototypeOf(tint.prototype), 'save', this).call(this);
+            save.start = this.start;
+            save.to = this.to;
+            return save;
         }
-        const save = super.save()
-        save.start = this.start
-        save.to = this.to
-        return save
-    }
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(tint.prototype.__proto__ || Object.getPrototypeOf(tint.prototype), 'load', this).call(this, _load);
+            this.start = _load.start;
+            this.to = _load.to;
+        }
+    }, {
+        key: 'calculate',
+        value: function calculate() {
+            var percent = this.options.ease(this.time, 0, 1, this.duration);
+            if (this.tints) {
+                var each = 1 / (this.tints.length - 1);
+                var per = each;
+                for (var i = 1; i < this.tints.length; i++) {
+                    if (percent <= per) {
+                        var color = Color.blend(1 - (per - percent) / each, this.tints[i - 1], this.tints[i]);
+                        if (this.list) {
+                            var _iteratorNormalCompletion = true;
+                            var _didIteratorError = false;
+                            var _iteratorError = undefined;
 
-    load(load)
-    {
-        super.load(load)
-        this.start = load.start
-        this.to = load.to
-    }
+                            try {
+                                for (var _iterator = this.list[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                    var object = _step.value;
 
-    calculate()
-    {
-        const percent = this.ease(this.time, 0, 1, this.duration)
-        if (this.tints)
-        {
-            const each = 1 / (this.tints.length - 1)
-            let per = each
-            for (let i = 1; i < this.tints.length; i++)
-            {
-                if (percent <= per)
-                {
-                    const color = Color.blend(1 - (per - percent) / each, this.tints[i - 1], this.tints[i])
-                    if (this.list)
-                    {
-                        for (let object of this.list)
-                        {
-                            object.tint = color
+                                    object.tint = color;
+                                }
+                            } catch (err) {
+                                _didIteratorError = true;
+                                _iteratorError = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion && _iterator.return) {
+                                        _iterator.return();
+                                    }
+                                } finally {
+                                    if (_didIteratorError) {
+                                        throw _iteratorError;
+                                    }
+                                }
+                            }
+                        } else {
+                            this.object.tint = color;
+                        }
+                        break;
+                    }
+                    per += each;
+                }
+            } else {
+                var _color = Color.blend(percent, this.start, this.to);
+                if (this.list) {
+                    var _iteratorNormalCompletion2 = true;
+                    var _didIteratorError2 = false;
+                    var _iteratorError2 = undefined;
+
+                    try {
+                        for (var _iterator2 = this.list[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                            var _object = _step2.value;
+
+                            _object.tint = _color;
+                        }
+                    } catch (err) {
+                        _didIteratorError2 = true;
+                        _iteratorError2 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                                _iterator2.return();
+                            }
+                        } finally {
+                            if (_didIteratorError2) {
+                                throw _iteratorError2;
+                            }
                         }
                     }
-                    else
-                    {
-                        this.object.tint = color
-                    }
-                    break;
-                }
-                per += each
-            }
-        }
-        else
-        {
-            const color = Color.blend(percent, this.start, this.to)
-            if (this.list)
-            {
-                for (let object of this.list)
-                {
-                    object.tint = color
+                } else {
+                    this.object.tint = _color;
                 }
             }
-            else
-            {
-                this.object.tint = color
+        }
+    }, {
+        key: 'reverse',
+        value: function reverse() {
+            if (this.tints) {
+                var tints = [];
+                for (var i = this.tints.length - 1; i >= 0; i--) {
+                    tints.push(this.tints[i]);
+                }
+                this.tints = tints;
+            } else {
+                var swap = this.to;
+                this.to = this.start;
+                this.start = swap;
             }
         }
-    }
+    }]);
 
-    reverse()
-    {
-        if (this.tints)
-        {
-            const tints = []
-            for (let i = this.tints.length - 1; i >= 0; i--)
-            {
-                tints.push(this.tints[i])
-            }
-            this.tints = tints
-        }
-        else
-        {
-            const swap = this.to
-            this.to = this.start
-            this.start = swap
-        }
-    }
-}
-},{"./wait":201,"yy-color":386}],200:[function(require,module,exports){
-const wait = require('./wait')
+    return tint;
+}(wait);
+
+module.exports = tint;
+
+},{"./wait":217,"yy-color":410}],216:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var wait = require('./wait');
 
 /** animate any numeric parameter of an object or array of objects */
-module.exports = class to extends wait
-{
+
+var to = function (_wait) {
+    _inherits(to, _wait);
+
     /**
+     * @private
      * @param {object} object to animate
      * @param {object} goto - parameters to animate, e.g.: {alpha: 5, scale: {3, 5}, scale: 5, rotation: Math.PI}
      * @param {number} duration - time to run
@@ -19895,225 +20789,192 @@ module.exports = class to extends wait
      * @param {boolean} [options.pause] start the animation paused
      * @param {boolean|number} [options.repeat] true: repeat animation forever n: repeat animation n times
      * @param {boolean|number} [options.reverse] true: reverse animation (if combined with repeat, then pulse) n: reverse animation n times
-     * @param {boolean|number} [options.continue] true: continue animation with new starting values n: continue animation n times
      * @param {Function} [options.load] loads an animation using an .save() object note the * parameters below cannot be loaded and must be re-set
      * @param {string|Function} [options.ease] name or function from easing.js (see http://easings.net for examples)
      * @emits to:done animation expires
-     * @emits to:cancel animation is cancelled
      * @emits to:wait each update during a wait
      * @emits to:first first update when animation starts
      * @emits to:each each update while animation is running
      * @emits to:loop when animation is repeated
      * @emits to:reverse when animation is reversed
      */
-    constructor(object, goto, duration, options)
-    {
-        options = options || {}
-        super(object, options)
-        this.type = 'To'
-        if (Array.isArray(object))
-        {
-            this.list = object
-            this.object = this.list[0]
+    function to(object, goto, duration, options) {
+        _classCallCheck(this, to);
+
+        options = options || {};
+
+        var _this = _possibleConstructorReturn(this, (to.__proto__ || Object.getPrototypeOf(to)).call(this, object, options));
+
+        _this.type = 'To';
+        if (Array.isArray(object)) {
+            _this.list = object;
+            _this.object = _this.list[0];
         }
-        this.ease = options.ease || this.noEase
-        if (options.load)
-        {
-            this.load(options.load)
+        if (options.load) {
+            _this.load(options.load);
+        } else {
+            _this.goto = goto;
+            _this.fixScale();
+            _this.duration = duration;
+            _this.restart();
         }
-        else
-        {
-            this.goto = goto
-            this.fixScale()
-            this.duration = duration
-            this.restart()
-        }
+        return _this;
     }
 
     /**
      * converts scale from { scale: n } to { scale: { x: n, y: n }}
      * @private
      */
-    fixScale()
-    {
-        if (typeof this.goto['scale'] !== 'undefined' && !Number.isNaN(this.goto['scale']))
-        {
-            this.goto['scale'] = {x: this.goto['scale'], y: this.goto['scale']}
+
+
+    _createClass(to, [{
+        key: 'fixScale',
+        value: function fixScale() {
+            if (typeof this.goto['scale'] !== 'undefined' && !Number.isNaN(this.goto['scale'])) {
+                this.goto['scale'] = { x: this.goto['scale'], y: this.goto['scale'] };
+            }
         }
-    }
-
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
+    }, {
+        key: 'save',
+        value: function save() {
+            var save = _get(to.prototype.__proto__ || Object.getPrototypeOf(to.prototype), 'save', this).call(this);
+            save.goto = this.goto;
+            save.start = this.start;
+            save.delta = this.delta;
+            save.keys = this.keys;
+            return save;
         }
-        const save = super.save()
-        save.goto = this.goto
-        save.start = this.start
-        save.delta = this.delta
-        save.keys = this.keys
-        return save
-    }
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            _get(to.prototype.__proto__ || Object.getPrototypeOf(to.prototype), 'load', this).call(this, _load);
+            this.goto = _load.goto;
+            this.start = _load.start;
+            this.delta = _load.delta;
+            this.keys = _load.keys;
+        }
+    }, {
+        key: 'restart',
+        value: function restart() {
+            var i = 0;
+            var start = this.start = [];
+            var delta = this.delta = [];
+            var keys = this.keys = [];
+            var goto = this.goto;
+            var object = this.object;
 
-    load(load)
-    {
-        super.load(load)
-        this.goto = load.goto
-        this.start = load.start
-        this.delta = load.delta
-        this.keys = load.keys
-    }
+            // loops through all keys in goto object
+            for (var key in goto) {
 
-    restart()
-    {
-        let i = 0
-        const start = this.start = []
-        const delta = this.delta = []
-        const keys = this.keys = []
-        const goto = this.goto
-        const object = this.object
+                // handles keys with one additional level e.g.: goto = {scale: {x: 5, y: 3}}
+                if (isNaN(goto[key])) {
+                    keys[i] = { key: key, children: [] };
+                    start[i] = [];
+                    delta[i] = [];
+                    var j = 0;
+                    for (var key2 in goto[key]) {
+                        keys[i].children[j] = key2;
+                        start[i][j] = parseFloat(object[key][key2]);
+                        start[i][j] = this._correctDOM(key2, start[i][j]);
+                        start[i][j] = isNaN(this.start[i][j]) ? 0 : start[i][j];
+                        delta[i][j] = goto[key][key2] - start[i][j];
+                        j++;
+                    }
+                } else {
+                    start[i] = parseFloat(object[key]);
+                    start[i] = this._correctDOM(key, start[i]);
+                    start[i] = isNaN(this.start[i]) ? 0 : start[i];
+                    delta[i] = goto[key] - start[i];
+                    keys[i] = key;
+                }
+                i++;
+            }
+            this.time = 0;
+        }
+    }, {
+        key: 'reverse',
+        value: function reverse() {
+            var object = this.object;
+            var keys = this.keys;
+            var goto = this.goto;
+            var delta = this.delta;
+            var start = this.start;
 
-        // loops through all keys in goto object
-        for (let key in goto)
-        {
-
-            // handles keys with one additional level e.g.: goto = {scale: {x: 5, y: 3}}
-            if (isNaN(goto[key]))
-            {
-                keys[i] = {key: key, children: []}
-                start[i] = []
-                delta[i] = []
-                let j = 0
-                for (let key2 in goto[key])
-                {
-                    keys[i].children[j] = key2
-                    start[i][j] = parseFloat(object[key][key2])
-                    start[i][j] = this._correctDOM(key2, start[i][j])
-                    start[i][j] = isNaN(this.start[i][j]) ? 0 : start[i][j]
-                    delta[i][j] = goto[key][key2] - start[i][j]
-                    j++
+            for (var i = 0, _i = keys.length; i < _i; i++) {
+                var key = keys[i];
+                if (isNaN(goto[key])) {
+                    for (var j = 0, _j = key.children.length; j < _j; j++) {
+                        delta[i][j] = -delta[i][j];
+                        start[i][j] = parseFloat(object[key.key][key.children[j]]);
+                        start[i][j] = isNaN(start[i][j]) ? 0 : start[i][j];
+                    }
+                } else {
+                    delta[i] = -delta[i];
+                    start[i] = parseFloat(object[key]);
+                    start[i] = isNaN(start[i]) ? 0 : start[i];
                 }
             }
-            else
-            {
-                start[i] = parseFloat(object[key])
-                start[i] = this._correctDOM(key, start[i])
-                start[i] = isNaN(this.start[i]) ? 0 : start[i]
-                delta[i] = goto[key] - start[i]
-                keys[i] = key
-            }
-            i++
         }
-        this.time = 0
-    }
-
-    reverse()
-    {
-        const object = this.object
-        const keys = this.keys
-        const goto = this.goto
-        const delta = this.delta
-        const start = this.start
-
-        for (let i = 0; i < keys.length; i++)
-        {
-            const key = keys[i]
-            if (isNaN(goto[key]))
-            {
-                for (let j = 0; j < key.children.length; j++)
-                {
-                    delta[i][j] = -delta[i][j]
-                    start[i][j] = parseFloat(object[key.key][key.children[j]])
-                    start[i][j] = isNaN(start[i][j]) ? 0 : start[i][j]
-                }
-            }
-            else
-            {
-                delta[i] = -delta[i]
-                start[i] = parseFloat(object[key])
-                start[i] = isNaN(start[i]) ? 0 : start[i]
-            }
-        }
-    }
-
-    continue()
-    {
-        const object = this.object
-        const keys = this.keys
-        const goto = this.goto
-        const start = this.start
-
-        for (let i = 0; i < keys.length; i++)
-        {
-            const key = keys[i]
-            if (isNaN(goto[key]))
-            {
-                for (let j = 0; j < key.children.length; j++)
-                {
-                    this.start[i][j] = parseFloat(object[key.key][key.children[j]])
-                    this.start[i][j] = isNaN(start[i][j]) ? 0 : start[i][j]
-                }
-            }
-            else
-            {
-                start[i] = parseFloat(object[key])
-                start[i] = isNaN(start[i]) ? 0 : start[i]
-            }
-        }
-    }
-
-    calculate(/*elapsed*/)
-    {
-        const object = this.object
-        const list = this.list
-        const keys = this.keys
-        const goto = this.goto
-        const time = this.time
-        const start = this.start
-        const delta = this.delta
-        const duration = this.duration
-        const ease = this.ease
-        for (let i = 0; i < this.keys.length; i++)
-        {
-            const key = keys[i]
-            if (isNaN(goto[key]))
-            {
-                const key1 = key.key
-                for (let j = 0; j < key.children.length; j++)
-                {
-                    const key2 = key.children[j]
-                    const others = object[key1][key2] = (time >= duration) ? start[i][j] + delta[i][j] : ease(time, start[i][j], delta[i][j], duration)
-                    if (list)
-                    {
-                        for (let k = 1; k < list.length; k++)
-                        {
-                            list[k][key1][key2] = others
+    }, {
+        key: 'calculate',
+        value: function calculate() /*elapsed*/{
+            var object = this.object;
+            var list = this.list;
+            var keys = this.keys;
+            var goto = this.goto;
+            var time = this.time;
+            var start = this.start;
+            var delta = this.delta;
+            var duration = this.duration;
+            var ease = this.options.ease;
+            for (var i = 0, _i = this.keys.length; i < _i; i++) {
+                var key = keys[i];
+                if (isNaN(goto[key])) {
+                    var key1 = key.key;
+                    for (var j = 0, _j = key.children.length; j < _j; j++) {
+                        var key2 = key.children[j];
+                        var others = object[key1][key2] = time >= duration ? start[i][j] + delta[i][j] : ease(time, start[i][j], delta[i][j], duration);
+                        if (list) {
+                            for (var k = 1, _k = list.length; k < _k; k++) {
+                                list[k][key1][key2] = others;
+                            }
+                        }
+                    }
+                } else {
+                    var _key = keys[i];
+                    var _others = object[_key] = time >= duration ? start[i] + delta[i] : ease(time, start[i], delta[i], duration);
+                    if (list) {
+                        for (var _j2 = 1, _j3 = this.list.length; _j2 < _j3; _j2++) {
+                            list[_j2][_key] = _others;
                         }
                     }
                 }
             }
-            else
-            {
-                const key = keys[i]
-                const others = object[key] = (time >= duration) ? start[i] + delta[i] : ease(time, start[i], delta[i], duration)
-                if (list)
-                {
-                    for (let j = 1; j < this.list.length; j++)
-                    {
-                        list[j][key] = others
-                    }
-                }
-            }
         }
-    }
-}
-},{"./wait":201}],201:[function(require,module,exports){
-const Easing = require('penner')
-const EventEmitter = require('eventemitter3')
+    }]);
 
-module.exports = class wait extends EventEmitter
-{
+    return to;
+}(wait);
+
+module.exports = to;
+
+},{"./wait":217}],217:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Easing = require('penner');
+var EventEmitter = require('eventemitter3');
+
+var wait = function (_EventEmitter) {
+    _inherits(wait, _EventEmitter);
+
     /**
      * @param {object|object[]} object or list of objects to animate
      * @param {object} [options]
@@ -20121,261 +20982,192 @@ module.exports = class wait extends EventEmitter
      * @param {boolean} [options.pause] start the animation paused
      * @param {(boolean|number)} [options.repeat] true: repeat animation forever n: repeat animation n times
      * @param {(boolean|number)} [options.reverse] true: reverse animation (if combined with repeat, then pulse) n: reverse animation n times
-     * @param {(boolean|number)} [options.continue] true: continue animation with new starting values n: continue animation n times
+     *
      * @param {number} [options.id] user-generated id (e.g., I use it to properly load animations when an object has multiple animations running)
-     * @param {boolean} [options.orphan] delete animation if .parent of object (or first object in list) is null
      * @param {Function} [options.load] loads an animation using an .save() object note the * parameters below cannot be loaded and must be re-set
      * @param {Function|string} [options.ease] function (or penner function name) from easing.js (see http://easings.net for examples)*
+     *
      * @emits {done} animation expires
-     * @emits {cancel} animation is cancelled
      * @emits {wait} each update during a wait
      * @emits {first} first update when animation starts
      * @emits {each} each update while animation is running
      * @emits {loop} when animation is repeated
      * @emits {reverse} when animation is reversed
      */
-    constructor(object, options)
-    {
-        super()
-        this.object = object
-        this.options = options || {}
-        this.type = 'Wait'
-        if (this.options.load)
-        {
-            this.load(this.options.load)
+    function wait(object, options) {
+        _classCallCheck(this, wait);
+
+        var _this = _possibleConstructorReturn(this, (wait.__proto__ || Object.getPrototypeOf(wait)).call(this));
+
+        _this.object = object;
+        _this.options = options || {};
+        _this.type = 'Wait';
+        if (_this.options.load) {
+            _this.load(_this.options.load);
+        } else {
+            _this.time = 0;
         }
-        else
-        {
-            this.time = 0
+        if (_this.options.ease && typeof _this.options.ease !== 'function') {
+            _this.options.easeName = _this.options.ease;
+            _this.options.ease = Easing[_this.options.ease];
         }
-        if (this.options.ease && typeof this.options.ease !== 'function')
-        {
-            this.options.ease = Easing[this.options.ease]
+        if (!_this.options.ease) {
+            _this.options.ease = Easing['linear'];
         }
-        if (!this.options.ease)
-        {
-            this.options.ease = Easing['linear']
-        }
+        return _this;
     }
 
-    save()
-    {
-        if (this.options.cancel)
-        {
-            return null
-        }
-        const save = {type: this.type, time: this.time, duration: this.duration}
-        const options = this.options
-        if (options.wait)
-        {
-            save.wait = options.wait
-        }
-        if (typeof options.id !== 'undefined')
-        {
-            save.id = options.id
-        }
-        if (options.pause)
-        {
-            save.pause = options.pause
-        }
-        if (options.repeat)
-        {
-            save.repeat = options.repeat
-        }
-        if (options.reverse)
-        {
-            save.reverse = options.reverse
-        }
-        if (options.continue)
-        {
-            save.continue = options.continue
-        }
-        if (options.cancel)
-        {
-            save.cancel = options.cancel
-        }
-        return save
-    }
-
-    load(load)
-    {
-        this.options.wait = load.wait
-        this.options.pause = load.pause
-        this.options.repeat = load.repeat
-        this.options.reverse = load.reverse
-        this.options.continue = load.continue
-        this.options.cancel = load.cancel
-        this.options.id = load.id
-        this.time = load.time
-        this.duration = load.duration
-    }
-
-    /**
-     * @type {boolean} pause this entry
-     */
-    set pause(value)
-    {
-        this.options.pause = value
-    }
-    get pause()
-    {
-        return this.options.pause
-    }
-
-    cancel()
-    {
-        this.options.cancel = true
-    }
-
-    done()
-    {
-    }
-
-    end(leftOver)
-    {
-        if (this.options.reverse)
-        {
-            this.reverse()
-            this.time = leftOver
-            if (!this.options.repeat)
-            {
-                if (this.options.reverse === true)
-                {
-                    this.options.reverse = false
-                }
-                else
-                {
-                    this.options.reverse--
-                }
+    _createClass(wait, [{
+        key: 'save',
+        value: function save() {
+            var save = { type: this.type, time: this.time, duration: this.duration, ease: this.options.easeName };
+            var options = this.options;
+            if (options.wait) {
+                save.wait = options.wait;
             }
-            else
-            {
-                if (this.options.repeat !== true)
-                {
-                    this.options.repeat--
+            if (typeof options.id !== 'undefined') {
+                save.id = options.id;
+            }
+            if (options.pause) {
+                save.pause = options.pause;
+            }
+            if (options.repeat) {
+                save.repeat = options.repeat;
+            }
+            if (options.reverse) {
+                save.reverse = options.reverse;
+            }
+            return save;
+        }
+    }, {
+        key: 'load',
+        value: function load(_load) {
+            this.options.wait = _load.wait;
+            this.options.pause = _load.pause;
+            this.options.repeat = _load.repeat;
+            this.options.reverse = _load.reverse;
+            this.options.id = _load.id;
+            this.options.ease = _load.ease;
+            if (this.options.ease && typeof this.options.ease !== 'function') {
+                this.options.easeName = this.options.ease;
+                this.options.ease = Easing[this.options.ease];
+            }
+            if (!this.options.ease) {
+                this.options.ease = Easing['linear'];
+            }
+            this.time = _load.time;
+            this.duration = _load.duration;
+        }
+
+        /**
+         * pause this entry
+         * @type {boolean}
+         */
+
+    }, {
+        key: 'end',
+        value: function end(leftOver) {
+            if (this.options.reverse) {
+                this.reverse();
+                this.time = leftOver;
+                if (!this.options.repeat) {
+                    if (this.options.reverse === true) {
+                        this.options.reverse = false;
+                    } else {
+                        this.options.reverse--;
+                    }
+                } else {
+                    if (this.options.repeat !== true) {
+                        this.options.repeat--;
+                    }
+                }
+                this.emit('loop', this.list || this.object);
+            } else if (this.options.repeat) {
+                this.time = leftOver;
+                if (this.options.repeat !== true) {
+                    this.options.repeat--;
+                }
+                this.emit('loop', this.list || this.object);
+            } else {
+                this.done();
+                this.emit('done', this.list || this.object, leftOver);
+                // this.list = this.object = null
+                return true;
+            }
+        }
+    }, {
+        key: 'update',
+        value: function update(elapsed) {
+            var options = this.options;
+            if (options.pause) {
+                return;
+            }
+            if (options.wait) {
+                options.wait -= elapsed;
+                if (options.wait <= 0) {
+                    elapsed = -options.wait;
+                    options.wait = false;
+                } else {
+                    this.emit('wait', elapsed, this.list || this.object);
+                    return;
                 }
             }
-            this.emit('loop', this.list || this.object)
-        }
-        else if (this.options.repeat)
-        {
-            this.time = leftOver
-            if (this.options.repeat !== true)
-            {
-                this.options.repeat--
+            if (!this.first) {
+                this.first = true;
+                this.emit('first', this.list || this.object);
             }
-            this.emit('loop', this.list || this.object)
-        }
-        else if (this.options.continue)
-        {
-            this.continue()
-            this.time = leftOver
-            if (this.options.continue !== true)
-            {
-                this.options.continue--
+            this.time += elapsed;
+            var leftOver = 0;
+            var duration = this.duration;
+            var time = this.time;
+            if (duration !== 0 && time > duration) {
+                leftOver = time - duration;
+                this.time = time = duration;
             }
-            this.emit('loop', this.list || this.object)
+            var force = this.calculate(elapsed);
+            this.emit('each', elapsed, this.list || this.object, this);
+            if (this.type === 'Wait' || duration !== 0 && time === duration) {
+                return this.end(leftOver);
+            }
+            return force || time === duration;
         }
-        else
-        {
-            this.done()
-            this.emit('done', this.list || this.object, leftOver)
-            this.list = this.object = null
-            return true
-        }
-    }
 
-    update(elapsed)
-    {
-        if (!this.options)
-        {
-            return
-        }
-        if (this.options.cancel)
-        {
-            this.emit('cancel', this.list || this.object)
-            return true
-        }
-        if (this.options.orphan)
-        {
-            if (this.list)
-            {
-                if (!this.list[0].parent)
-                {
-                    return true
-                }
-            }
-            else if (!this.object.parent)
-            {
-                return true
-            }
-        }
-        if (this.options.restart)
-        {
-            this.restart()
-            this.options.pause = false
-        }
-        if (this.options.original)
-        {
-            this.time = 0
-            this.options.pause = false
-        }
-        if (this.options.pause)
-        {
-            return
-        }
-        if (this.options.wait)
-        {
-            this.options.wait -= elapsed
-            if (this.options.wait <= 0)
-            {
-                elapsed = -this.options.wait
-                this.options.wait = false
-            }
-            else
-            {
-                this.emit('wait', elapsed, this.list || this.object)
-                return
-            }
-        }
-        if (!this.first)
-        {
-            this.first = true
-            this.emit('first', this.list || this.object)
-        }
-        this.time += elapsed
-        let leftOver = 0
-        if (this.duration !== 0 && this.time > this.duration)
-        {
-            leftOver = this.time - this.duration
-            this.time = this.duration
-        }
-        const allDone = this.calculate(elapsed)
-        this.emit('each', elapsed, this.list || this.object, this)
-        if (this.type === 'Wait' || (this.duration !== 0 && this.time === this.duration))
-        {
-            return this.end(leftOver)
-        }
-        if (allDone)
-        {
-            return true
-        }
-    }
+        // correct certain DOM values
 
-    // correct certain DOM values
-    _correctDOM(key, value)
-    {
-        switch (key)
-        {
-            case 'opacity':
-                return (isNaN(value)) ? 1 : value
+    }, {
+        key: '_correctDOM',
+        value: function _correctDOM(key, value) {
+            switch (key) {
+                case 'opacity':
+                    return isNaN(value) ? 1 : value;
+            }
+            return value;
         }
-        return value
-    }
+    }, {
+        key: 'reverse',
+        value: function reverse() {}
+    }, {
+        key: 'calculate',
+        value: function calculate() {}
+    }, {
+        key: 'done',
+        value: function done() {}
+    }, {
+        key: 'pause',
+        set: function set(value) {
+            this.options.pause = value;
+        },
+        get: function get() {
+            return this.options.pause;
+        }
+    }]);
 
-    calculate() {}
-}
-},{"eventemitter3":6,"penner":190}],202:[function(require,module,exports){
+    return wait;
+}(EventEmitter);
+
+module.exports = wait;
+
+},{"eventemitter3":21,"penner":206}],218:[function(require,module,exports){
 var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
 
 /**
@@ -20496,7 +21288,7 @@ Buffer.prototype.destroy = function(){
 
 module.exports = Buffer;
 
-},{}],203:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 
 var Texture = require('./GLTexture');
 
@@ -20724,7 +21516,7 @@ Framebuffer.createFloat32 = function(gl, width, height, data)
 
 module.exports = Framebuffer;
 
-},{"./GLTexture":205}],204:[function(require,module,exports){
+},{"./GLTexture":221}],220:[function(require,module,exports){
 
 var compileProgram = require('./shader/compileProgram'),
 	extractAttributes = require('./shader/extractAttributes'),
@@ -20820,7 +21612,7 @@ Shader.prototype.destroy = function()
 
 module.exports = Shader;
 
-},{"./shader/compileProgram":210,"./shader/extractAttributes":212,"./shader/extractUniforms":213,"./shader/generateUniformAccessObject":214,"./shader/setPrecision":218}],205:[function(require,module,exports){
+},{"./shader/compileProgram":226,"./shader/extractAttributes":228,"./shader/extractUniforms":229,"./shader/generateUniformAccessObject":230,"./shader/setPrecision":234}],221:[function(require,module,exports){
 
 /**
  * Helper class to create a WebGL Texture
@@ -21155,7 +21947,7 @@ Texture.fromData = function(gl, data, width, height)
 
 module.exports = Texture;
 
-},{}],206:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 
 // state object//
 var setVertexAttribArrays = require( './setVertexAttribArrays' );
@@ -21423,7 +22215,7 @@ VertexArrayObject.prototype.getSize = function()
     return attrib.buffer.data.length / (( attrib.stride/4 ) || attrib.attribute.size);
 };
 
-},{"./setVertexAttribArrays":209}],207:[function(require,module,exports){
+},{"./setVertexAttribArrays":225}],223:[function(require,module,exports){
 
 /**
  * Helper class to create a webGL Context
@@ -21451,7 +22243,7 @@ var createContext = function(canvas, options)
 
 module.exports = createContext;
 
-},{}],208:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 var gl = {
     createContext:          require('./createContext'),
     setVertexAttribArrays:  require('./setVertexAttribArrays'),
@@ -21478,7 +22270,7 @@ if (typeof window !== 'undefined')
     window.PIXI.glCore = gl;
 }
 
-},{"./GLBuffer":202,"./GLFramebuffer":203,"./GLShader":204,"./GLTexture":205,"./VertexArrayObject":206,"./createContext":207,"./setVertexAttribArrays":209,"./shader":215}],209:[function(require,module,exports){
+},{"./GLBuffer":218,"./GLFramebuffer":219,"./GLShader":220,"./GLTexture":221,"./VertexArrayObject":222,"./createContext":223,"./setVertexAttribArrays":225,"./shader":231}],225:[function(require,module,exports){
 // var GL_MAP = {};
 
 /**
@@ -21535,7 +22327,7 @@ var setVertexAttribArrays = function (gl, attribs, state)
 
 module.exports = setVertexAttribArrays;
 
-},{}],210:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 
 /**
  * @class
@@ -21617,7 +22409,7 @@ var compileShader = function (gl, type, src)
 
 module.exports = compileProgram;
 
-},{}],211:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI.glCore.shader
@@ -21697,7 +22489,7 @@ var booleanArray = function(size)
 
 module.exports = defaultValue;
 
-},{}],212:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 
 var mapType = require('./mapType');
 var mapSize = require('./mapSize');
@@ -21740,7 +22532,7 @@ var pointer = function(type, normalized, stride, start){
 
 module.exports = extractAttributes;
 
-},{"./mapSize":216,"./mapType":217}],213:[function(require,module,exports){
+},{"./mapSize":232,"./mapType":233}],229:[function(require,module,exports){
 var mapType = require('./mapType');
 var defaultValue = require('./defaultValue');
 
@@ -21777,7 +22569,7 @@ var extractUniforms = function(gl, program)
 
 module.exports = extractUniforms;
 
-},{"./defaultValue":211,"./mapType":217}],214:[function(require,module,exports){
+},{"./defaultValue":227,"./mapType":233}],230:[function(require,module,exports){
 /**
  * Extracts the attributes
  * @class
@@ -21900,7 +22692,7 @@ function getUniformGroup(nameTokens, uniform)
 
 module.exports = generateUniformAccessObject;
 
-},{}],215:[function(require,module,exports){
+},{}],231:[function(require,module,exports){
 module.exports = {
     compileProgram: require('./compileProgram'),
     defaultValue: require('./defaultValue'),
@@ -21911,7 +22703,7 @@ module.exports = {
     mapSize: require('./mapSize'),
     mapType: require('./mapType')
 };
-},{"./compileProgram":210,"./defaultValue":211,"./extractAttributes":212,"./extractUniforms":213,"./generateUniformAccessObject":214,"./mapSize":216,"./mapType":217,"./setPrecision":218}],216:[function(require,module,exports){
+},{"./compileProgram":226,"./defaultValue":227,"./extractAttributes":228,"./extractUniforms":229,"./generateUniformAccessObject":230,"./mapSize":232,"./mapType":233,"./setPrecision":234}],232:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI.glCore.shader
@@ -21949,7 +22741,7 @@ var GLSL_TO_SIZE = {
 
 module.exports = mapSize;
 
-},{}],217:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 
 
 var mapType = function(gl, type) 
@@ -21997,7 +22789,7 @@ var GL_TO_GLSL_TYPES = {
 
 module.exports = mapType;
 
-},{}],218:[function(require,module,exports){
+},{}],234:[function(require,module,exports){
 /**
  * Sets the float precision on the shader. If the precision is already present this function will do nothing
  * @param {string} src       the shader source
@@ -22017,7 +22809,7 @@ var setPrecision = function(src, precision)
 
 module.exports = setPrecision;
 
-},{}],219:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22511,7 +23303,7 @@ exports.default = AccessibilityManager;
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
-},{"../core":244,"./accessibleTarget":220,"ismobilejs":186}],220:[function(require,module,exports){
+},{"../core":260,"./accessibleTarget":236,"ismobilejs":201}],236:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -22569,7 +23361,7 @@ exports.default = {
   _accessibleDiv: false
 };
 
-},{}],221:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22594,7 +23386,7 @@ Object.defineProperty(exports, 'AccessibilityManager', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./AccessibilityManager":219,"./accessibleTarget":220}],222:[function(require,module,exports){
+},{"./AccessibilityManager":235,"./accessibleTarget":236}],238:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22762,11 +23554,12 @@ var Application = function () {
      * @param {Boolean} [removeView=false] Automatically remove canvas from DOM.
      */
     Application.prototype.destroy = function destroy(removeView) {
-        var oldTicker = this._ticker;
+        if (this._ticker) {
+            var oldTicker = this._ticker;
 
-        this.ticker = null;
-
-        oldTicker.destroy();
+            this.ticker = null;
+            oldTicker.destroy();
+        }
 
         this.stage.destroy();
         this.stage = null;
@@ -22817,7 +23610,7 @@ var Application = function () {
 
 exports.default = Application;
 
-},{"./autoDetectRenderer":224,"./const":225,"./display/Container":227,"./settings":280,"./ticker":300}],223:[function(require,module,exports){
+},{"./autoDetectRenderer":240,"./const":241,"./display/Container":243,"./settings":296,"./ticker":316}],239:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22845,7 +23638,7 @@ function checkPrecision(src, def) {
 
             return copy;
         }
-    } else if (src.substring(0, 9) !== 'precision') {
+    } else if (src.trim().substring(0, 9) !== 'precision') {
         return 'precision ' + def + ' float;\n' + src;
     }
 
@@ -22869,11 +23662,14 @@ var Shader = function (_GLShader) {
      * @param {WebGLRenderingContext} gl - The current WebGL rendering context
      * @param {string|string[]} vertexSrc - The vertex shader source as an array of strings.
      * @param {string|string[]} fragmentSrc - The fragment shader source as an array of strings.
+     * @param {object} [attributeLocations] - A key value pair showing which location eact attribute should sit.
+                       e.g. {position:0, uvs:1}.
+     * @param {string} [precision] - The float precision of the shader. Options are 'lowp', 'mediump' or 'highp'.
      */
-    function Shader(gl, vertexSrc, fragmentSrc) {
+    function Shader(gl, vertexSrc, fragmentSrc, attributeLocations, precision) {
         _classCallCheck(this, Shader);
 
-        return _possibleConstructorReturn(this, _GLShader.call(this, gl, checkPrecision(vertexSrc, _settings2.default.PRECISION_VERTEX), checkPrecision(fragmentSrc, _settings2.default.PRECISION_FRAGMENT)));
+        return _possibleConstructorReturn(this, _GLShader.call(this, gl, checkPrecision(vertexSrc, precision || _settings2.default.PRECISION_VERTEX), checkPrecision(fragmentSrc, precision || _settings2.default.PRECISION_FRAGMENT), undefined, attributeLocations));
     }
 
     return Shader;
@@ -22881,7 +23677,7 @@ var Shader = function (_GLShader) {
 
 exports.default = Shader;
 
-},{"./settings":280,"pixi-gl-core":208}],224:[function(require,module,exports){
+},{"./settings":296,"pixi-gl-core":224}],240:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22950,7 +23746,7 @@ function autoDetectRenderer(options, arg1, arg2, arg3) {
     return new _CanvasRenderer2.default(options, arg1, arg2);
 }
 
-},{"./renderers/canvas/CanvasRenderer":256,"./renderers/webgl/WebGLRenderer":263,"./utils":304}],225:[function(require,module,exports){
+},{"./renderers/canvas/CanvasRenderer":272,"./renderers/webgl/WebGLRenderer":279,"./utils":320}],241:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -22963,7 +23759,7 @@ exports.__esModule = true;
  * @name VERSION
  * @type {string}
  */
-var VERSION = exports.VERSION = '4.6.2';
+var VERSION = exports.VERSION = '4.7.3';
 
 /**
  * Two Pi.
@@ -23114,7 +23910,7 @@ var SCALE_MODES = exports.SCALE_MODES = {
 /**
  * The wrap modes that are supported by pixi.
  *
- * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wraping mode of future operations.
+ * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wrapping mode of future operations.
  * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
  * If the texture is non power of two then clamp will be used regardless as webGL can
  * only use REPEAT if the texture is po2.
@@ -23293,7 +24089,7 @@ var UPDATE_PRIORITY = exports.UPDATE_PRIORITY = {
   UTILITY: -50
 };
 
-},{}],226:[function(require,module,exports){
+},{}],242:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23636,7 +24432,7 @@ var Bounds = function () {
 
 exports.default = Bounds;
 
-},{"../math":249}],227:[function(require,module,exports){
+},{"../math":265}],243:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23828,7 +24624,7 @@ var Container = function (_DisplayObject) {
 
     Container.prototype.setChildIndex = function setChildIndex(child, index) {
         if (index < 0 || index >= this.children.length) {
-            throw new Error('The supplied index is out of bounds');
+            throw new Error('The index ' + index + ' supplied is out of bounds ' + this.children.length);
         }
 
         var currentIndex = this.getChildIndex(child);
@@ -24254,7 +25050,7 @@ var Container = function (_DisplayObject) {
 exports.default = Container;
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-},{"../utils":304,"./DisplayObject":228}],228:[function(require,module,exports){
+},{"../utils":320,"./DisplayObject":244}],244:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24909,12 +25705,14 @@ var DisplayObject = function (_EventEmitter) {
         {
             if (this._mask) {
                 this._mask.renderable = true;
+                this._mask.isMask = false;
             }
 
             this._mask = value;
 
             if (this._mask) {
                 this._mask.renderable = false;
+                this._mask.isMask = true;
             }
         }
 
@@ -24946,7 +25744,7 @@ var DisplayObject = function (_EventEmitter) {
 exports.default = DisplayObject;
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
-},{"../const":225,"../math":249,"../settings":280,"./Bounds":226,"./Transform":229,"./TransformStatic":231,"eventemitter3":368}],229:[function(require,module,exports){
+},{"../const":241,"../math":265,"../settings":296,"./Bounds":242,"./Transform":245,"./TransformStatic":247,"eventemitter3":385}],245:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25127,7 +25925,7 @@ var Transform = function (_TransformBase) {
 
 exports.default = Transform;
 
-},{"../math":249,"./TransformBase":230}],230:[function(require,module,exports){
+},{"../math":265,"./TransformBase":246}],246:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25214,7 +26012,7 @@ TransformBase.prototype.updateWorldTransform = TransformBase.prototype.updateTra
 
 TransformBase.IDENTITY = new TransformBase();
 
-},{"../math":249}],231:[function(require,module,exports){
+},{"../math":265}],247:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25424,7 +26222,7 @@ var TransformStatic = function (_TransformBase) {
 
 exports.default = TransformStatic;
 
-},{"../math":249,"./TransformBase":230}],232:[function(require,module,exports){
+},{"../math":265,"./TransformBase":246}],248:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25940,13 +26738,13 @@ var Graphics = function (_Container) {
         }
 
         if (!anticlockwise && endAngle <= startAngle) {
-            endAngle += Math.PI * 2;
+            endAngle += _const.PI_2;
         } else if (anticlockwise && startAngle <= endAngle) {
-            startAngle += Math.PI * 2;
+            startAngle += _const.PI_2;
         }
 
         var sweep = endAngle - startAngle;
-        var segs = Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
+        var segs = Math.ceil(Math.abs(sweep) / _const.PI_2) * 40;
 
         if (sweep === 0) {
             return this;
@@ -26140,6 +26938,39 @@ var Graphics = function (_Container) {
         this.drawShape(shape);
 
         return this;
+    };
+
+    /**
+     * Draw a star shape with an abitrary number of points.
+     *
+     * @param {number} x - Center X position of the star
+     * @param {number} y - Center Y position of the star
+     * @param {number} points - The number of points of the star, must be > 1
+     * @param {number} radius - The outer radius of the star
+     * @param {number} [innerRadius] - The inner radius between points, default half `radius`
+     * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
+     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     */
+
+
+    Graphics.prototype.drawStar = function drawStar(x, y, points, radius, innerRadius) {
+        var rotation = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+
+        innerRadius = innerRadius || radius / 2;
+
+        var startAngle = -1 * Math.PI / 2 + rotation;
+        var len = points * 2;
+        var delta = _const.PI_2 / len;
+        var polygon = [];
+
+        for (var i = 0; i < len; i++) {
+            var r = i % 2 ? innerRadius : radius;
+            var angle = i * delta + startAngle;
+
+            polygon.push(x + r * Math.cos(angle), y + r * Math.sin(angle));
+        }
+
+        return this.drawPolygon(polygon);
     };
 
     /**
@@ -26596,7 +27427,7 @@ exports.default = Graphics;
 
 Graphics._SPRITE_TEXTURE = null;
 
-},{"../const":225,"../display/Bounds":226,"../display/Container":227,"../math":249,"../renderers/canvas/CanvasRenderer":256,"../sprites/Sprite":281,"../textures/RenderTexture":292,"../textures/Texture":294,"../utils":304,"./GraphicsData":233,"./utils/bezierCurveTo":235}],233:[function(require,module,exports){
+},{"../const":241,"../display/Bounds":242,"../display/Container":243,"../math":265,"../renderers/canvas/CanvasRenderer":272,"../sprites/Sprite":297,"../textures/RenderTexture":308,"../textures/Texture":310,"../utils":320,"./GraphicsData":249,"./utils/bezierCurveTo":251}],249:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -26625,58 +27456,72 @@ var GraphicsData = function () {
     _classCallCheck(this, GraphicsData);
 
     /**
-     * @member {number} the width of the line to draw
+     * the width of the line to draw
+     * @member {number}
      */
     this.lineWidth = lineWidth;
+
     /**
-     * @member {boolean} if true the liens will be draw using LINES instead of TRIANGLE_STRIP
+     * if true the liens will be draw using LINES instead of TRIANGLE_STRIP
+     * @member {boolean}
      */
     this.nativeLines = nativeLines;
 
     /**
-     * @member {number} the color of the line to draw
+     * the color of the line to draw
+     * @member {number}
      */
     this.lineColor = lineColor;
 
     /**
-     * @member {number} the alpha of the line to draw
+     * the alpha of the line to draw
+     * @member {number}
      */
     this.lineAlpha = lineAlpha;
 
     /**
-     * @member {number} cached tint of the line to draw
+     * cached tint of the line to draw
+     * @member {number}
+     * @private
      */
     this._lineTint = lineColor;
 
     /**
-     * @member {number} the color of the fill
+     * the color of the fill
+     * @member {number}
      */
     this.fillColor = fillColor;
 
     /**
-     * @member {number} the alpha of the fill
+     * the alpha of the fill
+     * @member {number}
      */
     this.fillAlpha = fillAlpha;
 
     /**
-     * @member {number} cached tint of the fill
+     * cached tint of the fill
+     * @member {number}
+     * @private
      */
     this._fillTint = fillColor;
 
     /**
-     * @member {boolean} whether or not the shape is filled with a colour
+     * whether or not the shape is filled with a colour
+     * @member {boolean}
      */
     this.fill = fill;
 
     this.holes = [];
 
     /**
-     * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} The shape object to draw.
+     * The shape object to draw.
+     * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle}
      */
     this.shape = shape;
 
     /**
-     * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
+     * The type of the shape, see the Const.Shapes file for all the existing types,
+     * @member {number}
      */
     this.type = shape.type;
   }
@@ -26718,7 +27563,7 @@ var GraphicsData = function () {
 
 exports.default = GraphicsData;
 
-},{}],234:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -26987,7 +27832,7 @@ exports.default = CanvasGraphicsRenderer;
 
 _CanvasRenderer2.default.registerPlugin('graphics', CanvasGraphicsRenderer);
 
-},{"../../const":225,"../../renderers/canvas/CanvasRenderer":256}],235:[function(require,module,exports){
+},{"../../const":241,"../../renderers/canvas/CanvasRenderer":272}],251:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -27037,7 +27882,7 @@ function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY) {
     return path;
 }
 
-},{}],236:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27302,7 +28147,7 @@ exports.default = GraphicsRenderer;
 
 _WebGLRenderer2.default.registerPlugin('graphics', GraphicsRenderer);
 
-},{"../../const":225,"../../renderers/webgl/WebGLRenderer":263,"../../renderers/webgl/utils/ObjectRenderer":273,"../../utils":304,"./WebGLGraphicsData":237,"./shaders/PrimitiveShader":238,"./utils/buildCircle":239,"./utils/buildPoly":241,"./utils/buildRectangle":242,"./utils/buildRoundedRectangle":243}],237:[function(require,module,exports){
+},{"../../const":241,"../../renderers/webgl/WebGLRenderer":279,"../../renderers/webgl/utils/ObjectRenderer":289,"../../utils":320,"./WebGLGraphicsData":253,"./shaders/PrimitiveShader":254,"./utils/buildCircle":255,"./utils/buildPoly":257,"./utils/buildRectangle":258,"./utils/buildRoundedRectangle":259}],253:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27445,7 +28290,7 @@ var WebGLGraphicsData = function () {
 
 exports.default = WebGLGraphicsData;
 
-},{"pixi-gl-core":208}],238:[function(require,module,exports){
+},{"pixi-gl-core":224}],254:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27490,7 +28335,7 @@ var PrimitiveShader = function (_Shader) {
 
 exports.default = PrimitiveShader;
 
-},{"../../../Shader":223}],239:[function(require,module,exports){
+},{"../../../Shader":239}],255:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27583,7 +28428,7 @@ function buildCircle(graphicsData, webGLData, webGLDataNativeLines) {
     }
 }
 
-},{"../../../const":225,"../../../utils":304,"./buildLine":240}],240:[function(require,module,exports){
+},{"../../../const":241,"../../../utils":320,"./buildLine":256}],256:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27853,7 +28698,7 @@ function buildNativeLine(graphicsData, webGLData) {
     }
 }
 
-},{"../../../math":249,"../../../utils":304}],241:[function(require,module,exports){
+},{"../../../math":265,"../../../utils":320}],257:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27939,7 +28784,7 @@ function buildPoly(graphicsData, webGLData, webGLDataNativeLines) {
     }
 }
 
-},{"../../../utils":304,"./buildLine":240,"earcut":5}],242:[function(require,module,exports){
+},{"../../../utils":320,"./buildLine":256,"earcut":20}],258:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28015,7 +28860,7 @@ function buildRectangle(graphicsData, webGLData, webGLDataNativeLines) {
     }
 }
 
-},{"../../../utils":304,"./buildLine":240}],243:[function(require,module,exports){
+},{"../../../utils":320,"./buildLine":256}],259:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28171,7 +29016,7 @@ function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
     return points;
 }
 
-},{"../../../utils":304,"./buildLine":240,"earcut":5}],244:[function(require,module,exports){
+},{"../../../utils":320,"./buildLine":256,"earcut":20}],260:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28557,7 +29402,7 @@ exports.WebGLRenderer = _WebGLRenderer2.default; /**
                                                   * @namespace PIXI
                                                   */
 
-},{"./Application":222,"./Shader":223,"./autoDetectRenderer":224,"./const":225,"./display/Bounds":226,"./display/Container":227,"./display/DisplayObject":228,"./display/Transform":229,"./display/TransformBase":230,"./display/TransformStatic":231,"./graphics/Graphics":232,"./graphics/GraphicsData":233,"./graphics/canvas/CanvasGraphicsRenderer":234,"./graphics/webgl/GraphicsRenderer":236,"./math":249,"./renderers/canvas/CanvasRenderer":256,"./renderers/canvas/utils/CanvasRenderTarget":258,"./renderers/webgl/WebGLRenderer":263,"./renderers/webgl/filters/Filter":265,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":268,"./renderers/webgl/managers/WebGLManager":272,"./renderers/webgl/utils/ObjectRenderer":273,"./renderers/webgl/utils/Quad":274,"./renderers/webgl/utils/RenderTarget":275,"./settings":280,"./sprites/Sprite":281,"./sprites/canvas/CanvasSpriteRenderer":282,"./sprites/canvas/CanvasTinter":283,"./sprites/webgl/SpriteRenderer":285,"./text/Text":287,"./text/TextMetrics":288,"./text/TextStyle":289,"./textures/BaseRenderTexture":290,"./textures/BaseTexture":291,"./textures/RenderTexture":292,"./textures/Spritesheet":293,"./textures/Texture":294,"./textures/TextureMatrix":295,"./textures/TextureUvs":296,"./textures/VideoBaseTexture":297,"./ticker":300,"./utils":304,"pixi-gl-core":208}],245:[function(require,module,exports){
+},{"./Application":238,"./Shader":239,"./autoDetectRenderer":240,"./const":241,"./display/Bounds":242,"./display/Container":243,"./display/DisplayObject":244,"./display/Transform":245,"./display/TransformBase":246,"./display/TransformStatic":247,"./graphics/Graphics":248,"./graphics/GraphicsData":249,"./graphics/canvas/CanvasGraphicsRenderer":250,"./graphics/webgl/GraphicsRenderer":252,"./math":265,"./renderers/canvas/CanvasRenderer":272,"./renderers/canvas/utils/CanvasRenderTarget":274,"./renderers/webgl/WebGLRenderer":279,"./renderers/webgl/filters/Filter":281,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":284,"./renderers/webgl/managers/WebGLManager":288,"./renderers/webgl/utils/ObjectRenderer":289,"./renderers/webgl/utils/Quad":290,"./renderers/webgl/utils/RenderTarget":291,"./settings":296,"./sprites/Sprite":297,"./sprites/canvas/CanvasSpriteRenderer":298,"./sprites/canvas/CanvasTinter":299,"./sprites/webgl/SpriteRenderer":301,"./text/Text":303,"./text/TextMetrics":304,"./text/TextStyle":305,"./textures/BaseRenderTexture":306,"./textures/BaseTexture":307,"./textures/RenderTexture":308,"./textures/Spritesheet":309,"./textures/Texture":310,"./textures/TextureMatrix":311,"./textures/TextureUvs":312,"./textures/VideoBaseTexture":313,"./ticker":316,"./utils":320,"pixi-gl-core":224}],261:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28750,7 +29595,7 @@ var GroupD8 = {
 
 exports.default = GroupD8;
 
-},{"./Matrix":246}],246:[function(require,module,exports){
+},{"./Matrix":262}],262:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28761,6 +29606,8 @@ var _Point = require('./Point');
 
 var _Point2 = _interopRequireDefault(_Point);
 
+var _const = require('../const');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28768,8 +29615,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  * The PixiJS Matrix class as an object, which makes it a lot faster,
  * here is a representation of it :
- * | a | b | tx|
- * | c | d | ty|
+ * | a | c | tx|
+ * | b | d | ty|
  * | 0 | 0 | 1 |
  *
  * @class
@@ -28778,8 +29625,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Matrix = function () {
     /**
      * @param {number} [a=1] - x scale
-     * @param {number} [b=0] - y skew
-     * @param {number} [c=0] - x skew
+     * @param {number} [b=0] - x skew
+     * @param {number} [c=0] - y skew
      * @param {number} [d=1] - y scale
      * @param {number} [tx=0] - x translation
      * @param {number} [ty=0] - y translation
@@ -29072,25 +29919,13 @@ var Matrix = function () {
 
 
     Matrix.prototype.setTransform = function setTransform(x, y, pivotX, pivotY, scaleX, scaleY, rotation, skewX, skewY) {
-        var sr = Math.sin(rotation);
-        var cr = Math.cos(rotation);
-        var cy = Math.cos(skewY);
-        var sy = Math.sin(skewY);
-        var nsx = -Math.sin(skewX);
-        var cx = Math.cos(skewX);
+        this.a = Math.cos(rotation + skewY) * scaleX;
+        this.b = Math.sin(rotation + skewY) * scaleX;
+        this.c = -Math.sin(rotation - skewX) * scaleY;
+        this.d = Math.cos(rotation - skewX) * scaleY;
 
-        var a = cr * scaleX;
-        var b = sr * scaleX;
-        var c = -sr * scaleY;
-        var d = cr * scaleY;
-
-        this.a = cy * a + sy * c;
-        this.b = cy * b + sy * d;
-        this.c = nsx * a + cx * c;
-        this.d = nsx * b + cx * d;
-
-        this.tx = x + (pivotX * a + pivotY * c);
-        this.ty = y + (pivotX * b + pivotY * d);
+        this.tx = x - (pivotX * this.a + pivotY * this.c);
+        this.ty = y - (pivotX * this.b + pivotY * this.d);
 
         return this;
     };
@@ -29142,7 +29977,7 @@ var Matrix = function () {
 
         var delta = Math.abs(skewX + skewY);
 
-        if (delta < 0.00001) {
+        if (delta < 0.00001 || Math.abs(_const.PI_2 - delta) < 0.00001) {
             transform.rotation = skewY;
 
             if (a < 0 && d >= 0) {
@@ -29151,6 +29986,7 @@ var Matrix = function () {
 
             transform.skew.x = transform.skew.y = 0;
         } else {
+            transform.rotation = 0;
             transform.skew.x = skewX;
             transform.skew.y = skewY;
         }
@@ -29281,7 +30117,7 @@ var Matrix = function () {
 
 exports.default = Matrix;
 
-},{"./Point":248}],247:[function(require,module,exports){
+},{"../const":241,"./Point":264}],263:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -29398,7 +30234,7 @@ var ObservablePoint = function () {
 
 exports.default = ObservablePoint;
 
-},{}],248:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -29489,7 +30325,7 @@ var Point = function () {
 
 exports.default = Point;
 
-},{}],249:[function(require,module,exports){
+},{}],265:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29577,7 +30413,7 @@ Object.defineProperty(exports, 'RoundedRectangle', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./GroupD8":245,"./Matrix":246,"./ObservablePoint":247,"./Point":248,"./shapes/Circle":250,"./shapes/Ellipse":251,"./shapes/Polygon":252,"./shapes/Rectangle":253,"./shapes/RoundedRectangle":254}],250:[function(require,module,exports){
+},{"./GroupD8":261,"./Matrix":262,"./ObservablePoint":263,"./Point":264,"./shapes/Circle":266,"./shapes/Ellipse":267,"./shapes/Polygon":268,"./shapes/Rectangle":269,"./shapes/RoundedRectangle":270}],266:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29691,7 +30527,7 @@ var Circle = function () {
 
 exports.default = Circle;
 
-},{"../../const":225,"./Rectangle":253}],251:[function(require,module,exports){
+},{"../../const":241,"./Rectangle":269}],267:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29813,7 +30649,7 @@ var Ellipse = function () {
 
 exports.default = Ellipse;
 
-},{"../../const":225,"./Rectangle":253}],252:[function(require,module,exports){
+},{"../../const":241,"./Rectangle":269}],268:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29944,7 +30780,7 @@ var Polygon = function () {
 
 exports.default = Polygon;
 
-},{"../../const":225,"../Point":248}],253:[function(require,module,exports){
+},{"../../const":241,"../Point":264}],269:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30072,7 +30908,7 @@ var Rectangle = function () {
      * Pads the rectangle making it grow in all directions.
      *
      * @param {number} paddingX - The horizontal padding amount.
-     * @param {number} paddingY - The vertical padding amount.
+     * @param {number} [paddingY] - The vertical padding amount.
      */
 
 
@@ -30207,7 +31043,7 @@ var Rectangle = function () {
 
 exports.default = Rectangle;
 
-},{"../../const":225}],254:[function(require,module,exports){
+},{"../../const":241}],270:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30340,7 +31176,7 @@ var RoundedRectangle = function () {
 
 exports.default = RoundedRectangle;
 
-},{"../../const":225}],255:[function(require,module,exports){
+},{"../../const":241}],271:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30705,7 +31541,7 @@ var SystemRenderer = function (_EventEmitter) {
 
 exports.default = SystemRenderer;
 
-},{"../const":225,"../display/Container":227,"../math":249,"../settings":280,"../textures/RenderTexture":292,"../utils":304,"eventemitter3":368}],256:[function(require,module,exports){
+},{"../const":241,"../display/Container":243,"../math":265,"../settings":296,"../textures/RenderTexture":308,"../utils":320,"eventemitter3":385}],272:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31070,7 +31906,7 @@ var CanvasRenderer = function (_SystemRenderer) {
 exports.default = CanvasRenderer;
 _utils.pluginTarget.mixin(CanvasRenderer);
 
-},{"../../const":225,"../../settings":280,"../../utils":304,"../SystemRenderer":255,"./utils/CanvasMaskManager":257,"./utils/CanvasRenderTarget":258,"./utils/mapCanvasBlendModesToPixi":260}],257:[function(require,module,exports){
+},{"../../const":241,"../../settings":296,"../../utils":320,"../SystemRenderer":271,"./utils/CanvasMaskManager":273,"./utils/CanvasRenderTarget":274,"./utils/mapCanvasBlendModesToPixi":276}],273:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31239,7 +32075,7 @@ var CanvasMaskManager = function () {
 
 exports.default = CanvasMaskManager;
 
-},{"../../../const":225}],258:[function(require,module,exports){
+},{"../../../const":241}],274:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31363,7 +32199,7 @@ var CanvasRenderTarget = function () {
 
 exports.default = CanvasRenderTarget;
 
-},{"../../../settings":280}],259:[function(require,module,exports){
+},{"../../../settings":296}],275:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31424,7 +32260,7 @@ function canUseNewCanvasBlendModes() {
     return data[0] === 255 && data[1] === 0 && data[2] === 0;
 }
 
-},{}],260:[function(require,module,exports){
+},{}],276:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31496,7 +32332,7 @@ function mapCanvasBlendModesToPixi() {
     return array;
 }
 
-},{"../../../const":225,"./canUseNewCanvasBlendModes":259}],261:[function(require,module,exports){
+},{"../../../const":241,"./canUseNewCanvasBlendModes":275}],277:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31616,7 +32452,7 @@ var TextureGarbageCollector = function () {
 
 exports.default = TextureGarbageCollector;
 
-},{"../../const":225,"../../settings":280}],262:[function(require,module,exports){
+},{"../../const":241,"../../settings":296}],278:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31872,7 +32708,7 @@ var TextureManager = function () {
 
 exports.default = TextureManager;
 
-},{"../../const":225,"../../utils":304,"./utils/RenderTarget":275,"pixi-gl-core":208}],263:[function(require,module,exports){
+},{"../../const":241,"../../utils":320,"./utils/RenderTarget":291,"pixi-gl-core":224}],279:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32689,7 +33525,7 @@ var WebGLRenderer = function (_SystemRenderer) {
 exports.default = WebGLRenderer;
 _utils.pluginTarget.mixin(WebGLRenderer);
 
-},{"../../const":225,"../../textures/BaseTexture":291,"../../utils":304,"../SystemRenderer":255,"./TextureGarbageCollector":261,"./TextureManager":262,"./WebGLState":264,"./managers/FilterManager":269,"./managers/MaskManager":270,"./managers/StencilManager":271,"./utils/ObjectRenderer":273,"./utils/RenderTarget":275,"./utils/mapWebGLDrawModesToPixi":278,"./utils/validateContext":279,"pixi-gl-core":208}],264:[function(require,module,exports){
+},{"../../const":241,"../../textures/BaseTexture":307,"../../utils":320,"../SystemRenderer":271,"./TextureGarbageCollector":277,"./TextureManager":278,"./WebGLState":280,"./managers/FilterManager":285,"./managers/MaskManager":286,"./managers/StencilManager":287,"./utils/ObjectRenderer":289,"./utils/RenderTarget":291,"./utils/mapWebGLDrawModesToPixi":294,"./utils/validateContext":295,"pixi-gl-core":224}],280:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32969,7 +33805,7 @@ var WebGLState = function () {
 
 exports.default = WebGLState;
 
-},{"./utils/mapWebGLBlendModesToPixi":277}],265:[function(require,module,exports){
+},{"./utils/mapWebGLBlendModesToPixi":293}],281:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33070,7 +33906,7 @@ var Filter = function () {
      *
      * @member {number}
      */
-    this.resolution = _settings2.default.RESOLUTION;
+    this.resolution = _settings2.default.FILTER_RESOLUTION;
 
     /**
      * If enabled is true the filter is applied, if false it will not.
@@ -33165,7 +34001,7 @@ var Filter = function () {
 
 exports.default = Filter;
 
-},{"../../../const":225,"../../../settings":280,"../../../utils":304,"./extractUniformsFromSrc":266}],266:[function(require,module,exports){
+},{"../../../const":241,"../../../settings":296,"../../../utils":320,"./extractUniformsFromSrc":282}],282:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33227,7 +34063,7 @@ function extractUniformsFromString(string) {
     return uniforms;
 }
 
-},{"pixi-gl-core":208}],267:[function(require,module,exports){
+},{"pixi-gl-core":224}],283:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33242,6 +34078,7 @@ var _math = require('../../../math');
  * @param filterArea {Rectangle} The filter area
  * @param sprite {Sprite} the target sprite
  * @param outputMatrix {Matrix} @alvin
+ * @private
  */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 // this returns a matrix that will normalise map filter cords in the filter to screen space
@@ -33286,7 +34123,7 @@ function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, sprite) {
     return mappedMatrix;
 }
 
-},{"../../../math":249}],268:[function(require,module,exports){
+},{"../../../math":265}],284:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33374,7 +34211,7 @@ var SpriteMaskFilter = function (_Filter) {
 
 exports.default = SpriteMaskFilter;
 
-},{"../../../../math":249,"../../../../textures/TextureMatrix":295,"../Filter":265,"path":401}],269:[function(require,module,exports){
+},{"../../../../math":265,"../../../../textures/TextureMatrix":311,"../Filter":281,"path":205}],285:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33434,12 +34271,13 @@ function FilterState() {
     this.resolution = 1;
 };
 
+var screenKey = 'screen';
+
 /**
  * @class
  * @memberof PIXI
  * @extends PIXI.WebGLManager
  */
-
 
 var FilterManager = function (_WebGLManager) {
     _inherits(FilterManager, _WebGLManager);
@@ -33463,6 +34301,11 @@ var FilterManager = function (_WebGLManager) {
         _this.filterData = null;
 
         _this.managedFilters = [];
+
+        _this.renderer.on('prerender', _this.onPrerender, _this);
+
+        _this._screenWidth = renderer.view.width;
+        _this._screenHeight = renderer.view.height;
         return _this;
     }
 
@@ -33498,15 +34341,18 @@ var FilterManager = function (_WebGLManager) {
 
         // get the current filter state..
         var currentState = filterData.stack[++filterData.index];
+        var renderTargetFrame = filterData.stack[0].destinationFrame;
 
         if (!currentState) {
             currentState = filterData.stack[filterData.index] = new FilterState();
         }
 
+        var fullScreen = target.filterArea && target.filterArea.x === 0 && target.filterArea.y === 0 && target.filterArea.width === renderer.screen.width && target.filterArea.height === renderer.screen.height;
+
         // for now we go off the filter of the first resolution..
         var resolution = filters[0].resolution;
         var padding = filters[0].padding | 0;
-        var targetBounds = target.filterArea || target.getBounds(true);
+        var targetBounds = fullScreen ? renderer.screen : target.filterArea || target.getBounds(true);
         var sourceFrame = currentState.sourceFrame;
         var destinationFrame = currentState.destinationFrame;
 
@@ -33515,16 +34361,18 @@ var FilterManager = function (_WebGLManager) {
         sourceFrame.width = (targetBounds.width * resolution | 0) / resolution;
         sourceFrame.height = (targetBounds.height * resolution | 0) / resolution;
 
-        if (filterData.stack[0].renderTarget.transform) {//
+        if (!fullScreen) {
+            if (filterData.stack[0].renderTarget.transform) {//
 
-            // TODO we should fit the rect around the transform..
-        } else if (filters[0].autoFit) {
-            sourceFrame.fit(filterData.stack[0].destinationFrame);
+                // TODO we should fit the rect around the transform..
+            } else if (filters[0].autoFit) {
+                sourceFrame.fit(renderTargetFrame);
+            }
+
+            // lets apply the padding After we fit the element to the screen.
+            // this should stop the strange side effects that can occur when cropping to the edges
+            sourceFrame.pad(padding);
         }
-
-        // lets apply the padding After we fit the element to the screen.
-        // this should stop the strange side effects that can occur when cropping to the edges
-        sourceFrame.pad(padding);
 
         destinationFrame.width = sourceFrame.width;
         destinationFrame.height = sourceFrame.height;
@@ -33862,6 +34710,8 @@ var FilterManager = function (_WebGLManager) {
         var renderer = this.renderer;
         var filters = this.managedFilters;
 
+        renderer.off('prerender', this.onPrerender, this);
+
         for (var i = 0; i < filters.length; i++) {
             if (!contextLost) {
                 filters[i].glShaders[renderer.CONTEXT_UID].destroy();
@@ -33893,11 +34743,17 @@ var FilterManager = function (_WebGLManager) {
 
 
     FilterManager.prototype.getPotRenderTarget = function getPotRenderTarget(gl, minWidth, minHeight, resolution) {
-        // TODO you could return a bigger texture if there is not one in the pool?
-        minWidth = _bitTwiddle2.default.nextPow2(minWidth * resolution);
-        minHeight = _bitTwiddle2.default.nextPow2(minHeight * resolution);
+        var key = screenKey;
 
-        var key = (minWidth & 0xFFFF) << 16 | minHeight & 0xFFFF;
+        minWidth *= resolution;
+        minHeight *= resolution;
+
+        if (minWidth !== this._screenWidth || minHeight !== this._screenHeight) {
+            // TODO you could return a bigger texture if there is not one in the pool?
+            minWidth = _bitTwiddle2.default.nextPow2(minWidth);
+            minHeight = _bitTwiddle2.default.nextPow2(minHeight);
+            key = (minWidth & 0xFFFF) << 16 | minHeight & 0xFFFF;
+        }
 
         if (!this.pool[key]) {
             this.pool[key] = [];
@@ -33958,9 +34814,36 @@ var FilterManager = function (_WebGLManager) {
     FilterManager.prototype.freePotRenderTarget = function freePotRenderTarget(renderTarget) {
         var minWidth = renderTarget.size.width * renderTarget.resolution;
         var minHeight = renderTarget.size.height * renderTarget.resolution;
-        var key = (minWidth & 0xFFFF) << 16 | minHeight & 0xFFFF;
+
+        var key = screenKey;
+
+        if (minWidth !== this._screenWidth || minHeight !== this._screenHeight) {
+            key = (minWidth & 0xFFFF) << 16 | minHeight & 0xFFFF;
+        }
 
         this.pool[key].push(renderTarget);
+    };
+
+    /**
+     * Called before the renderer starts rendering.
+     *
+     */
+
+
+    FilterManager.prototype.onPrerender = function onPrerender() {
+        if (this._screenWidth !== this.renderer.view.width || this._screenHeight !== this.renderer.view.height) {
+            this._screenWidth = this.renderer.view.width;
+            this._screenHeight = this.renderer.view.height;
+
+            var textures = this.pool[screenKey];
+
+            if (textures) {
+                for (var j = 0; j < textures.length; j++) {
+                    textures[j].destroy(true);
+                }
+            }
+            this.pool[screenKey] = [];
+        }
     };
 
     return FilterManager;
@@ -33968,7 +34851,7 @@ var FilterManager = function (_WebGLManager) {
 
 exports.default = FilterManager;
 
-},{"../../../Shader":223,"../../../math":249,"../filters/filterTransforms":267,"../utils/Quad":274,"../utils/RenderTarget":275,"./WebGLManager":272,"bit-twiddle":4}],270:[function(require,module,exports){
+},{"../../../Shader":239,"../../../math":265,"../filters/filterTransforms":283,"../utils/Quad":290,"../utils/RenderTarget":291,"./WebGLManager":288,"bit-twiddle":18}],286:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34178,7 +35061,7 @@ var MaskManager = function (_WebGLManager) {
 
 exports.default = MaskManager;
 
-},{"../filters/spriteMask/SpriteMaskFilter":268,"./WebGLManager":272}],271:[function(require,module,exports){
+},{"../filters/spriteMask/SpriteMaskFilter":284,"./WebGLManager":288}],287:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34331,7 +35214,7 @@ var StencilManager = function (_WebGLManager) {
 
 exports.default = StencilManager;
 
-},{"./WebGLManager":272}],272:[function(require,module,exports){
+},{"./WebGLManager":288}],288:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34386,7 +35269,7 @@ var WebGLManager = function () {
 
 exports.default = WebGLManager;
 
-},{}],273:[function(require,module,exports){
+},{}],289:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34464,7 +35347,7 @@ var ObjectRenderer = function (_WebGLManager) {
 
 exports.default = ObjectRenderer;
 
-},{"../managers/WebGLManager":272}],274:[function(require,module,exports){
+},{"../managers/WebGLManager":288}],290:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34645,7 +35528,7 @@ var Quad = function () {
 
 exports.default = Quad;
 
-},{"../../../utils/createIndicesForQuads":302,"pixi-gl-core":208}],275:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":318,"pixi-gl-core":224}],291:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34972,7 +35855,7 @@ var RenderTarget = function () {
 
 exports.default = RenderTarget;
 
-},{"../../../const":225,"../../../math":249,"../../../settings":280,"pixi-gl-core":208}],276:[function(require,module,exports){
+},{"../../../const":241,"../../../math":265,"../../../settings":296,"pixi-gl-core":224}],292:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35047,7 +35930,7 @@ function generateIfTestSrc(maxIfs) {
     return src;
 }
 
-},{"pixi-gl-core":208}],277:[function(require,module,exports){
+},{"pixi-gl-core":224}],293:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35096,7 +35979,7 @@ function mapWebGLBlendModesToPixi(gl) {
     return array;
 }
 
-},{"../../../const":225}],278:[function(require,module,exports){
+},{"../../../const":241}],294:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35128,7 +36011,7 @@ function mapWebGLDrawModesToPixi(gl) {
   return object;
 }
 
-},{"../../../const":225}],279:[function(require,module,exports){
+},{"../../../const":241}],295:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35144,7 +36027,7 @@ function validateContext(gl) {
     }
 }
 
-},{}],280:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35372,14 +36255,24 @@ exports.default = {
    *
    * @static
    * @constant
-   * @memberof PIXI
+   * @memberof PIXI.settings
    * @type {boolean}
    */
-  CAN_UPLOAD_SAME_BUFFER: (0, _canUploadSameBuffer2.default)()
+  CAN_UPLOAD_SAME_BUFFER: (0, _canUploadSameBuffer2.default)(),
 
+  /**
+   * Default Mesh `canvasPadding`.
+   *
+   * @see PIXI.mesh.Mesh#canvasPadding
+   * @static
+   * @constant
+   * @memberof PIXI.settings
+   * @type {number}
+   */
+  MESH_CANVAS_PADDING: 0
 };
 
-},{"./utils/canUploadSameBuffer":301,"./utils/maxRecommendedTextures":306}],281:[function(require,module,exports){
+},{"./utils/canUploadSameBuffer":317,"./utils/maxRecommendedTextures":322}],297:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36002,7 +36895,7 @@ var Sprite = function (_Container) {
 
 exports.default = Sprite;
 
-},{"../const":225,"../display/Container":227,"../math":249,"../textures/Texture":294,"../utils":304}],282:[function(require,module,exports){
+},{"../const":241,"../display/Container":243,"../math":265,"../textures/Texture":310,"../utils":320}],298:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36155,7 +37048,7 @@ exports.default = CanvasSpriteRenderer;
 
 _CanvasRenderer2.default.registerPlugin('sprite', CanvasSpriteRenderer);
 
-},{"../../const":225,"../../math":249,"../../renderers/canvas/CanvasRenderer":256,"./CanvasTinter":283}],283:[function(require,module,exports){
+},{"../../const":241,"../../math":265,"../../renderers/canvas/CanvasRenderer":272,"./CanvasTinter":299}],299:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36406,7 +37299,7 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
 
 exports.default = CanvasTinter;
 
-},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":259,"../../utils":304}],284:[function(require,module,exports){
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":275,"../../utils":320}],300:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -36459,7 +37352,7 @@ var Buffer = function () {
 
 exports.default = Buffer;
 
-},{}],285:[function(require,module,exports){
+},{}],301:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37010,7 +37903,7 @@ exports.default = SpriteRenderer;
 
 _WebGLRenderer2.default.registerPlugin('sprite', SpriteRenderer);
 
-},{"../../renderers/webgl/WebGLRenderer":263,"../../renderers/webgl/utils/ObjectRenderer":273,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":276,"../../settings":280,"../../utils":304,"../../utils/createIndicesForQuads":302,"./BatchBuffer":284,"./generateMultiTextureShader":286,"bit-twiddle":4,"pixi-gl-core":208}],286:[function(require,module,exports){
+},{"../../renderers/webgl/WebGLRenderer":279,"../../renderers/webgl/utils/ObjectRenderer":289,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":292,"../../settings":296,"../../utils":320,"../../utils/createIndicesForQuads":318,"./BatchBuffer":300,"./generateMultiTextureShader":302,"bit-twiddle":18,"pixi-gl-core":224}],302:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37073,7 +37966,7 @@ function generateSampleSrc(maxTextures) {
     return src;
 }
 
-},{"../../Shader":223,"path":401}],287:[function(require,module,exports){
+},{"../../Shader":239,"path":205}],303:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37257,8 +38150,8 @@ var Text = function (_Sprite) {
         var maxLineWidth = measured.maxLineWidth;
         var fontProperties = measured.fontProperties;
 
-        this.canvas.width = Math.ceil((width + style.padding * 2) * this.resolution);
-        this.canvas.height = Math.ceil((height + style.padding * 2) * this.resolution);
+        this.canvas.width = Math.ceil((Math.max(1, width) + style.padding * 2) * this.resolution);
+        this.canvas.height = Math.ceil((Math.max(1, height) + style.padding * 2) * this.resolution);
 
         context.scale(this.resolution, this.resolution);
 
@@ -37728,7 +38621,7 @@ var Text = function (_Sprite) {
 
 exports.default = Text;
 
-},{"../const":225,"../math":249,"../settings":280,"../sprites/Sprite":281,"../textures/Texture":294,"../utils":304,"../utils/trimCanvas":309,"./TextMetrics":288,"./TextStyle":289}],288:[function(require,module,exports){
+},{"../const":241,"../math":265,"../settings":296,"../sprites/Sprite":297,"../textures/Texture":310,"../utils":320,"../utils/trimCanvas":325,"./TextMetrics":304,"./TextStyle":305}],304:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37737,6 +38630,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
+ *
+ * ```js
+ * let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
+ * let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
+ * ```
  *
  * @class
  * @memberOf PIXI
@@ -37832,70 +38730,142 @@ var TextMetrics = function () {
 
         var context = canvas.getContext('2d');
 
-        // Greedy wrapping algorithm that will wrap words as the line grows longer
-        // than its horizontal bounds.
-        var result = '';
-        var firstChar = text.charAt(0);
-        var lines = text.split('\n');
-        var wordWrapWidth = style.wordWrapWidth;
-        var characterCache = {};
+        var line = '';
+        var width = 0;
+        var lines = '';
+        var cache = {};
+        var ls = style.letterSpacing;
 
-        for (var i = 0; i < lines.length; i++) {
-            var spaceLeft = wordWrapWidth;
-            var words = lines[i].split(' ');
+        // ideally there is letterSpacing after every char except the last one
+        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!
+        // so for convenience the above needs to be compared to width + 1 extra space
+        // t_h_i_s_' '_i_s_' '_a_n_' '_e_x_a_m_p_l_e_' '_!_
+        // ________________________________________________
+        // And then the final space is simply no appended to each line
+        var wordWrapWidth = style.wordWrapWidth + style.letterSpacing;
 
-            for (var j = 0; j < words.length; j++) {
-                var wordWidth = context.measureText(words[j]).width;
+        // get the width of a space and add it to cache
+        var spaceWidth = TextMetrics.getFromCache(' ', ls, cache, context);
 
-                if (style.breakWords && wordWidth > wordWrapWidth) {
-                    // Word should be split in the middle
-                    var characters = words[j].split('');
+        // break text into words
+        var words = text.split(' ');
 
-                    for (var c = 0; c < characters.length; c++) {
-                        var character = characters[c];
-                        var characterWidth = characterCache[character];
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i];
 
-                        if (characterWidth === undefined) {
-                            characterWidth = context.measureText(character).width;
-                            characterCache[character] = characterWidth;
+            // get word width from cache if possible
+            var wordWidth = TextMetrics.getFromCache(word, ls, cache, context);
+
+            // word is longer than desired bounds
+            if (wordWidth > wordWrapWidth) {
+                // break large word over multiple lines
+                if (style.breakWords) {
+                    // add a space to the start of the word unless its at the beginning of the line
+                    var tmpWord = line.length > 0 ? ' ' + word : word;
+
+                    // break word into characters
+                    var characters = tmpWord.split('');
+
+                    // loop the characters
+                    for (var j = 0; j < characters.length; j++) {
+                        var character = characters[j];
+                        var characterWidth = TextMetrics.getFromCache(character, ls, cache, context);
+
+                        if (characterWidth + width > wordWrapWidth) {
+                            lines += TextMetrics.addLine(line);
+                            line = '';
+                            width = 0;
                         }
 
-                        if (characterWidth > spaceLeft) {
-                            result += '\n' + character;
-                            spaceLeft = wordWrapWidth - characterWidth;
-                        } else {
-                            if (c === 0 && (j > 0 || firstChar === ' ')) {
-                                result += ' ';
-                            }
-
-                            result += character;
-                            spaceLeft -= characterWidth;
-                        }
-                    }
-                } else {
-                    var wordWidthWithSpace = wordWidth + context.measureText(' ').width;
-
-                    if (j === 0 || wordWidthWithSpace > spaceLeft) {
-                        // Skip printing the newline if it's the first word of the line that is
-                        // greater than the word wrap width.
-                        if (j > 0) {
-                            result += '\n';
-                        }
-                        result += words[j];
-                        spaceLeft = wordWrapWidth - wordWidth;
-                    } else {
-                        spaceLeft -= wordWidthWithSpace;
-                        result += ' ' + words[j];
+                        line += character;
+                        width += characterWidth;
                     }
                 }
+
+                // run word out of the bounds
+                else {
+                        // if there are words in this line already
+                        // finish that line and start a new one
+                        if (line.length > 0) {
+                            lines += TextMetrics.addLine(line);
+                            line = '';
+                            width = 0;
+                        }
+
+                        // give it its own line
+                        lines += TextMetrics.addLine(word);
+                        line = '';
+                        width = 0;
+                    }
             }
 
-            if (i < lines.length - 1) {
-                result += '\n';
-            }
+            // word could fit
+            else {
+                    // word won't fit, start a new line
+                    if (wordWidth + width > wordWrapWidth) {
+                        lines += TextMetrics.addLine(line);
+                        line = '';
+                        width = 0;
+                    }
+
+                    // add the word to the current line
+                    if (line.length > 0) {
+                        // add a space if it is not the beginning
+                        line += ' ' + word;
+                    } else {
+                        // add without a space if it is the beginning
+                        line += word;
+                    }
+
+                    width += wordWidth + spaceWidth;
+                }
         }
 
-        return result;
+        lines += TextMetrics.addLine(line, false);
+
+        return lines;
+    };
+
+    /**
+     *  Convienience function for logging each line added
+     *  during the wordWrap method
+     *
+     * @param  {string}   line    - The line of text to add
+     * @param  {boolean}  newLine - Add new line character to end
+     * @return {string}   A formatted line
+     */
+
+
+    TextMetrics.addLine = function addLine(line) {
+        var newLine = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        line = newLine ? line + '\n' : line;
+
+        return line;
+    };
+
+    /**
+     * Gets & sets the widths of calculated characters in a cache object
+     *
+     * @param  {string}                    key            The key
+     * @param  {number}                    letterSpacing  The letter spacing
+     * @param  {object}                    cache          The cache
+     * @param  {CanvasRenderingContext2D}  context        The canvas context
+     * @return {number}                    The from cache.
+     */
+
+
+    TextMetrics.getFromCache = function getFromCache(key, letterSpacing, cache, context) {
+        var width = cache[key];
+
+        if (width === undefined) {
+            var spacing = key.length * letterSpacing;
+
+            width = context.measureText(key).width + spacing;
+            cache[key] = width;
+        }
+
+        return width;
     };
 
     /**
@@ -38031,7 +39001,7 @@ TextMetrics._context = canvas.getContext('2d');
  */
 TextMetrics._fonts = {};
 
-},{}],289:[function(require,module,exports){
+},{}],305:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -38752,7 +39722,7 @@ var TextStyle = function () {
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
- *
+ * @private
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
@@ -38774,7 +39744,7 @@ function getSingleColor(color) {
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
- *
+ * @private
  * @param {number|number[]} color
  * @return {string} The color as a string.
  */
@@ -38793,7 +39763,7 @@ function getColor(color) {
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
- *
+ * @private
  * @param {Array} array1 First array to compare
  * @param {Array} array2 Second array to compare
  * @return {boolean} Do the arrays contain the same values in the same order
@@ -38818,7 +39788,7 @@ function areArraysEqual(array1, array2) {
 
 /**
  * Utility function to ensure that object properties are copied by value, and not by reference
- *
+ * @private
  * @param {Object} target Target object to copy properties into
  * @param {Object} source Source object for the proporties to copy
  * @param {string} propertyObj Object containing properties names we want to loop over
@@ -38833,7 +39803,7 @@ function deepCopyProperties(target, source, propertyObj) {
     }
 }
 
-},{"../const":225,"../utils":304}],290:[function(require,module,exports){
+},{"../const":241,"../utils":320}],306:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -38995,7 +39965,7 @@ var BaseRenderTexture = function (_BaseTexture) {
 
 exports.default = BaseRenderTexture;
 
-},{"../settings":280,"./BaseTexture":291}],291:[function(require,module,exports){
+},{"../settings":296,"./BaseTexture":307}],307:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -39841,7 +40811,7 @@ var BaseTexture = function (_EventEmitter) {
 
 exports.default = BaseTexture;
 
-},{"../settings":280,"../utils":304,"../utils/determineCrossOrigin":303,"bit-twiddle":4,"eventemitter3":368}],292:[function(require,module,exports){
+},{"../settings":296,"../utils":320,"../utils/determineCrossOrigin":319,"bit-twiddle":18,"eventemitter3":385}],308:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -39995,7 +40965,7 @@ var RenderTexture = function (_Texture) {
 
 exports.default = RenderTexture;
 
-},{"./BaseRenderTexture":290,"./Texture":294}],293:[function(require,module,exports){
+},{"./BaseRenderTexture":306,"./Texture":310}],309:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -40165,25 +41135,28 @@ var Spritesheet = function () {
 
         while (frameIndex - initialFrameIndex < maxFrames && frameIndex < this._frameKeys.length) {
             var i = this._frameKeys[frameIndex];
-            var rect = this._frames[i].frame;
+            var data = this._frames[i];
+            var rect = data.frame;
 
             if (rect) {
                 var frame = null;
                 var trim = null;
-                var orig = new _.Rectangle(0, 0, Math.floor(this._frames[i].sourceSize.w * sourceScale) / this.resolution, Math.floor(this._frames[i].sourceSize.h * sourceScale) / this.resolution);
+                var sourceSize = data.trimmed !== false && data.sourceSize ? data.sourceSize : data.frame;
 
-                if (this._frames[i].rotated) {
+                var orig = new _.Rectangle(0, 0, Math.floor(sourceSize.w * sourceScale) / this.resolution, Math.floor(sourceSize.h * sourceScale) / this.resolution);
+
+                if (data.rotated) {
                     frame = new _.Rectangle(Math.floor(rect.x * sourceScale) / this.resolution, Math.floor(rect.y * sourceScale) / this.resolution, Math.floor(rect.h * sourceScale) / this.resolution, Math.floor(rect.w * sourceScale) / this.resolution);
                 } else {
                     frame = new _.Rectangle(Math.floor(rect.x * sourceScale) / this.resolution, Math.floor(rect.y * sourceScale) / this.resolution, Math.floor(rect.w * sourceScale) / this.resolution, Math.floor(rect.h * sourceScale) / this.resolution);
                 }
 
                 //  Check to see if the sprite is trimmed
-                if (this._frames[i].trimmed) {
-                    trim = new _.Rectangle(Math.floor(this._frames[i].spriteSourceSize.x * sourceScale) / this.resolution, Math.floor(this._frames[i].spriteSourceSize.y * sourceScale) / this.resolution, Math.floor(rect.w * sourceScale) / this.resolution, Math.floor(rect.h * sourceScale) / this.resolution);
+                if (data.trimmed !== false && data.spriteSourceSize) {
+                    trim = new _.Rectangle(Math.floor(data.spriteSourceSize.x * sourceScale) / this.resolution, Math.floor(data.spriteSourceSize.y * sourceScale) / this.resolution, Math.floor(rect.w * sourceScale) / this.resolution, Math.floor(rect.h * sourceScale) / this.resolution);
                 }
 
-                this.textures[i] = new _.Texture(this.baseTexture, frame, orig, trim, this._frames[i].rotated ? 2 : 0);
+                this.textures[i] = new _.Texture(this.baseTexture, frame, orig, trim, data.rotated ? 2 : 0);
 
                 // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                 _.Texture.addToCache(this.textures[i], i);
@@ -40257,7 +41230,7 @@ var Spritesheet = function () {
 
 exports.default = Spritesheet;
 
-},{"../":244,"../utils":304}],294:[function(require,module,exports){
+},{"../":260,"../utils":320}],310:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -40949,7 +41922,7 @@ Texture.WHITE = createWhiteTexture();
 removeAllHandlers(Texture.WHITE);
 removeAllHandlers(Texture.WHITE.baseTexture);
 
-},{"../math":249,"../settings":280,"../utils":304,"./BaseTexture":291,"./TextureUvs":296,"./VideoBaseTexture":297,"eventemitter3":368}],295:[function(require,module,exports){
+},{"../math":265,"../settings":296,"../utils":320,"./BaseTexture":307,"./TextureUvs":312,"./VideoBaseTexture":313,"eventemitter3":385}],311:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -41113,7 +42086,7 @@ var TextureMatrix = function () {
 
 exports.default = TextureMatrix;
 
-},{"../math/Matrix":246}],296:[function(require,module,exports){
+},{"../math/Matrix":262}],312:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -41218,7 +42191,7 @@ var TextureUvs = function () {
 
 exports.default = TextureUvs;
 
-},{"../math/GroupD8":245}],297:[function(require,module,exports){
+},{"../math/GroupD8":261}],313:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -41560,7 +42533,7 @@ function createSource(path, type) {
     return source;
 }
 
-},{"../const":225,"../ticker":300,"../utils":304,"../utils/determineCrossOrigin":303,"./BaseTexture":291}],298:[function(require,module,exports){
+},{"../const":241,"../ticker":316,"../utils":320,"../utils/determineCrossOrigin":319,"./BaseTexture":307}],314:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42033,7 +43006,7 @@ var Ticker = function () {
 
 exports.default = Ticker;
 
-},{"../const":225,"../settings":280,"./TickerListener":299}],299:[function(require,module,exports){
+},{"../const":241,"../settings":296,"./TickerListener":315}],315:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -42207,7 +43180,7 @@ var TickerListener = function () {
 
 exports.default = TickerListener;
 
-},{}],300:[function(require,module,exports){
+},{}],316:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42287,7 +43260,7 @@ shared.destroy = function () {
 exports.shared = shared;
 exports.Ticker = _Ticker2.default;
 
-},{"./Ticker":298}],301:[function(require,module,exports){
+},{"./Ticker":314}],317:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -42301,7 +43274,7 @@ function canUploadSameBuffer() {
 	return !ios;
 }
 
-},{}],302:[function(require,module,exports){
+},{}],318:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -42335,7 +43308,7 @@ function createIndicesForQuads(size) {
     return indices;
 }
 
-},{}],303:[function(require,module,exports){
+},{}],319:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42391,11 +43364,11 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":407}],304:[function(require,module,exports){
+},{"url":407}],320:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
-exports.premultiplyBlendMode = exports.BaseTextureCache = exports.TextureCache = exports.mixins = exports.pluginTarget = exports.EventEmitter = exports.removeItems = exports.isMobile = undefined;
+exports.premultiplyBlendMode = exports.BaseTextureCache = exports.TextureCache = exports.earcut = exports.mixins = exports.pluginTarget = exports.EventEmitter = exports.removeItems = exports.isMobile = undefined;
 exports.uid = uid;
 exports.hex2rgb = hex2rgb;
 exports.hex2string = hex2string;
@@ -42445,6 +43418,10 @@ var _mapPremultipliedBlendModes = require('./mapPremultipliedBlendModes');
 
 var _mapPremultipliedBlendModes2 = _interopRequireDefault(_mapPremultipliedBlendModes);
 
+var _earcut = require('earcut');
+
+var _earcut2 = _interopRequireDefault(_earcut);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -42475,6 +43452,7 @@ exports.removeItems = _removeArrayItems2.default;
 exports.EventEmitter = _eventemitter2.default;
 exports.pluginTarget = _pluginTarget2.default;
 exports.mixins = mixins;
+exports.earcut = _earcut2.default;
 
 /**
  * Gets the next unique identifier
@@ -42557,7 +43535,7 @@ function getResolutionOfUrl(url, defaultValue) {
 /**
  * Typedef for decomposeDataUri return object.
  *
- * @typedef {object} DecomposedDataUri
+ * @typedef {object} PIXI.utils~DecomposedDataUri
  * @property {mediaType} Media type, eg. `image`
  * @property {subType} Sub type, eg. `png`
  * @property {encoding} Data encoding, eg. `base64`
@@ -42571,7 +43549,7 @@ function getResolutionOfUrl(url, defaultValue) {
  * @memberof PIXI.utils
  * @function decomposeDataUri
  * @param {string} dataUri - the data URI to check
- * @return {DecomposedDataUri|undefined} The decomposed data uri or undefined
+ * @return {PIXI.utils~DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
 function decomposeDataUri(dataUri) {
     var dataUriMatch = _const.DATA_URI.exec(dataUri);
@@ -42609,7 +43587,7 @@ function getUrlFileExtension(url) {
 /**
  * Typedef for Size object.
  *
- * @typedef {object} Size
+ * @typedef {object} PIXI.utils~Size
  * @property {width} Width component
  * @property {height} Height component
  */
@@ -42620,7 +43598,7 @@ function getUrlFileExtension(url) {
  * @memberof PIXI.utils
  * @function getSvgSize
  * @param {string} svgString - a serialized svg element
- * @return {Size|undefined} image extension
+ * @return {PIXI.utils~Size|undefined} image extension
  */
 function getSvgSize(svgString) {
     var sizeMatch = _const.SVG_SIZE.exec(svgString);
@@ -42794,6 +43772,7 @@ function correctBlendMode(blendMode, premultiplied) {
 /**
  * premultiplies tint
  *
+ * @memberof PIXI.utils
  * @param {number} tint integet RGB
  * @param {number} alpha floating point alpha (0.0-1.0)
  * @returns {number} tint multiplied by alpha
@@ -42819,6 +43798,7 @@ function premultiplyTint(tint, alpha) {
 /**
  * combines rgb and alpha to out array
  *
+ * @memberof PIXI.utils
  * @param {Float32Array|number[]} rgb input rgb
  * @param {number} alpha alpha param
  * @param {Float32Array} [out] output
@@ -42844,6 +43824,7 @@ function premultiplyRgba(rgb, alpha, out, premultiply) {
 /**
  * converts integer tint and float alpha to vec4 form, premultiplies by default
  *
+ * @memberof PIXI.utils
  * @param {number} tint input tint
  * @param {number} alpha alpha param
  * @param {Float32Array} [out] output
@@ -42865,7 +43846,7 @@ function premultiplyTintToRgba(tint, alpha, out, premultiply) {
     return out;
 }
 
-},{"../const":225,"../settings":280,"./mapPremultipliedBlendModes":305,"./mixin":307,"./pluginTarget":308,"eventemitter3":368,"ismobilejs":186,"remove-array-items":369}],305:[function(require,module,exports){
+},{"../const":241,"../settings":296,"./mapPremultipliedBlendModes":321,"./mixin":323,"./pluginTarget":324,"earcut":20,"eventemitter3":385,"ismobilejs":201,"remove-array-items":391}],321:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42908,7 +43889,7 @@ function mapPremultipliedBlendModes() {
     return array;
 }
 
-},{"../const":225}],306:[function(require,module,exports){
+},{"../const":241}],322:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42930,7 +43911,7 @@ function maxRecommendedTextures(max) {
     return max;
 }
 
-},{"ismobilejs":186}],307:[function(require,module,exports){
+},{"ismobilejs":201}],323:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -42992,7 +43973,7 @@ function performMixins() {
     mixins.length = 0;
 }
 
-},{}],308:[function(require,module,exports){
+},{}],324:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -43058,7 +44039,7 @@ exports.default = {
     }
 };
 
-},{}],309:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43134,7 +44115,7 @@ function trimCanvas(canvas) {
     };
 }
 
-},{}],310:[function(require,module,exports){
+},{}],326:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43142,8 +44123,19 @@ exports.default = deprecation;
 // provide method to give a stack track for warnings
 // useful for tracking-down where deprecated methods/properties/classes
 // are being used within the code
+
+// A map of warning messages already fired
+var warnings = {};
+
+// provide method to give a stack track for warnings
+// useful for tracking-down where deprecated methods/properties/classes
+// are being used within the code
 function warn(msg) {
-    // @if DEBUG
+    // Ignore duplicat
+    if (warnings[msg]) {
+        return;
+    }
+
     /* eslint-disable no-console */
     var stack = new Error().stack;
 
@@ -43164,7 +44156,8 @@ function warn(msg) {
         }
     }
     /* eslint-enable no-console */
-    // @endif
+
+    warnings[msg] = true;
 }
 
 function deprecation(core) {
@@ -44278,7 +45271,7 @@ function deprecation(core) {
     }
 }
 
-},{}],311:[function(require,module,exports){
+},{}],327:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -44458,7 +45451,7 @@ exports.default = CanvasExtract;
 
 core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
 
-},{"../../core":244}],312:[function(require,module,exports){
+},{"../../core":260}],328:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -44483,7 +45476,7 @@ Object.defineProperty(exports, 'canvas', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./canvas/CanvasExtract":311,"./webgl/WebGLExtract":313}],313:[function(require,module,exports){
+},{"./canvas/CanvasExtract":327,"./webgl/WebGLExtract":329}],329:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -44573,12 +45566,14 @@ var WebGLExtract = function () {
         var frame = void 0;
         var flipY = false;
         var renderTexture = void 0;
+        var generated = false;
 
         if (target) {
             if (target instanceof core.RenderTexture) {
                 renderTexture = target;
             } else {
                 renderTexture = this.renderer.generateTexture(target);
+                generated = true;
             }
         }
 
@@ -44628,7 +45623,11 @@ var WebGLExtract = function () {
             }
         }
 
+        if (generated) {
+            renderTexture.destroy(true);
+        }
         // send the canvas back..
+
         return canvasBuffer.canvas;
     };
 
@@ -44648,12 +45647,14 @@ var WebGLExtract = function () {
         var resolution = void 0;
         var frame = void 0;
         var renderTexture = void 0;
+        var generated = false;
 
         if (target) {
             if (target instanceof core.RenderTexture) {
                 renderTexture = target;
             } else {
                 renderTexture = this.renderer.generateTexture(target);
+                generated = true;
             }
         }
 
@@ -44684,6 +45685,10 @@ var WebGLExtract = function () {
             gl.readPixels(frame.x * resolution, frame.y * resolution, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webglPixels);
         }
 
+        if (generated) {
+            renderTexture.destroy(true);
+        }
+
         return webglPixels;
     };
 
@@ -44706,7 +45711,7 @@ exports.default = WebGLExtract;
 
 core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
 
-},{"../../core":244}],314:[function(require,module,exports){
+},{"../../core":260}],330:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -44726,7 +45731,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * @typedef FrameObject
+ * @typedef PIXI.extras.AnimatedSprite~FrameObject
  * @type {object}
  * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
  * @property {number} time - the duration of the frame in ms
@@ -44756,7 +45761,7 @@ var AnimatedSprite = function (_core$Sprite) {
     _inherits(AnimatedSprite, _core$Sprite);
 
     /**
-     * @param {PIXI.Texture[]|FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
+     * @param {PIXI.Texture[]|PIXI.extras.AnimatedSprite~FrameObject[]} textures - an array of {@link PIXI.Texture} or frame
      *  objects that make up the animation
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.ticker.shared to auto update animation time.
      */
@@ -45115,7 +46120,7 @@ var AnimatedSprite = function (_core$Sprite) {
 
 exports.default = AnimatedSprite;
 
-},{"../core":244}],315:[function(require,module,exports){
+},{"../core":260}],331:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -45706,7 +46711,7 @@ exports.default = BitmapText;
 
 BitmapText.fonts = {};
 
-},{"../core":244,"../core/math/ObservablePoint":247,"../core/settings":280,"../core/utils":304}],316:[function(require,module,exports){
+},{"../core":260,"../core/math/ObservablePoint":263,"../core/settings":296,"../core/utils":320}],332:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46152,7 +47157,7 @@ var TilingSprite = function (_core$Sprite) {
 
 exports.default = TilingSprite;
 
-},{"../core":244,"../core/sprites/canvas/CanvasTinter":283}],317:[function(require,module,exports){
+},{"../core":260,"../core/sprites/canvas/CanvasTinter":299}],333:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -46556,7 +47561,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(o
     this.destroy(options);
 };
 
-},{"../core":244,"../core/textures/BaseTexture":291,"../core/textures/Texture":294,"../core/utils":304}],318:[function(require,module,exports){
+},{"../core":260,"../core/textures/BaseTexture":307,"../core/textures/Texture":310,"../core/utils":320}],334:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -46569,13 +47574,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * The instance name of the object.
  *
  * @memberof PIXI.DisplayObject#
- * @member {string}
+ * @member {string} name
  */
 core.DisplayObject.prototype.name = null;
 
 /**
  * Returns the display object in the container
  *
+ * @method getChildByName
  * @memberof PIXI.Container#
  * @param {string} name - instance name
  * @return {PIXI.DisplayObject} The child with the specified name.
@@ -46590,7 +47596,7 @@ core.Container.prototype.getChildByName = function getChildByName(name) {
     return null;
 };
 
-},{"../core":244}],319:[function(require,module,exports){
+},{"../core":260}],335:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -46602,6 +47608,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 /**
  * Returns the global position of the displayObject. Does not depend on object scale, rotation and pivot.
  *
+ * @method getGlobalPosition
  * @memberof PIXI.DisplayObject#
  * @param {Point} point - the point to write the global value to. If null a new point will be returned
  * @param {boolean} skipUpdate - setting to true will stop the transforms of the scene graph from
@@ -46623,7 +47630,7 @@ core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition() {
     return point;
 };
 
-},{"../core":244}],320:[function(require,module,exports){
+},{"../core":260}],336:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46675,7 +47682,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // imported for side effect of extending the prototype only, contains no exports
 
-},{"./AnimatedSprite":314,"./BitmapText":315,"./TilingSprite":316,"./cacheAsBitmap":317,"./getChildByName":318,"./getGlobalPosition":319,"./webgl/TilingSpriteRenderer":321}],321:[function(require,module,exports){
+},{"./AnimatedSprite":330,"./BitmapText":331,"./TilingSprite":332,"./cacheAsBitmap":333,"./getChildByName":334,"./getGlobalPosition":335,"./webgl/TilingSpriteRenderer":337}],337:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46837,7 +47844,7 @@ exports.default = TilingSpriteRenderer;
 
 core.WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-},{"../../core":244,"../../core/const":225,"path":401}],322:[function(require,module,exports){
+},{"../../core":260,"../../core/const":241,"path":205}],338:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46921,7 +47928,7 @@ var AlphaFilter = function (_core$Filter) {
 
 exports.default = AlphaFilter;
 
-},{"../../core":244,"path":401}],323:[function(require,module,exports){
+},{"../../core":260,"path":205}],339:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47095,7 +48102,7 @@ var BlurFilter = function (_core$Filter) {
 
 exports.default = BlurFilter;
 
-},{"../../core":244,"./BlurXFilter":324,"./BlurYFilter":325}],324:[function(require,module,exports){
+},{"../../core":260,"./BlurXFilter":340,"./BlurYFilter":341}],340:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47261,7 +48268,7 @@ var BlurXFilter = function (_core$Filter) {
 
 exports.default = BlurXFilter;
 
-},{"../../core":244,"./generateBlurFragSource":326,"./generateBlurVertSource":327,"./getMaxBlurKernelSize":328}],325:[function(require,module,exports){
+},{"../../core":260,"./generateBlurFragSource":342,"./generateBlurVertSource":343,"./getMaxBlurKernelSize":344}],341:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47426,7 +48433,7 @@ var BlurYFilter = function (_core$Filter) {
 
 exports.default = BlurYFilter;
 
-},{"../../core":244,"./generateBlurFragSource":326,"./generateBlurVertSource":327,"./getMaxBlurKernelSize":328}],326:[function(require,module,exports){
+},{"../../core":260,"./generateBlurFragSource":342,"./generateBlurVertSource":343,"./getMaxBlurKernelSize":344}],342:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47473,7 +48480,7 @@ function generateFragBlurSource(kernelSize) {
     return fragSource;
 }
 
-},{}],327:[function(require,module,exports){
+},{}],343:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47517,7 +48524,7 @@ function generateVertBlurSource(kernelSize, x) {
     return vertSource;
 }
 
-},{}],328:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -47533,7 +48540,7 @@ function getMaxKernelSize(gl) {
     return kernelSize;
 }
 
-},{}],329:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47832,7 +48839,7 @@ var ColorMatrixFilter = function (_core$Filter) {
 
 
     ColorMatrixFilter.prototype.negative = function negative(multiply) {
-        var matrix = [0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0];
+        var matrix = [-1, 0, 0, 1, 0, 0, -1, 0, 1, 0, 0, 0, -1, 1, 0, 0, 0, 0, 1, 0];
 
         this._loadMatrix(matrix, multiply);
     };
@@ -48084,7 +49091,7 @@ var ColorMatrixFilter = function (_core$Filter) {
 exports.default = ColorMatrixFilter;
 ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
-},{"../../core":244,"path":401}],330:[function(require,module,exports){
+},{"../../core":260,"path":205}],346:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48134,7 +49141,7 @@ var DisplacementFilter = function (_core$Filter) {
         // vertex shader
         'attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform mat3 filterMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vFilterCoord;\n\nvoid main(void)\n{\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;\n   vTextureCoord = aTextureCoord;\n}',
         // fragment shader
-        'varying vec2 vFilterCoord;\nvarying vec2 vTextureCoord;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nuniform vec4 filterClamp;\n\nvoid main(void)\n{\n   vec4 map =  texture2D(mapSampler, vFilterCoord);\n\n   map -= 0.5;\n   map.xy *= scale;\n\n   gl_FragColor = texture2D(uSampler, clamp(vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y), filterClamp.xy, filterClamp.zw));\n}\n'));
+        'varying vec2 vFilterCoord;\nvarying vec2 vTextureCoord;\n\nuniform vec2 scale;\n\nuniform sampler2D uSampler;\nuniform sampler2D mapSampler;\n\nuniform vec4 filterArea;\nuniform vec4 filterClamp;\n\nvoid main(void)\n{\n  vec4 map =  texture2D(mapSampler, vFilterCoord);\n\n  map -= 0.5;\n  map.xy *= scale / filterArea.xy;\n\n  gl_FragColor = texture2D(uSampler, clamp(vec2(vTextureCoord.x + map.x, vTextureCoord.y + map.y), filterClamp.xy, filterClamp.zw));\n}\n'));
 
         _this.maskSprite = sprite;
         _this.maskMatrix = maskMatrix;
@@ -48161,11 +49168,9 @@ var DisplacementFilter = function (_core$Filter) {
 
 
     DisplacementFilter.prototype.apply = function apply(filterManager, input, output) {
-        var ratio = 1 / output.destinationFrame.width * (output.size.width / input.size.width);
-
         this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.maskMatrix, this.maskSprite);
-        this.uniforms.scale.x = this.scale.x * ratio;
-        this.uniforms.scale.y = this.scale.y * ratio;
+        this.uniforms.scale.x = this.scale.x;
+        this.uniforms.scale.y = this.scale.y;
 
         // draw the filter...
         filterManager.applyFilter(this, input, output);
@@ -48194,7 +49199,7 @@ var DisplacementFilter = function (_core$Filter) {
 
 exports.default = DisplacementFilter;
 
-},{"../../core":244,"path":401}],331:[function(require,module,exports){
+},{"../../core":260,"path":205}],347:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48248,7 +49253,7 @@ var FXAAFilter = function (_core$Filter) {
 
 exports.default = FXAAFilter;
 
-},{"../../core":244,"path":401}],332:[function(require,module,exports){
+},{"../../core":260,"path":205}],348:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48327,7 +49332,7 @@ Object.defineProperty(exports, 'AlphaFilter', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./alpha/AlphaFilter":322,"./blur/BlurFilter":323,"./blur/BlurXFilter":324,"./blur/BlurYFilter":325,"./colormatrix/ColorMatrixFilter":329,"./displacement/DisplacementFilter":330,"./fxaa/FXAAFilter":331,"./noise/NoiseFilter":333}],333:[function(require,module,exports){
+},{"./alpha/AlphaFilter":338,"./blur/BlurFilter":339,"./blur/BlurXFilter":340,"./blur/BlurYFilter":341,"./colormatrix/ColorMatrixFilter":345,"./displacement/DisplacementFilter":346,"./fxaa/FXAAFilter":347,"./noise/NoiseFilter":349}],349:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48424,7 +49429,7 @@ var NoiseFilter = function (_core$Filter) {
 
 exports.default = NoiseFilter;
 
-},{"../../core":244,"path":401}],334:[function(require,module,exports){
+},{"../../core":260,"path":205}],350:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -48538,7 +49543,7 @@ if (typeof _deprecation2.default === 'function') {
 global.PIXI = exports; // eslint-disable-line
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":221,"./core":244,"./deprecation":310,"./extract":312,"./extras":320,"./filters":332,"./interaction":339,"./loaders":342,"./mesh":351,"./particles":354,"./polyfill":360,"./prepare":364}],335:[function(require,module,exports){
+},{"./accessibility":237,"./core":260,"./deprecation":326,"./extract":328,"./extras":336,"./filters":348,"./interaction":355,"./loaders":358,"./mesh":367,"./particles":370,"./polyfill":377,"./prepare":381}],351:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48713,11 +49718,10 @@ var InteractionData = function () {
    * Copies properties from normalized event data.
    *
    * @param {Touch|MouseEvent|PointerEvent} event The normalized event data
-   * @private
    */
 
 
-  InteractionData.prototype._copyEvent = function _copyEvent(event) {
+  InteractionData.prototype.copyEvent = function copyEvent(event) {
     // isPrimary should only change on touchstart/pointerdown, so we don't want to overwrite
     // it with "false" on later events when our shim for it on touch events might not be
     // accurate
@@ -48725,7 +49729,9 @@ var InteractionData = function () {
       this.isPrimary = true;
     }
     this.button = event.button;
-    this.buttons = event.buttons;
+    // event.buttons is not available in all browsers (ie. Safari), but it does have a non-standard
+    // event.which property instead, which conveys the same information.
+    this.buttons = Number.isInteger(event.buttons) ? event.buttons : event.which;
     this.width = event.width;
     this.height = event.height;
     this.tiltX = event.tiltX;
@@ -48739,12 +49745,10 @@ var InteractionData = function () {
 
   /**
    * Resets the data for pooling.
-   *
-   * @private
    */
 
 
-  InteractionData.prototype._reset = function _reset() {
+  InteractionData.prototype.reset = function reset() {
     // isPrimary is the only property that we really need to reset - everything else is
     // guaranteed to be overwritten
     this.isPrimary = false;
@@ -48762,7 +49766,7 @@ var InteractionData = function () {
 
 exports.default = InteractionData;
 
-},{"../core":244}],336:[function(require,module,exports){
+},{"../core":260}],352:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -48831,12 +49835,10 @@ var InteractionEvent = function () {
 
   /**
    * Resets the event.
-   *
-   * @private
    */
 
 
-  InteractionEvent.prototype._reset = function _reset() {
+  InteractionEvent.prototype.reset = function reset() {
     this.stopped = false;
     this.currentTarget = null;
     this.target = null;
@@ -48847,7 +49849,7 @@ var InteractionEvent = function () {
 
 exports.default = InteractionEvent;
 
-},{}],337:[function(require,module,exports){
+},{}],353:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48891,7 +49893,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // Mix interactiveTarget into core.DisplayObject.prototype, after deprecation has been handled
 core.utils.mixins.delayMixin(core.DisplayObject.prototype, _interactiveTarget2.default);
 
-var MOUSE_POINTER_ID = 'MOUSE';
+var MOUSE_POINTER_ID = 1;
 
 // helpers for hitTest() - only used inside hitTest()
 var hitTestEvent = {
@@ -49866,21 +50868,37 @@ var InteractionManager = function (_EventEmitter) {
         var hit = false;
         var interactiveParent = interactive;
 
-        // if the displayobject has a hitArea, then it does not need to hitTest children.
+        // Flag here can set to false if the event is outside the parents hitArea or mask
+        var hitTestChildren = true;
+
+        // If there is a hitArea, no need to test against anything else if the pointer is not within the hitArea
+        // There is also no longer a need to hitTest children.
         if (displayObject.hitArea) {
+            if (hitTest) {
+                displayObject.worldTransform.applyInverse(point, this._tempPoint);
+                if (!displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y)) {
+                    hitTest = false;
+                    hitTestChildren = false;
+                } else {
+                    hit = true;
+                }
+            }
             interactiveParent = false;
         }
-        // it has a mask! Then lets hit test that before continuing
-        else if (hitTest && displayObject._mask) {
-                if (!displayObject._mask.containsPoint(point)) {
-                    hitTest = false;
+        // If there is a mask, no need to test against anything else if the pointer is not within the mask
+        else if (displayObject._mask) {
+                if (hitTest) {
+                    if (!displayObject._mask.containsPoint(point)) {
+                        hitTest = false;
+                        hitTestChildren = false;
+                    }
                 }
             }
 
         // ** FREE TIP **! If an object is not interactive or has no buttons in it
         // (such as a game scene!) set interactiveChildren to false for that displayObject.
         // This will allow PixiJS to completely ignore and bypass checking the displayObjects children.
-        if (displayObject.interactiveChildren && displayObject.children) {
+        if (hitTestChildren && displayObject.interactiveChildren && displayObject.children) {
             var children = displayObject.children;
 
             for (var i = children.length - 1; i >= 0; i--) {
@@ -49922,12 +50940,8 @@ var InteractionManager = function (_EventEmitter) {
             // has already been hit - but only if it was interactive, otherwise we need to keep
             // looking for an interactive child, just in case we hit one
             if (hitTest && !interactionEvent.target) {
-                if (displayObject.hitArea) {
-                    displayObject.worldTransform.applyInverse(point, this._tempPoint);
-                    if (displayObject.hitArea.contains(this._tempPoint.x, this._tempPoint.y)) {
-                        hit = true;
-                    }
-                } else if (displayObject.containsPoint) {
+                // already tested against hitArea if it is defined
+                if (!displayObject.hitArea && displayObject.containsPoint) {
                     if (displayObject.containsPoint(point)) {
                         hit = true;
                     }
@@ -50222,7 +51236,7 @@ var InteractionManager = function (_EventEmitter) {
 
         var events = this.normalizeToPointerData(originalEvent);
 
-        if (events[0].pointerType === 'mouse') {
+        if (events[0].pointerType === 'mouse' || events[0].pointerType === 'pen') {
             this.didMove = true;
 
             this.cursor = null;
@@ -50430,7 +51444,7 @@ var InteractionManager = function (_EventEmitter) {
         }
         // copy properties from the event, so that we can make sure that touch/pointer specific
         // data is available
-        interactionData._copyEvent(event);
+        interactionData.copyEvent(event);
 
         return interactionData;
     };
@@ -50448,7 +51462,7 @@ var InteractionManager = function (_EventEmitter) {
 
         if (interactionData) {
             delete this.activeInteractionData[pointerId];
-            interactionData._reset();
+            interactionData.reset();
             this.interactionDataPool.push(interactionData);
         }
     };
@@ -50485,7 +51499,7 @@ var InteractionManager = function (_EventEmitter) {
         }
 
         interactionData.originalEvent = pointerEvent;
-        interactionEvent._reset();
+        interactionEvent.reset();
 
         return interactionEvent;
     };
@@ -50606,7 +51620,7 @@ exports.default = InteractionManager;
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":244,"./InteractionData":335,"./InteractionEvent":336,"./InteractionTrackingData":338,"./interactiveTarget":340,"eventemitter3":368}],338:[function(require,module,exports){
+},{"../core":260,"./InteractionData":351,"./InteractionEvent":352,"./InteractionTrackingData":354,"./interactiveTarget":356,"eventemitter3":385}],354:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -50782,7 +51796,7 @@ InteractionTrackingData.FLAGS = Object.freeze({
     RIGHT_DOWN: 1 << 2
 });
 
-},{}],339:[function(require,module,exports){
+},{}],355:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50834,7 +51848,7 @@ Object.defineProperty(exports, 'InteractionEvent', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./InteractionData":335,"./InteractionEvent":336,"./InteractionManager":337,"./InteractionTrackingData":338,"./interactiveTarget":340}],340:[function(require,module,exports){
+},{"./InteractionData":351,"./InteractionEvent":352,"./InteractionManager":353,"./InteractionTrackingData":354,"./interactiveTarget":356}],356:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -50951,7 +51965,7 @@ exports.default = {
   _trackedPointers: undefined
 };
 
-},{}],341:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51043,7 +52057,7 @@ function parse(resource, texture) {
     resource.bitmapFont = _extras.BitmapText.registerFont(resource.data, texture);
 }
 
-},{"../core":244,"../extras":320,"path":401,"resource-loader":374}],342:[function(require,module,exports){
+},{"../core":260,"../extras":336,"path":205,"resource-loader":396}],358:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51171,7 +52185,7 @@ AppPrototype.destroy = function destroy(removeView) {
     this._parentDestroy(removeView);
 };
 
-},{"../core/Application":222,"./bitmapFontParser":341,"./loader":343,"./spritesheetParser":344,"./textureParser":345,"resource-loader":374}],343:[function(require,module,exports){
+},{"../core/Application":238,"./bitmapFontParser":357,"./loader":359,"./spritesheetParser":360,"./textureParser":361,"resource-loader":396}],359:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51342,7 +52356,7 @@ var Resource = _resourceLoader2.default.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":341,"./spritesheetParser":344,"./textureParser":345,"eventemitter3":368,"resource-loader":374,"resource-loader/lib/middlewares/parsing/blob":375}],344:[function(require,module,exports){
+},{"./bitmapFontParser":357,"./spritesheetParser":360,"./textureParser":361,"eventemitter3":385,"resource-loader":396,"resource-loader/lib/middlewares/parsing/blob":397}],360:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51360,7 +52374,6 @@ exports.default = function () {
 
         var loadOptions = {
             crossOrigin: resource.crossOrigin,
-            loadType: _resourceLoader.Resource.LOAD_TYPE.IMAGE,
             metadata: resource.metadata.imageMetadata,
             parentResource: resource
         };
@@ -51369,6 +52382,12 @@ exports.default = function () {
 
         // load the image for this sheet
         this.add(imageResourceName, resourcePath, loadOptions, function onImageLoad(res) {
+            if (res.error) {
+                next(res.error);
+
+                return;
+            }
+
             var spritesheet = new _core.Spritesheet(res.texture.baseTexture, resource.data, resource.url);
 
             spritesheet.parse(function () {
@@ -51401,7 +52420,7 @@ function getResourcePath(resource, baseUrl) {
     return _url2.default.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
 }
 
-},{"../core":244,"resource-loader":374,"url":407}],345:[function(require,module,exports){
+},{"../core":260,"resource-loader":396,"url":407}],361:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51424,7 +52443,7 @@ var _Texture2 = _interopRequireDefault(_Texture);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../core/textures/Texture":294,"resource-loader":374}],346:[function(require,module,exports){
+},{"../core/textures/Texture":310,"resource-loader":396}],362:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51535,7 +52554,7 @@ var Mesh = function (_core$Container) {
      *
      * @member {number}
      */
-    _this.canvasPadding = 0;
+    _this.canvasPadding = core.settings.MESH_CANVAS_PADDING;
 
     /**
      * The way the Mesh should be drawn, can be any of the {@link PIXI.mesh.Mesh.DRAW_MODES} consts
@@ -51793,7 +52812,7 @@ Mesh.DRAW_MODES = {
   TRIANGLES: 1
 };
 
-},{"../core":244,"../core/textures/Texture":294}],347:[function(require,module,exports){
+},{"../core":260,"../core/textures/Texture":310}],363:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51962,6 +52981,7 @@ var NineSlicePlane = function (_Plane) {
         var context = renderer.context;
 
         context.globalAlpha = this.worldAlpha;
+        renderer.setBlendMode(this.blendMode);
 
         var transform = this.worldTransform;
         var res = renderer.resolution;
@@ -52179,7 +53199,7 @@ var NineSlicePlane = function (_Plane) {
 
 exports.default = NineSlicePlane;
 
-},{"./Plane":348}],348:[function(require,module,exports){
+},{"./Plane":364}],364:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52320,7 +53340,7 @@ var Plane = function (_Mesh) {
 
 exports.default = Plane;
 
-},{"./Mesh":346}],349:[function(require,module,exports){
+},{"./Mesh":362}],365:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52556,7 +53576,7 @@ var Rope = function (_Mesh) {
 
 exports.default = Rope;
 
-},{"./Mesh":346}],350:[function(require,module,exports){
+},{"./Mesh":362}],366:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52612,6 +53632,7 @@ var MeshSpriteRenderer = function () {
             context.setTransform(transform.a * res, transform.b * res, transform.c * res, transform.d * res, transform.tx * res, transform.ty * res);
         }
 
+        renderer.context.globalAlpha = mesh.worldAlpha;
         renderer.setBlendMode(mesh.blendMode);
 
         if (mesh.drawMode === _Mesh2.default.DRAW_MODES.TRIANGLE_MESH) {
@@ -52722,9 +53743,11 @@ var MeshSpriteRenderer = function () {
         var y1 = vertices[index1 + 1];
         var y2 = vertices[index2 + 1];
 
-        if (mesh.canvasPadding > 0) {
-            var paddingX = mesh.canvasPadding / mesh.worldTransform.a;
-            var paddingY = mesh.canvasPadding / mesh.worldTransform.d;
+        var canvasPadding = mesh.canvasPadding / this.renderer.resolution;
+
+        if (canvasPadding > 0) {
+            var paddingX = canvasPadding / Math.abs(mesh.worldTransform.a);
+            var paddingY = canvasPadding / Math.abs(mesh.worldTransform.d);
             var centerX = (x0 + x1 + x2) / 3;
             var centerY = (y0 + y1 + y2) / 3;
 
@@ -52839,7 +53862,7 @@ exports.default = MeshSpriteRenderer;
 
 core.CanvasRenderer.registerPlugin('mesh', MeshSpriteRenderer);
 
-},{"../../core":244,"../Mesh":346}],351:[function(require,module,exports){
+},{"../../core":260,"../Mesh":362}],367:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52900,7 +53923,7 @@ Object.defineProperty(exports, 'Rope', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./Mesh":346,"./NineSlicePlane":347,"./Plane":348,"./Rope":349,"./canvas/CanvasMeshRenderer":350,"./webgl/MeshRenderer":352}],352:[function(require,module,exports){
+},{"./Mesh":362,"./NineSlicePlane":363,"./Plane":364,"./Rope":365,"./canvas/CanvasMeshRenderer":366,"./webgl/MeshRenderer":368}],368:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53051,7 +54074,7 @@ exports.default = MeshRenderer;
 
 core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 
-},{"../../core":244,"../Mesh":346,"path":401,"pixi-gl-core":208}],353:[function(require,module,exports){
+},{"../../core":260,"../Mesh":362,"path":205,"pixi-gl-core":224}],369:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53104,13 +54127,14 @@ var ParticleContainer = function (_core$Container) {
      * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
      * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
-     * @param {boolean} [properties.scale=false] - When true, scale be uploaded and applied.
+     * @param {boolean} [properties.vertices=false] - When true, vertices be uploaded and applied.
+     *                  if sprite's ` scale/anchor/trim/frame/orig` is dynamic, please set `true`.
      * @param {boolean} [properties.position=true] - When true, position be uploaded and applied.
      * @param {boolean} [properties.rotation=false] - When true, rotation be uploaded and applied.
      * @param {boolean} [properties.uvs=false] - When true, uvs be uploaded and applied.
      * @param {boolean} [properties.tint=false] - When true, alpha and tint be uploaded and applied.
      * @param {number} [batchSize=16384] - Number of particles per batch. If less than maxSize, it uses maxSize instead.
-     * @param {boolean} [autoResize=true] If true, container allocates more batches in case
+     * @param {boolean} [autoResize=false] If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
     function ParticleContainer() {
@@ -53163,10 +54187,18 @@ var ParticleContainer = function (_core$Container) {
         _this._glBuffers = {};
 
         /**
-         * @member {number}
+         * for every batch stores _updateID corresponding to the last change in that batch
+         * @member {number[]}
          * @private
          */
-        _this._bufferToUpdate = 0;
+        _this._bufferUpdateIDs = [];
+
+        /**
+         * when child inserted, removed or changes position this number goes up
+         * @member {number[]}
+         * @private
+         */
+        _this._updateID = 0;
 
         /**
          * @member {boolean}
@@ -53233,11 +54265,11 @@ var ParticleContainer = function (_core$Container) {
 
     ParticleContainer.prototype.setProperties = function setProperties(properties) {
         if (properties) {
-            this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
+            this._properties[0] = 'vertices' in properties || 'scale' in properties ? !!properties.vertices || !!properties.scale : this._properties[0];
             this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
             this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
             this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
-            this._properties[4] = 'alpha' in properties || 'tint' in properties ? !!properties.alpha || !!properties.tint : this._properties[4];
+            this._properties[4] = 'tint' in properties || 'alpha' in properties ? !!properties.tint || !!properties.alpha : this._properties[4];
         }
     };
 
@@ -53300,9 +54332,10 @@ var ParticleContainer = function (_core$Container) {
     ParticleContainer.prototype.onChildrenChange = function onChildrenChange(smallestChildIndex) {
         var bufferIndex = Math.floor(smallestChildIndex / this._batchSize);
 
-        if (bufferIndex < this._bufferToUpdate) {
-            this._bufferToUpdate = bufferIndex;
+        while (this._bufferUpdateIDs.length < bufferIndex) {
+            this._bufferUpdateIDs.push(0);
         }
+        this._bufferUpdateIDs[bufferIndex] = ++this._updateID;
     };
 
     /**
@@ -53411,6 +54444,7 @@ var ParticleContainer = function (_core$Container) {
 
         this._properties = null;
         this._buffers = null;
+        this._bufferUpdateIDs = null;
     };
 
     _createClass(ParticleContainer, [{
@@ -53430,7 +54464,7 @@ var ParticleContainer = function (_core$Container) {
 
 exports.default = ParticleContainer;
 
-},{"../core":244,"../core/utils":304}],354:[function(require,module,exports){
+},{"../core":260,"../core/utils":320}],370:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53455,7 +54489,7 @@ Object.defineProperty(exports, 'ParticleRenderer', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./ParticleContainer":353,"./webgl/ParticleRenderer":356}],355:[function(require,module,exports){
+},{"./ParticleContainer":369,"./webgl/ParticleRenderer":372}],371:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53558,6 +54592,8 @@ var ParticleBuffer = function () {
         this.dynamicBuffer = null;
         this.dynamicData = null;
         this.dynamicDataUint32 = null;
+
+        this._updateID = 0;
 
         this.initBuffers();
     }
@@ -53702,7 +54738,7 @@ var ParticleBuffer = function () {
 
 exports.default = ParticleBuffer;
 
-},{"../../core/utils/createIndicesForQuads":302,"pixi-gl-core":208}],356:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":318,"pixi-gl-core":224}],372:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53891,6 +54927,8 @@ var ParticleRenderer = function (_core$ObjectRenderer) {
         // make sure the texture is bound..
         this.shader.uniforms.uSampler = renderer.bindTexture(baseTexture);
 
+        var updateStatic = false;
+
         // now lets upload and render the buffers..
         for (var i = 0, j = 0; i < totalChildren; i += batchSize, j += 1) {
             var amount = totalChildren - i;
@@ -53911,10 +54949,13 @@ var ParticleRenderer = function (_core$ObjectRenderer) {
             // we always upload the dynamic
             buffer.uploadDynamic(children, i, amount);
 
+            var bid = container._bufferUpdateIDs[i] || 0;
+
+            updateStatic = updateStatic || buffer._updateID < bid;
             // we only upload the static content when we have to!
-            if (container._bufferToUpdate === j) {
+            if (updateStatic) {
+                buffer._updateID = container._updateID;
                 buffer.uploadStatic(children, i, amount);
-                container._bufferToUpdate = j + 1;
             }
 
             // bind the buffer
@@ -54178,7 +55219,7 @@ exports.default = ParticleRenderer;
 
 core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
-},{"../../core":244,"../../core/utils":304,"./ParticleBuffer":355,"./ParticleShader":357}],357:[function(require,module,exports){
+},{"../../core":260,"../../core/utils":320,"./ParticleBuffer":371,"./ParticleShader":373}],373:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54211,7 +55252,7 @@ var ParticleShader = function (_Shader) {
 
         return _possibleConstructorReturn(this, _Shader.call(this, gl,
         // vertex shader
-        ['attribute vec2 aVertexPosition;', 'attribute vec2 aTextureCoord;', 'attribute vec4 aColor;', 'attribute vec2 aPositionCoord;', 'attribute vec2 aScale;', 'attribute float aRotation;', 'uniform mat3 projectionMatrix;', 'uniform vec4 uColor;', 'varying vec2 vTextureCoord;', 'varying vec4 vColor;', 'void main(void){', '   float x = (aVertexPosition.x) * cos(aRotation) - (aVertexPosition.y) * sin(aRotation);', '   float y = (aVertexPosition.x) * sin(aRotation) + (aVertexPosition.y) * cos(aRotation);', '   vec2 v = vec2(x, y);', '   v = v + aPositionCoord;', '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);', '   vTextureCoord = aTextureCoord;', '   vColor = aColor * uColor;', '}'].join('\n'),
+        ['attribute vec2 aVertexPosition;', 'attribute vec2 aTextureCoord;', 'attribute vec4 aColor;', 'attribute vec2 aPositionCoord;', 'attribute float aRotation;', 'uniform mat3 projectionMatrix;', 'uniform vec4 uColor;', 'varying vec2 vTextureCoord;', 'varying vec4 vColor;', 'void main(void){', '   float x = (aVertexPosition.x) * cos(aRotation) - (aVertexPosition.y) * sin(aRotation);', '   float y = (aVertexPosition.x) * sin(aRotation) + (aVertexPosition.y) * cos(aRotation);', '   vec2 v = vec2(x, y);', '   v = v + aPositionCoord;', '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);', '   vTextureCoord = aTextureCoord;', '   vColor = aColor * uColor;', '}'].join('\n'),
         // hello
         ['varying vec2 vTextureCoord;', 'varying vec4 vColor;', 'uniform sampler2D uSampler;', 'void main(void){', '  vec4 color = texture2D(uSampler, vTextureCoord) * vColor;', '  gl_FragColor = color;', '}'].join('\n')));
     }
@@ -54221,7 +55262,7 @@ var ParticleShader = function (_Shader) {
 
 exports.default = ParticleShader;
 
-},{"../../core/Shader":223}],358:[function(require,module,exports){
+},{"../../core/Shader":239}],374:[function(require,module,exports){
 "use strict";
 
 // References:
@@ -54239,7 +55280,19 @@ if (!Math.sign) {
     };
 }
 
-},{}],359:[function(require,module,exports){
+},{}],375:[function(require,module,exports){
+'use strict';
+
+// References:
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger
+
+if (!Number.isInteger) {
+    Number.isInteger = function numberIsInteger(value) {
+        return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+    };
+}
+
+},{}],376:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -54254,7 +55307,7 @@ if (!Object.assign) {
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 
-},{"object-assign":188}],360:[function(require,module,exports){
+},{"object-assign":203}],377:[function(require,module,exports){
 'use strict';
 
 require('./Object.assign');
@@ -54262,6 +55315,8 @@ require('./Object.assign');
 require('./requestAnimationFrame');
 
 require('./Math.sign');
+
+require('./Number.isInteger');
 
 if (!window.ArrayBuffer) {
     window.ArrayBuffer = Array;
@@ -54279,7 +55334,7 @@ if (!window.Uint16Array) {
     window.Uint16Array = Array;
 }
 
-},{"./Math.sign":358,"./Object.assign":359,"./requestAnimationFrame":361}],361:[function(require,module,exports){
+},{"./Math.sign":374,"./Number.isInteger":375,"./Object.assign":376,"./requestAnimationFrame":378}],378:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -54356,7 +55411,7 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],362:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54844,7 +55899,7 @@ function findTextStyle(item, queue) {
     return false;
 }
 
-},{"../core":244,"./limiters/CountLimiter":365}],363:[function(require,module,exports){
+},{"../core":260,"./limiters/CountLimiter":382}],380:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54964,7 +56019,7 @@ function uploadBaseTextures(prepare, item) {
 
 core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
 
-},{"../../core":244,"../BasePrepare":362}],364:[function(require,module,exports){
+},{"../../core":260,"../BasePrepare":379}],381:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -55016,7 +56071,7 @@ Object.defineProperty(exports, 'TimeLimiter', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./BasePrepare":362,"./canvas/CanvasPrepare":363,"./limiters/CountLimiter":365,"./limiters/TimeLimiter":366,"./webgl/WebGLPrepare":367}],365:[function(require,module,exports){
+},{"./BasePrepare":379,"./canvas/CanvasPrepare":380,"./limiters/CountLimiter":382,"./limiters/TimeLimiter":383,"./webgl/WebGLPrepare":384}],382:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -55074,7 +56129,7 @@ var CountLimiter = function () {
 
 exports.default = CountLimiter;
 
-},{}],366:[function(require,module,exports){
+},{}],383:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -55132,7 +56187,7 @@ var TimeLimiter = function () {
 
 exports.default = TimeLimiter;
 
-},{}],367:[function(require,module,exports){
+},{}],384:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -55254,7 +56309,7 @@ function findGraphics(item, queue) {
 
 core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
 
-},{"../../core":244,"../BasePrepare":362}],368:[function(require,module,exports){
+},{"../../core":260,"../BasePrepare":379}],385:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty
@@ -55567,7 +56622,909 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],369:[function(require,module,exports){
+},{}],386:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],387:[function(require,module,exports){
+(function (global){
+/*! https://mths.be/punycode v1.4.1 by @mathias */
+;(function(root) {
+
+	/** Detect free variables */
+	var freeExports = typeof exports == 'object' && exports &&
+		!exports.nodeType && exports;
+	var freeModule = typeof module == 'object' && module &&
+		!module.nodeType && module;
+	var freeGlobal = typeof global == 'object' && global;
+	if (
+		freeGlobal.global === freeGlobal ||
+		freeGlobal.window === freeGlobal ||
+		freeGlobal.self === freeGlobal
+	) {
+		root = freeGlobal;
+	}
+
+	/**
+	 * The `punycode` object.
+	 * @name punycode
+	 * @type Object
+	 */
+	var punycode,
+
+	/** Highest positive signed 32-bit float value */
+	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
+
+	/** Bootstring parameters */
+	base = 36,
+	tMin = 1,
+	tMax = 26,
+	skew = 38,
+	damp = 700,
+	initialBias = 72,
+	initialN = 128, // 0x80
+	delimiter = '-', // '\x2D'
+
+	/** Regular expressions */
+	regexPunycode = /^xn--/,
+	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
+
+	/** Error messages */
+	errors = {
+		'overflow': 'Overflow: input needs wider integers to process',
+		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+		'invalid-input': 'Invalid input'
+	},
+
+	/** Convenience shortcuts */
+	baseMinusTMin = base - tMin,
+	floor = Math.floor,
+	stringFromCharCode = String.fromCharCode,
+
+	/** Temporary variable */
+	key;
+
+	/*--------------------------------------------------------------------------*/
+
+	/**
+	 * A generic error utility function.
+	 * @private
+	 * @param {String} type The error type.
+	 * @returns {Error} Throws a `RangeError` with the applicable error message.
+	 */
+	function error(type) {
+		throw new RangeError(errors[type]);
+	}
+
+	/**
+	 * A generic `Array#map` utility function.
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} callback The function that gets called for every array
+	 * item.
+	 * @returns {Array} A new array of values returned by the callback function.
+	 */
+	function map(array, fn) {
+		var length = array.length;
+		var result = [];
+		while (length--) {
+			result[length] = fn(array[length]);
+		}
+		return result;
+	}
+
+	/**
+	 * A simple `Array#map`-like wrapper to work with domain name strings or email
+	 * addresses.
+	 * @private
+	 * @param {String} domain The domain name or email address.
+	 * @param {Function} callback The function that gets called for every
+	 * character.
+	 * @returns {Array} A new string of characters returned by the callback
+	 * function.
+	 */
+	function mapDomain(string, fn) {
+		var parts = string.split('@');
+		var result = '';
+		if (parts.length > 1) {
+			// In email addresses, only the domain name should be punycoded. Leave
+			// the local part (i.e. everything up to `@`) intact.
+			result = parts[0] + '@';
+			string = parts[1];
+		}
+		// Avoid `split(regex)` for IE8 compatibility. See #17.
+		string = string.replace(regexSeparators, '\x2E');
+		var labels = string.split('.');
+		var encoded = map(labels, fn).join('.');
+		return result + encoded;
+	}
+
+	/**
+	 * Creates an array containing the numeric code points of each Unicode
+	 * character in the string. While JavaScript uses UCS-2 internally,
+	 * this function will convert a pair of surrogate halves (each of which
+	 * UCS-2 exposes as separate characters) into a single code point,
+	 * matching UTF-16.
+	 * @see `punycode.ucs2.encode`
+	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+	 * @memberOf punycode.ucs2
+	 * @name decode
+	 * @param {String} string The Unicode input string (UCS-2).
+	 * @returns {Array} The new array of code points.
+	 */
+	function ucs2decode(string) {
+		var output = [],
+		    counter = 0,
+		    length = string.length,
+		    value,
+		    extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * Creates a string based on an array of numeric code points.
+	 * @see `punycode.ucs2.decode`
+	 * @memberOf punycode.ucs2
+	 * @name encode
+	 * @param {Array} codePoints The array of numeric code points.
+	 * @returns {String} The new Unicode string (UCS-2).
+	 */
+	function ucs2encode(array) {
+		return map(array, function(value) {
+			var output = '';
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+			return output;
+		}).join('');
+	}
+
+	/**
+	 * Converts a basic code point into a digit/integer.
+	 * @see `digitToBasic()`
+	 * @private
+	 * @param {Number} codePoint The basic numeric code point value.
+	 * @returns {Number} The numeric value of a basic code point (for use in
+	 * representing integers) in the range `0` to `base - 1`, or `base` if
+	 * the code point does not represent a value.
+	 */
+	function basicToDigit(codePoint) {
+		if (codePoint - 48 < 10) {
+			return codePoint - 22;
+		}
+		if (codePoint - 65 < 26) {
+			return codePoint - 65;
+		}
+		if (codePoint - 97 < 26) {
+			return codePoint - 97;
+		}
+		return base;
+	}
+
+	/**
+	 * Converts a digit/integer into a basic code point.
+	 * @see `basicToDigit()`
+	 * @private
+	 * @param {Number} digit The numeric value of a basic code point.
+	 * @returns {Number} The basic code point whose value (when used for
+	 * representing integers) is `digit`, which needs to be in the range
+	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	 * used; else, the lowercase form is used. The behavior is undefined
+	 * if `flag` is non-zero and `digit` has no uppercase form.
+	 */
+	function digitToBasic(digit, flag) {
+		//  0..25 map to ASCII a..z or A..Z
+		// 26..35 map to ASCII 0..9
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	}
+
+	/**
+	 * Bias adaptation function as per section 3.4 of RFC 3492.
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
+	 * @private
+	 */
+	function adapt(delta, numPoints, firstTime) {
+		var k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+			delta = floor(delta / baseMinusTMin);
+		}
+		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	}
+
+	/**
+	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
+	 * symbols.
+	 * @memberOf punycode
+	 * @param {String} input The Punycode string of ASCII-only symbols.
+	 * @returns {String} The resulting string of Unicode symbols.
+	 */
+	function decode(input) {
+		// Don't use UCS-2
+		var output = [],
+		    inputLength = input.length,
+		    out,
+		    i = 0,
+		    n = initialN,
+		    bias = initialBias,
+		    basic,
+		    j,
+		    index,
+		    oldi,
+		    w,
+		    k,
+		    digit,
+		    t,
+		    /** Cached calculation results */
+		    baseMinusT;
+
+		// Handle the basic code points: let `basic` be the number of input code
+		// points before the last delimiter, or `0` if there is none, then copy
+		// the first basic code points to the output.
+
+		basic = input.lastIndexOf(delimiter);
+		if (basic < 0) {
+			basic = 0;
+		}
+
+		for (j = 0; j < basic; ++j) {
+			// if it's not a basic code point
+			if (input.charCodeAt(j) >= 0x80) {
+				error('not-basic');
+			}
+			output.push(input.charCodeAt(j));
+		}
+
+		// Main decoding loop: start just after the last delimiter if any basic code
+		// points were copied; start at the beginning otherwise.
+
+		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+			// `index` is the index of the next character to be consumed.
+			// Decode a generalized variable-length integer into `delta`,
+			// which gets added to `i`. The overflow checking is easier
+			// if we increase `i` as we go, then subtract off its starting
+			// value at the end to obtain `delta`.
+			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
+
+				if (index >= inputLength) {
+					error('invalid-input');
+				}
+
+				digit = basicToDigit(input.charCodeAt(index++));
+
+				if (digit >= base || digit > floor((maxInt - i) / w)) {
+					error('overflow');
+				}
+
+				i += digit * w;
+				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+
+				if (digit < t) {
+					break;
+				}
+
+				baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) {
+					error('overflow');
+				}
+
+				w *= baseMinusT;
+
+			}
+
+			out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+
+			// `i` was supposed to wrap around from `out` to `0`,
+			// incrementing `n` each time, so we'll fix that now:
+			if (floor(i / out) > maxInt - n) {
+				error('overflow');
+			}
+
+			n += floor(i / out);
+			i %= out;
+
+			// Insert `n` at position `i` of the output
+			output.splice(i++, 0, n);
+
+		}
+
+		return ucs2encode(output);
+	}
+
+	/**
+	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
+	 * Punycode string of ASCII-only symbols.
+	 * @memberOf punycode
+	 * @param {String} input The string of Unicode symbols.
+	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
+	 */
+	function encode(input) {
+		var n,
+		    delta,
+		    handledCPCount,
+		    basicLength,
+		    bias,
+		    j,
+		    m,
+		    q,
+		    k,
+		    t,
+		    currentValue,
+		    output = [],
+		    /** `inputLength` will hold the number of code points in `input`. */
+		    inputLength,
+		    /** Cached calculation results */
+		    handledCPCountPlusOne,
+		    baseMinusT,
+		    qMinusT;
+
+		// Convert the input in UCS-2 to Unicode
+		input = ucs2decode(input);
+
+		// Cache the length
+		inputLength = input.length;
+
+		// Initialize the state
+		n = initialN;
+		delta = 0;
+		bias = initialBias;
+
+		// Handle the basic code points
+		for (j = 0; j < inputLength; ++j) {
+			currentValue = input[j];
+			if (currentValue < 0x80) {
+				output.push(stringFromCharCode(currentValue));
+			}
+		}
+
+		handledCPCount = basicLength = output.length;
+
+		// `handledCPCount` is the number of code points that have been handled;
+		// `basicLength` is the number of basic code points.
+
+		// Finish the basic string - if it is not empty - with a delimiter
+		if (basicLength) {
+			output.push(delimiter);
+		}
+
+		// Main encoding loop:
+		while (handledCPCount < inputLength) {
+
+			// All non-basic code points < n have been handled already. Find the next
+			// larger one:
+			for (m = maxInt, j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+				if (currentValue >= n && currentValue < m) {
+					m = currentValue;
+				}
+			}
+
+			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// but guard against overflow
+			handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+				error('overflow');
+			}
+
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+
+			for (j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+
+				if (currentValue < n && ++delta > maxInt) {
+					error('overflow');
+				}
+
+				if (currentValue == n) {
+					// Represent delta as a generalized variable-length integer
+					for (q = delta, k = base; /* no condition */; k += base) {
+						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+						if (q < t) {
+							break;
+						}
+						qMinusT = q - t;
+						baseMinusT = base - t;
+						output.push(
+							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+						);
+						q = floor(qMinusT / baseMinusT);
+					}
+
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+
+			++delta;
+			++n;
+
+		}
+		return output.join('');
+	}
+
+	/**
+	 * Converts a Punycode string representing a domain name or an email address
+	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	 * it doesn't matter if you call it on a string that has already been
+	 * converted to Unicode.
+	 * @memberOf punycode
+	 * @param {String} input The Punycoded domain name or email address to
+	 * convert to Unicode.
+	 * @returns {String} The Unicode representation of the given Punycode
+	 * string.
+	 */
+	function toUnicode(input) {
+		return mapDomain(input, function(string) {
+			return regexPunycode.test(string)
+				? decode(string.slice(4).toLowerCase())
+				: string;
+		});
+	}
+
+	/**
+	 * Converts a Unicode string representing a domain name or an email address to
+	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
+	 * i.e. it doesn't matter if you call it with a domain that's already in
+	 * ASCII.
+	 * @memberOf punycode
+	 * @param {String} input The domain name or email address to convert, as a
+	 * Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name or
+	 * email address.
+	 */
+	function toASCII(input) {
+		return mapDomain(input, function(string) {
+			return regexNonASCII.test(string)
+				? 'xn--' + encode(string)
+				: string;
+		});
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	/** Define the public API */
+	punycode = {
+		/**
+		 * A string representing the current Punycode.js version number.
+		 * @memberOf punycode
+		 * @type String
+		 */
+		'version': '1.4.1',
+		/**
+		 * An object of methods to convert from JavaScript's internal character
+		 * representation (UCS-2) to Unicode code points, and back.
+		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+		 * @memberOf punycode
+		 * @type Object
+		 */
+		'ucs2': {
+			'decode': ucs2decode,
+			'encode': ucs2encode
+		},
+		'decode': decode,
+		'encode': encode,
+		'toASCII': toASCII,
+		'toUnicode': toUnicode
+	};
+
+	/** Expose `punycode` */
+	// Some AMD build optimizers, like r.js, check for specific condition patterns
+	// like the following:
+	if (
+		typeof define == 'function' &&
+		typeof define.amd == 'object' &&
+		define.amd
+	) {
+		define('punycode', function() {
+			return punycode;
+		});
+	} else if (freeExports && freeModule) {
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
+			freeModule.exports = punycode;
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
+			for (key in punycode) {
+				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+			}
+		}
+	} else {
+		// in Rhino or a web browser
+		root.punycode = punycode;
+	}
+
+}(this));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],388:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
+
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
+  }
+
+  var regexp = /\+/g;
+  qs = qs.split(sep);
+
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
+  }
+
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
+  }
+
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
+
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+},{}],389:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+      }
+    }).join(sep);
+
+  }
+
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+},{}],390:[function(require,module,exports){
+'use strict';
+
+exports.decode = exports.parse = require('./decode');
+exports.encode = exports.stringify = require('./encode');
+
+},{"./decode":388,"./encode":389}],391:[function(require,module,exports){
 'use strict'
 
 /**
@@ -55597,12 +57554,14 @@ module.exports = function removeItems(arr, startIdx, removeCount)
   arr.length = len
 }
 
-},{}],370:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _miniSignals = require('mini-signals');
 
@@ -56063,24 +58022,35 @@ var Loader = function () {
             return this;
         }
 
-        // distribute progress chunks
-        var chunk = 100 / this._queue._tasks.length;
+        if (this._queue.idle()) {
+            this._onStart();
+            this._onComplete();
+        } else {
+            // distribute progress chunks
+            var numTasks = this._queue._tasks.length;
+            var chunk = 100 / numTasks;
 
-        for (var i = 0; i < this._queue._tasks.length; ++i) {
-            this._queue._tasks[i].data.progressChunk = chunk;
+            for (var i = 0; i < this._queue._tasks.length; ++i) {
+                this._queue._tasks[i].data.progressChunk = chunk;
+            }
+
+            // notify we are starting
+            this._onStart();
+
+            // start loading
+            this._queue.resume();
         }
-
-        // update loading state
-        this.loading = true;
-
-        // notify of start
-        this.onStart.dispatch(this);
-
-        // start loading
-        this._queue.resume();
 
         return this;
     };
+
+    /**
+     * The number of resources to load concurrently.
+     *
+     * @member {number}
+     * @default 10
+     */
+
 
     /**
      * Prepares a url for usage based on the configuration of this object
@@ -56089,8 +58059,6 @@ var Loader = function () {
      * @param {string} url - The url to prepare.
      * @return {string} The prepared url.
      */
-
-
     Loader.prototype._prepareUrl = function _prepareUrl(url) {
         var parsedUrl = (0, _parseUri2.default)(url, { strictMode: true });
         var result = void 0;
@@ -56156,6 +58124,19 @@ var Loader = function () {
     };
 
     /**
+     * Called once loading has started.
+     *
+     * @private
+     */
+
+
+    Loader.prototype._onStart = function _onStart() {
+        this.progress = 0;
+        this.loading = true;
+        this.onStart.dispatch(this);
+    };
+
+    /**
      * Called once each resource has loaded.
      *
      * @private
@@ -56163,8 +58144,8 @@ var Loader = function () {
 
 
     Loader.prototype._onComplete = function _onComplete() {
+        this.progress = MAX_PROGRESS;
         this.loading = false;
-
         this.onComplete.dispatch(this, this.resources);
     };
 
@@ -56204,18 +58185,29 @@ var Loader = function () {
 
             // do completion check
             if (_this3._queue.idle() && _this3._resourcesParsing.length === 0) {
-                _this3.progress = MAX_PROGRESS;
                 _this3._onComplete();
             }
         }, true);
     };
+
+    _createClass(Loader, [{
+        key: 'concurrency',
+        get: function get() {
+            return this._queue.concurrency;
+        }
+        // eslint-disable-next-line require-jsdoc
+        ,
+        set: function set(concurrency) {
+            this._queue.concurrency = concurrency;
+        }
+    }]);
 
     return Loader;
 }();
 
 exports.default = Loader;
 
-},{"./Resource":371,"./async":372,"mini-signals":187,"parse-uri":189}],371:[function(require,module,exports){
+},{"./Resource":393,"./async":394,"mini-signals":202,"parse-uri":204}],393:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -56972,7 +58964,7 @@ var Resource = function () {
 
         // status can be 0 when using the `file://` protocol so we also check if a response is set.
         // If it has a response, we assume 200; otherwise a 0 status code with no contents is an aborted request.
-        if (status === STATUS_NONE && text.length > 0) {
+        if (status === STATUS_NONE && (text.length > 0 || xhr.responseType === Resource.XHR_RESPONSE_TYPE.BUFFER)) {
             status = STATUS_OK;
         }
         // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
@@ -57371,7 +59363,7 @@ function reqType(xhr) {
     return xhr.toString().replace('object ', '');
 }
 
-},{"mini-signals":187,"parse-uri":189}],372:[function(require,module,exports){
+},{"mini-signals":202,"parse-uri":204}],394:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57580,7 +59572,7 @@ function queue(worker, concurrency) {
     return q;
 }
 
-},{}],373:[function(require,module,exports){
+},{}],395:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57648,7 +59640,7 @@ function encodeBinary(input) {
     return output;
 }
 
-},{}],374:[function(require,module,exports){
+},{}],396:[function(require,module,exports){
 'use strict';
 
 // import Loader from './Loader';
@@ -57672,7 +59664,7 @@ module.exports = Loader;
 // export default Loader;
 module.exports.default = Loader;
 
-},{"./Loader":370,"./Resource":371,"./async":372,"./b64":373}],375:[function(require,module,exports){
+},{"./Loader":392,"./Resource":393,"./async":394,"./b64":395}],397:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -57760,7 +59752,7 @@ function blobMiddlewareFactory() {
     };
 }
 
-},{"../../Resource":371,"../../b64":373}],376:[function(require,module,exports){
+},{"../../Resource":393,"../../b64":395}],398:[function(require,module,exports){
 // A library of seedable RNGs implemented in Javascript.
 //
 // Usage:
@@ -57822,7 +59814,7 @@ sr.tychei = tychei;
 
 module.exports = sr;
 
-},{"./lib/alea":377,"./lib/tychei":378,"./lib/xor128":379,"./lib/xor4096":380,"./lib/xorshift7":381,"./lib/xorwow":382,"./seedrandom":383}],377:[function(require,module,exports){
+},{"./lib/alea":399,"./lib/tychei":400,"./lib/xor128":401,"./lib/xor4096":402,"./lib/xorshift7":403,"./lib/xorwow":404,"./seedrandom":405}],399:[function(require,module,exports){
 // A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
 // http://baagoe.com/en/RandomMusings/javascript/
 // https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
@@ -57938,7 +59930,7 @@ if (module && module.exports) {
 
 
 
-},{}],378:[function(require,module,exports){
+},{}],400:[function(require,module,exports){
 // A Javascript implementaion of the "Tyche-i" prng algorithm by
 // Samuel Neves and Filipe Araujo.
 // See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
@@ -58043,7 +60035,7 @@ if (module && module.exports) {
 
 
 
-},{}],379:[function(require,module,exports){
+},{}],401:[function(require,module,exports){
 // A Javascript implementaion of the "xor128" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -58126,7 +60118,7 @@ if (module && module.exports) {
 
 
 
-},{}],380:[function(require,module,exports){
+},{}],402:[function(require,module,exports){
 // A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
 //
 // This fast non-cryptographic random number generator is designed for
@@ -58274,7 +60266,7 @@ if (module && module.exports) {
   (typeof define) == 'function' && define   // present with an AMD loader
 );
 
-},{}],381:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 // A Javascript implementaion of the "xorshift7" algorithm by
 // François Panneton and Pierre L'ecuyer:
 // "On the Xorgshift Random Number Generators"
@@ -58373,7 +60365,7 @@ if (module && module.exports) {
 );
 
 
-},{}],382:[function(require,module,exports){
+},{}],404:[function(require,module,exports){
 // A Javascript implementaion of the "xorwow" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -58461,7 +60453,7 @@ if (module && module.exports) {
 
 
 
-},{}],383:[function(require,module,exports){
+},{}],405:[function(require,module,exports){
 /*
 Copyright 2014 David Bau.
 
@@ -58710,7 +60702,7 @@ if ((typeof module) == 'object' && module.exports) {
   Math    // math: package containing random, pow, and seedrandom
 );
 
-},{"crypto":400}],384:[function(require,module,exports){
+},{"crypto":19}],406:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -59907,3696 +61899,7 @@ else {
 
 })(Math);
 
-},{}],385:[function(require,module,exports){
-// angle.js <https://github.com/davidfig/anglejs>
-// Released under MIT license <https://github.com/davidfig/angle/blob/master/LICENSE>
-// Author: David Figatner
-// Copyright (c) 2016-17 YOPEY YOPEY LLC
-
-const _toDegreeConversion = 180 / Math.PI
-const _toRadianConversion = Math.PI / 180
-
-
-/** @constant {number} */
-const UP = Math.PI / 2
-const DOWN = 3 * Math.PI / 2
-const LEFT = Math.PI
-const RIGHT = 0
-
-const NORTH = UP
-const SOUTH = DOWN
-const WEST = LEFT
-const EAST = RIGHT
-
-const PI_2 = Math.PI * 2
-const PI_QUARTER = Math.PI / 4
-const PI_HALF = Math.PI / 2
-
-/**
- * converts from radians to degrees (all other functions expect radians)
- * @param {number} radians
- * @return {number} degrees
- */
-function toDegrees(radians)
-{
-    return radians * _toDegreeConversion
-}
-
-/**
- * converts from degrees to radians (all other functions expect radians)
- * @param {number} degrees
- * @return {number} radians
- */
-function toRadians(degrees)
-{
-    return degrees * _toRadianConversion
-}
-
-/**
- * returns whether the target angle is between angle1 and angle2 (in radians)
- * (based on: http://stackoverflow.com/questions/11406189/determine-if-angle-lies-between-2-other-angles)
- * @param {number} target angle
- * @param {number} angle1
- * @param {number} angle2
- * @return {boolean}
- */
-function isAngleBetween(target, angle1, angle2)
-{
-    const rAngle = ((angle2 - angle1) % PI_2 + PI_2) % PI_2
-    if (rAngle >= Math.PI)
-    {
-        const swap = angle1
-        angle1 = angle2
-        angle2 = swap
-    }
-
-    if (angle1 <= angle2)
-    {
-        return target >= angle1 && target <= angle2
-    }
-    else
-    {
-        return target >= angle1 || target <= angle2
-    }
-}
-
-/**
- * returns +1 or -1 based on whether the difference between two angles is positive or negative (in radians)
- * @param {number} target angle
- * @param {number} source angle
- * @return {number} 1 or -1
- */
-function differenceAnglesSign(target, source)
-{
-    function mod(a, n)
-    {
-        return (a % n + n) % n
-    }
-
-    const a = target - source
-    return mod((a + Math.PI), PI_2) - Math.PI > 0 ? 1 : -1
-}
-
-/**
- * returns the normalized difference between two angles (in radians)
- * @param {number} a - first angle
- * @param {number} b - second angle
- * @return {number} normalized difference between a and b
- */
-function differenceAngles(a, b)
-{
-    const c = Math.abs(a - b) % PI_2
-    return c > Math.PI ? (PI_2 - c) : c
-}
-
-/**
- * returns a target angle that is the shortest way to rotate an object between start and to--may choose a negative angle
- * @param {number} start
- * @param {number} to
- * @return {number} shortest target angle
- */
-function shortestAngle(start, to)
-{
-    const difference = differenceAngles(to, start)
-    const sign = differenceAnglesSign(to, start)
-    const delta = difference * sign
-    return delta + start
-}
-
-/**
- * returns the normalized angle (0 - PI x 2)
- * @param {number} radians
- * @return {number} normalized angle in radians
- */
-function normalize(radians)
-{
-    return radians - PI_2 * Math.floor(radians / PI_2)
-}
-
-/**
- * returns angle between two points (in radians)
- * @param {Point} [point1] {x: x, y: y}
- * @param {Point} [point2] {x: x, y: y}
- * @param {number} [x1]
- * @param {number} [y1]
- * @param {number} [x2]
- * @param {number} [y2]
- * @return {number} angle
- */
-function angleTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
-{
-    if (arguments.length === 4)
-    {
-        return Math.atan2(arguments[3] - arguments[1], arguments[2] - arguments[0])
-    }
-    else
-    {
-        return Math.atan2(arguments[1].y - arguments[0].y, arguments[1].x - arguments[0].x)
-    }
-}
-
-/**
- * returns distance between two points
- * @param {Point} [point1] {x: x, y: y}
- * @param {Point} [point2] {x: x, y: y}
- * @param {number} [x1]
- * @param {number} [y1]
- * @param {number} [x2]
- * @param {number} [y2]
- * @return {number} distance
- */
-function distanceTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
-{
-    if (arguments.length === 2)
-    {
-        return Math.sqrt(Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2))
-    }
-    else
-    {
-        return Math.sqrt(Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2))
-    }
-}
-
-/**
- * returns the squared distance between two points
- * @param {Point} [point1] {x: x, y: y}
- * @param {Point} [point2] {x: x, y: y}
- * @param {number} [x1]
- * @param {number} [y1]
- * @param {number} [x2]
- * @param {number} [y2]
- * @return {number} squared distance
- */
-function distanceTwoPointsSquared(/* (point1, point2) OR (x1, y1, x2, y2) */)
-{
-    if (arguments.length === 2)
-    {
-        return Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2)
-    }
-    else
-    {
-        return Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2)
-    }
-}
-
-/**
- * returns the closest cardinal (N, S, E, W) to the given angle (in radians)
- * @param {number} angle
- * @return {number} closest cardinal in radians
- */
-function closestAngle(angle)
-{
-    const left = differenceAngles(angle, LEFT)
-    const right = differenceAngles(angle, RIGHT)
-    const up = differenceAngles(angle, UP)
-    const down = differenceAngles(angle, DOWN)
-    if (left <= right && left <= up && left <= down)
-    {
-        return LEFT
-    }
-    else if (right <= up && right <= down)
-    {
-        return RIGHT
-    }
-    else if (up <= down)
-    {
-        return UP
-    }
-    else
-    {
-        return DOWN
-    }
-}
-
-/**
- * checks whether angles a1 and a2 are equal (after normalizing)
- * @param {number} a1
- * @param {number} a2
- * @param {number} [wiggle] return true if the difference between the angles is <= wiggle
- * @return {boolean} a1 === a2
- */
-function equals(a1, a2, wiggle)
-{
-    if (wiggle)
-    {
-        return differenceAngles(a1, a2) < wiggle
-    }
-    else
-    {
-        return normalize(a1) === normalize(a2)
-    }
-}
-
-/**
- * return a text representation of the cardinal direction
- * @param {number} angle
- * @returns {string} UP, DOWN, LEFT, RIGHT, or NOT CARDINAL
- */
-function explain(angle)
-{
-    switch (angle)
-    {
-        case UP: return 'UP'
-        case DOWN: return 'DOWN'
-        case LEFT: return 'LEFT'
-        case RIGHT: return 'RIGHT'
-        default: return 'NOT CARDINAL'
-    }
-}
-
-module.exports = {
-    UP, DOWN, LEFT, RIGHT,
-    NORTH, SOUTH, WEST, EAST,
-    PI_2, PI_QUARTER, PI_HALF,
-
-    toDegrees,
-    toRadians,
-    isAngleBetween,
-    differenceAnglesSign,
-    differenceAngles,
-    shortestAngle,
-    normalize,
-    angleTwoPoints,
-    distanceTwoPoints,
-    distanceTwoPointsSquared,
-    closestAngle,
-    equals,
-    explain
-}
-},{}],386:[function(require,module,exports){
-/**
- * @file color.js
- * @author David Figatner
- * @license MIT
- * @copyright YOPEY YOPEY LLC 2016
- * {@link https://github.com/davidfig/color}
- */
-
-const Random = require('yy-random');
-
-/** @class */
-class Color
-{
-    /**
-     * converts a #FFFFFF to 0x123456
-     * @param  {string} color
-     * @return {string}
-     */
-    poundToHex(color)
-    {
-        return '0x' + parseInt(color.substr(1)).toString(16);
-    }
-
-    /**
-     * converts a 0x123456 to #FFFFFF
-     * @param  {string} color
-     * @return {string}
-     */
-    hexToPound(color)
-    {
-        return '#' + color.substr(2);
-    }
-
-    /**
-     * converts a number to #FFFFFF
-     * @param  {number} color
-     * @return {string}
-     */
-    valueToPound(color)
-    {
-        return '#' + color.toString(16);
-    }
-
-    /**
-     * based on tinycolor
-     * https://github.com/bgrins/TinyColor
-     * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-     * @param {string} color
-     * @returns {object}
-     */
-    hexToHsl (color)
-    {
-        var rgb = this.hexToRgb(color),
-            r = rgb.r,
-            g = rgb.g,
-            b = rgb.b;
-        var max = Math.max(r, g, b),
-            min = Math.min(r, g, b);
-        var h, s, l = (max + min) / 2;
-
-        if (max === min)
-        {
-            h = s = 0; // achromatic
-        }
-        else
-        {
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-            }
-
-            h /= 6;
-        }
-
-        return { h: h, s: s, l: l };
-    }
-
-    /** based on tinycolor
-    * https://github.com/bgrins/TinyColor
-    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-    * @param {object|number} color {h, s, b} or h
-    * @param {number} [s]
-    * @param {number} [l]
-    * @returns number
-    */
-    hslToHex(color)
-    {
-        var r, g, b, h, s, l;
-        if (arguments.length === 1)
-        {
-            h = color.h,
-            s = color.s,
-            l = color.l;
-        }
-        else
-        {
-            h = arguments[0];
-            s = arguments[1];
-            l = arguments[2];
-        }
-
-        function hue2rgb(p, q, t) {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1/6) return p + (q - p) * 6 * t;
-            if (t < 1/2) return q;
-            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        }
-
-        if (s === 0)
-        {
-            r = g = b = l; // achromatic
-        }
-        else
-        {
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
-        }
-
-        return this.rgbToHex(r * 255, g * 255, b * 255);
-    }
-
-    /* darkens a color by the percentage
-    * @param {object} color in hex (0xabcdef)
-    * @param {number} amount
-    * @return {number}
-    */
-    darken(color, amount)
-    {
-        return this.blend(amount, color, 0);
-    }
-
-    /** based on tinycolor
-    * https://github.com/bgrins/TinyColor
-    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-    * @param {object} color
-    * @param {number} amount
-    */
-    saturate(color, amount)
-    {
-        amount = (amount === 0) ? 0 : (amount || 10);
-        var hsl = this.hexToHsl(color);
-        hsl.s += amount / 100;
-        hsl.s = Math.min(1, Math.max(0, hsl.s));
-        return this.hslToHex(hsl);
-    }
-
-    /** based on tinycolor
-    * https://github.com/bgrins/TinyColor
-    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-    * @param {object} color
-    * @param {number} amount
-    */
-    desaturate(color, amount) {
-        amount = (amount === 0) ? 0 : (amount || 10);
-        var hsl = this.hexToHsl(color);
-        hsl.s -= amount / 100;
-        hsl.s = Math.min(1, Math.max(0, hsl.s));
-        return this.hslToHex(hsl);
-    }
-
-    /**
-     * blends two colors together
-     * @param  {number} percent [0.0 - 1.0]
-     * @param  {string} color1 first color in 0x123456 format
-     * @param  {string} color2 second color in 0x123456 format
-     * @return {number}
-     */
-    blend(percent, color1, color2)
-    {
-        if (percent === 0)
-        {
-            return color1;
-        }
-        if (percent === 1)
-        {
-            return color2;
-        }
-        var r1 = color1 >> 16;
-        var g1 = color1 >> 8 & 0x0000ff;
-        var b1 = color1 & 0x0000ff;
-        var r2 = color2 >> 16;
-        var g2 = color2 >> 8 & 0x0000ff;
-        var b2 = color2 & 0x0000ff;
-        var percent1 = 1 - percent;
-        var r = percent1 * r1 + percent * r2;
-        var g = percent1 * g1 + percent * g2;
-        var b = percent1 * b1 + percent * b2;
-        return r << 16 | g << 8 | b;
-    }
-
-    /**
-     * returns a hex color into an rgb value
-     * @param  {number} hex
-     * @return {string}
-     */
-    hexToRgb(hex)
-    {
-        if (hex === 0)
-        {
-            hex = '0x000000';
-        }
-        else if (typeof hex !== 'string')
-        {
-            var s = '000000' + hex.toString(16);
-            hex = '0x' + s.substr(s.length - 6);
-        }
-        var result = /^0x?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    /**
-     * rgb color to hex in the form of 0x123456
-     * @param  {number|string} r first number or 'rgb(...)' string
-     * @param  {number|null} g
-     * @param  {number|null} b
-     * @return {string}
-     */
-    rgbToHex(r, g, b)
-    {
-        if (arguments.length === 1) {
-            if (Array.isArray(arguments[0])) {
-                var number = arguments[0];
-                r = number[0];
-                g = number[1];
-                b = number[2];
-            } else {
-                var parse = r.replace(/( *rgb *\( *)|( )|(\) *;?)/,'');
-                var numbers = parse.split(',');
-                r = numbers[0];
-                g = numbers[1];
-                b = numbers[2];
-            }
-        }
-        return '0x' + ((1 << 24) + (parseInt(r) << 16) + (parseInt(g) << 8) + parseInt(b)).toString(16).slice(1);
-    }
-
-    /**
-     * returns a random color with balanced r, g, b values (i.e., r, g, b either have the same value or are 0)
-     * @param {number} min value for random number
-     * @param {number} max value for random number
-     * @return {number} color
-     */
-    random(min, max)
-    {
-        function random()
-        {
-            return Random.range(min, max);
-        }
-
-        var colors = [{r:1, g:1, b:1}, {r:1, g:1, b:0}, {r:1,g:0,b:1}, {r:0,g:1,b:1}, {r:1,g:0,b:0}, {r:0,g:1,b:0}, {r:0,g:0,b:1}];
-        var color = Random.pick(colors);
-        min = min || 0;
-        max = max || 255;
-        return this.rgbToHex(color.r ? random() : 0, color.g ? random() : 0, color.b ? random() : 0);
-    }
-
-    // h: 0-360, s: 0-1, l: 0-1
-    /**
-     * returns a random color based on hsl
-     * @param {number} hMin [0, 360]
-     * @param {number} hMax [hMin, 360]
-     * @param {number} sMin [0, 1]
-     * @param {number} sMax [sMin, 1]
-     * @param {number} lMin [0, 1]
-     * @param {number} lMax [lMin, 1]
-     */
-    randomHSL(hMin, hMax, sMin, sMax, lMin, lMax)
-    {
-        var color = {
-            h: Random.range(hMin, hMax),
-            s: Random.range(sMin, sMax, true),
-            l: Random.range(lMin, lMax, true)
-        };
-        return this.hslToHex(color);
-    }
-
-    /**
-     * returns random colors based on HSL with different hues
-     * based on http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
-     * @returns {number[]} colors in hex format (0x123456)
-     */
-    randomGoldenRatioHSL(count, saturation, luminosity)
-    {
-        const goldenRatio = 0.618033988749895;
-        let h = Random.get(1, true);
-        const colors = [];
-        for (let i = 0; i < count; i++)
-        {
-            colors.push(this.hslToHex(h, saturation, luminosity));
-            h = (h + goldenRatio) % 1;
-        }
-        return colors;
-    }
-};
-
-module.exports = new Color();
-},{"yy-random":393}],387:[function(require,module,exports){
-// yy-counter
-// In-browser counter to watch changeable values like counters or FPS
-// David Figatner
-// (c) YOPEY YOPEY LLC 2017
-// MIT License
-// https://github.com/davidfig/counter
-
-module.exports = class Counter
-{
-    /**
-     * @param {object} [options]
-     * @param {string} [options.side=rightbottom] side to place the panel (combination of right/left and bottom/top)
-     * @param {number} [options.padding=7px]
-     * @param {string} [options.color=white]
-     * @param {string} [options.background=rgba(0,0,0,0.5)]
-     * @param {*} {options.xxx} where xxx is a CSS style for the div
-     */
-    constructor(options)
-    {
-        options = options || {}
-        options.side = options.side || 'rightbottom'
-        options.side.toLowerCase()
-        options.padding = options.padding || '7px'
-        options.color = options.color || 'white'
-        options.background = options.background || 'rgba(0,0,0,0.5)'
-        this.div = document.createElement('div')
-        Counter.findParent(options.side).appendChild(this.div)
-        for (let style in options)
-        {
-            if (style !== 'parent' && style !== 'side')
-            {
-                this.div.style[style] = options[style]
-            }
-        }
-    }
-
-    /**
-     * find the parent div for one of the corners
-     * @param {string} [options.side] side to place the panel (combination of right/left and bottom/top)
-     * @return {HTMLElement}
-     */
-    static findParent(side)
-    {
-        const styles = []
-        let name = 'yy-counter-'
-        if (side.indexOf('left') !== -1)
-        {
-            name += 'left-'
-            styles['left'] = 0
-        }
-        else
-        {
-            name += 'right-'
-            styles['right'] = 0
-        }
-        if (side.indexOf('top') !== -1)
-        {
-            name += 'top'
-            styles['top'] = 0
-        }
-        else
-        {
-            name += 'bottom'
-            styles['bottom'] = 0
-        }
-        const test = document.getElementById(name)
-        if (test)
-        {
-            return test
-        }
-        const container = document.createElement('div')
-        container.id = name
-        container.style.overflow = 'hidden'
-        container.style.position = 'fixed'
-        container.style.zIndex = 10000
-        container.style.pointerEvents = 'none'
-        container.style.userSelect = 'none'
-        for (let style in styles)
-        {
-            container.style[style] = styles[style]
-        }
-        document.body.appendChild(container)
-        return container
-    }
-
-    /**
-     * replaces the innerHTML of the console
-     * @param {string|number} text1
-     * @param {string|number} [text2]
-     * @param {string|number} [...textn] any number of arguments
-     */
-    log()
-    {
-        let s = ''
-        for (let arg of arguments)
-        {
-            s += '<div>' + arg + '</div>'
-        }
-        this.div.innerHTML =  s
-    }
-
-    /**
-     * appends to the innerHTML of the console
-     * @param {string|number} text1
-     * @param {string|number} [text2]
-     * @param {string|number} [...textn] any number of arguments
-     */
-    append()
-    {
-        let s = this.div.innerHTML
-        for (let arg of arguments)
-        {
-            s += '<div>' + arg + '</div>'
-        }
-        this.div.innerHTML = s
-    }
-}
-},{}],388:[function(require,module,exports){
-const Color = require('tinycolor2')
-const Counter = require('yy-counter')
-
-const STYLES = {
-    'background': 'rgba(0, 0, 0, 0.5)',
-    'color': 'white',
-}
-
-const STYLES_FPS = {
-    'padding': '0.1em 0.5em'
-}
-
-const STYLES_METER = {
-}
-
-module.exports = class FPS
-{
-    /**
-     * @param {object} [options]
-     * @param {boolean} [options.meter=true] include a meter with the FPS
-     * @param {string} [options.side=bottom-right] include any combination of left/right and top/bottom
-     * @param {number} [options.FPS=60] desired FPS
-     * @param {number} [options.tolerance=1] minimum tolerance for fluctuations in FPS number
-     * @param {number} [options.meterWidth=100] width of meter div
-     * @param {number} [options.meterHeight=25] height of meter div
-     * @param {number} [options.meterLineHeight=4] height of meter line
-     * @param {styles[]} [options.styles] CSS styles to apply to the div (in javascript format)
-     * @param {styles[]} [options.stylesFPS] CSS styles to apply to the FPS text (in javascript format)
-     * @param {styles[]} [options.stylesMeter] CSS styles to apply to the FPS meter (in javascript format)
-     * @param {string} [options.text=" FPS"] change the text to the right of the FPS
-     */
-    constructor(options)
-    {
-        this.options = options || {}
-        this.tolerance = this.options.tolerance || 1
-        this.FPS = this.options.FPS || 60
-        this.meterWidth = this.options.meterWidth || 100
-        this.meterHeight = this.options.meterHeight || 25
-        this.meterLineHeight = this.options.meterLineHeight || 4
-        this.div = document.createElement('div')
-        Counter.findParent(this.options.side || 'bottom-right').appendChild(this.div)
-        this.style(this.div, STYLES, this.options.styles)
-        this.divFPS()
-        this.meter = typeof this.options.meter === 'undefined' || this.options.meter
-        this.lastTime = 0
-        this.frameNumber = 0
-        this.lastUpdate = 0
-        this.lastFPS = '--'
-    }
-
-    /**
-     * change desired FPS
-     * @type {number}
-     */
-    get fps()
-    {
-        return this.FPS
-    }
-    set fps(value)
-    {
-        this.FPS = value
-    }
-
-    /**
-     * remove meter from DOM
-     */
-    remove()
-    {
-        this.div.remove()
-    }
-
-    /**
-     * @type {boolean} meter (the FPS graph) is on or off
-     */
-    get meter()
-    {
-        return this._meter
-    }
-    set meter(value)
-    {
-        if (value)
-        {
-            this.divMeter()
-        }
-        else if (this.meterCanvas)
-        {
-            this.meterCanvas.style.display = 'none'
-        }
-    }
-
-    style(div, style1, style2)
-    {
-        for (let style in style1)
-        {
-            div.style[style] = style1[style]
-        }
-        if (style2)
-        {
-            for (let style in style2)
-            {
-                div.style[style] = style2[style]
-            }
-        }
-    }
-
-    /**
-     * create div for text FPS
-     * @private
-     * @param {HTMLElement} div
-     * @param {object} options (see contructor)
-     */
-    divFPS()
-    {
-        const div = this.div
-        const options = this.options
-        const divFPS = document.createElement('div')
-        div.appendChild(divFPS)
-        this.fpsSpan = document.createElement('span')
-        divFPS.appendChild(this.fpsSpan)
-        const span = document.createElement('span')
-        divFPS.appendChild(span)
-        span.innerText = typeof options.text !== 'undefined' ? options.text : ' FPS'
-        this.style(div, STYLES_FPS, options.stylesFPS)
-    }
-
-    /**
-     * create div for FPS meter
-     * @private
-     * @param {HTMLElement} div
-     * @param {object} options (see contructor)
-     */
-    divMeter()
-    {
-        const div = this.div
-        const options = this.options
-        if (!this.meterCanvas)
-        {
-            this.meterCanvas = document.createElement('canvas')
-            div.appendChild(this.meterCanvas)
-            this.meterCanvas.width = this.meterWidth
-            this.meterCanvas.height = this.meterHeight
-            this.meterCanvas.style.width = div.width + 'px'
-            this.meterCanvas.style.height = div.height + 'px'
-            this.style(this.meterCanvas, STYLES_METER, options.stylesMeter)
-        }
-        else
-        {
-            this.meterCanvas.style.display = 'block'
-        }
-    }
-
-    /**
-     * call this at the start of the frame to calculate FPS
-     */
-    frame()
-    {
-        this.frameNumber++
-        const currentTime = performance.now() - this.lastTime
-
-        // skip large differences to remove garbage
-        if (currentTime > 500)
-        {
-            if (this.lastTime !== 0)
-            {
-                this.lastFPS = Math.floor(this.frameNumber / (currentTime / 1000))
-                if (this.lastFPS >= this.FPS - this.tolerance && this.lastFPS <= this.FPS + this.tolerance)
-                {
-                    this.lastFPS = this.FPS
-                }
-            }
-            this.lastTime = performance.now()
-            this.frameNumber = 0
-        }
-        this.fpsSpan.innerText = this.lastFPS
-        if (this.meterCanvas && this.lastFPS !== '--')
-        {
-            this.meterUpdate(this.lastFPS / this.FPS)
-        }
-    }
-
-    meterUpdate(percent)
-    {
-        const c = this.meterCanvas.getContext('2d')
-        const data = c.getImageData(0, 0, this.meterCanvas.width, this.meterCanvas.height)
-        c.putImageData(data, -1, 0)
-        c.clearRect(this.meterCanvas.width - 1, 0, 1, this.meterCanvas.height)
-        if (percent < 0.5)
-        {
-            c.fillStyle = Color.mix('#ff0000', '0xffa500', percent * 200).toHexString()
-        }
-        else
-        {
-            c.fillStyle = Color.mix('#ffa500', '#00ff00', (percent - 0.5) * 200).toHexString()
-        }
-        const height = (this.meterCanvas.height - this.meterLineHeight) * (1 - percent)
-        c.fillRect(this.meterCanvas.width - 1, height, 1, this.meterLineHeight)
-    }
-
-    side(options)
-    {
-        if (options.side)
-        {
-            options.side = options.side.toLowerCase()
-            if (options.side.indexOf('left') !== -1)
-            {
-                STYLES['left'] = 0
-                delete STYLES['right']
-            }
-            else
-            {
-                STYLES['right'] = 0
-                delete STYLES['left']
-            }
-            if (options.side.indexOf('top') !== -1)
-            {
-                STYLES['top'] = 0
-                delete STYLES['bottom']
-            }
-            else
-            {
-                STYLES['bottom'] = 0
-                delete STYLES['top']
-            }
-        }
-        else
-        {
-            STYLES['right'] = 0
-            STYLES['bottom'] = 0
-        }
-    }
-}
-},{"tinycolor2":384,"yy-counter":387}],389:[function(require,module,exports){
-module.exports = require('./src/loop')
-},{"./src/loop":392}],390:[function(require,module,exports){
-arguments[4][368][0].apply(exports,arguments)
-},{"dup":368}],391:[function(require,module,exports){
-const Events = require('eventemitter3')
-
-/** Entry class for Loop */
-class Entry extends Events
-{
-    /**
-     * create an entry in the update loop
-     * used by Loop
-     * @param {function} callback
-     * @param {number} [time=0] in milliseconds to call this update
-     * @param {number} [count] number of times to run this update (undefined=infinite)
-     */
-    constructor(callback, time, count)
-    {
-        super()
-        this.callback = callback
-        this.time = time
-        this.current = 0
-        this.count = count
-    }
-
-    /**
-     * run the callback if available
-     * @private
-     * @param {number} elapsed
-     */
-    _update(elapsed)
-    {
-        let result
-        if (this.callback)
-        {
-            result = this.callback(elapsed, this)
-        }
-        this.emit('each', elapsed, this)
-        if (result || (!isNaN(this.count) && !--this.count))
-        {
-            this.emit('done', this)
-            return true
-        }
-    }
-
-    /**
-     * update checks time and runs the callback
-     * @param {number} elapsed
-     * @return {boolean} whether entry is complete and may be removed from list
-     */
-    update(elapsed)
-    {
-        if (!this._pause)
-        {
-            if (this.time)
-            {
-                this.current += elapsed
-                if (this.current >= this.time)
-                {
-                    this.current -= this.time
-                    return this._update(elapsed)
-                }
-            }
-            else
-            {
-                return this._update(elapsed)
-            }
-        }
-    }
-
-    /**
-     * @type {boolean} pause this entry
-     */
-    set pause(value)
-    {
-        this._pause = value
-    }
-    get pause()
-    {
-        return this._pause
-    }
-}
-
-module.exports = Entry
-},{"eventemitter3":390}],392:[function(require,module,exports){
-/* Copyright (c) 2017 YOPEY YOPEY LLC */
-
-const Events = require('eventemitter3')
-
-class Loop extends Events
-{
-    /**
-     * basic loop support
-     * @param {object} [options]
-     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
-     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
-     *
-     * @event each(elapsed, Loop, elapsedInLoop)
-     * @event start(Loop)
-     * @event stop(Loop)
-     */
-    constructor(options)
-    {
-        super()
-        options = options || {}
-        this.maxFrameTime = options.maxFrameTime || 1000 / 60
-        if (options.pauseOnBlur)
-        {
-            window.addEventListener('blur', this.stopBlur.bind(this))
-            window.addEventListener('focus', this.startBlur.bind(this))
-        }
-        this.list = []
-    }
-
-    /**
-     * start requestAnimationFrame() loop
-     * @return {Loop} this
-     */
-    start()
-    {
-        if (!this.running)
-        {
-            this.running = true
-            if (!this.waiting)
-            {
-                this.loop()
-            }
-            this.emit('start', this)
-        }
-        return this
-    }
-
-    /**
-     * handler for focus event
-     * @private
-     */
-    startBlur()
-    {
-        if (this.blurred)
-        {
-            this.start()
-            this.blurred = false
-        }
-    }
-
-    /**
-     * handler for blur event
-     * @private
-     */
-    stopBlur()
-    {
-        if (this.running)
-        {
-            this.stop()
-            this.blurred = true
-        }
-    }
-
-    /**
-     * stop loop
-     * @return {Loop} this
-     */
-    stop()
-    {
-        this.running = false
-        this.blurred = false
-        this.emit('stop', this)
-        return this
-    }
-
-    /**
-     * loop through updates; can be called manually each frame, or called automatically as part of start()
-     */
-    update()
-    {
-        const now = performance.now()
-        let elapsed = now - this.last ? this.last : 0
-        elapsed = elapsed > this.maxFrameTime ? this.maxFrameTime : elapsed
-        for (let entry of this.list)
-        {
-            if (entry.update(elapsed))
-            {
-                this.remove(entry)
-            }
-        }
-        this.emit('each', elapsed, this, now - performance.now())
-        this.last = now
-    }
-
-    /**
-     * internal loop through animations
-     * @private
-     */
-    loop()
-    {
-        if (this.running)
-        {
-            this.waiting = false
-            this.update()
-            requestAnimationFrame(this.loop.bind(this))
-            this.waiting = true
-        }
-        else
-        {
-            this.waiting = false
-        }
-    }
-
-    /**
-     * adds a callback to the loop
-     * @param {function} callback
-     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
-     * @param {number} [count=0] number of times to run this update (0=infinite)
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    interval(callback, time, count)
-    {
-        const entry = new Entry(callback, time, count)
-        this.list.push(entry)
-        return entry
-    }
-
-    /**
-     * adds a one-time callback to the loop
-     * @param {function} callback
-     * @param {number} time in milliseconds to call this update
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    timeout(callback, time)
-    {
-        return this.interval(callback, time, 1)
-    }
-
-    /**
-     * remove a callback from the loop
-     * @param {object} entry - returned by add()
-     */
-    remove(entry)
-    {
-        const index = this.list.indexOf(entry)
-        if (index !== -1)
-        {
-            this.list.splice(index, 1)
-        }
-    }
-
-    /**
-     * removes all callbacks from the loop
-     */
-    removeAll()
-    {
-        this.list = []
-    }
-
-    /**
-     * @type {number} count of all animations
-     */
-    get count()
-    {
-        return this.list.length
-    }
-
-    /**
-     * @type {number} count of running animations
-     */
-    get countRunning()
-    {
-        let count = 0
-        for (let entry of this.list)
-        {
-            if (!entry.pause)
-            {
-                count++
-            }
-        }
-        return count
-    }
-}
-
-const Entry = require('./entry')
-
-Loop.entry = Entry
-module.exports = Loop
-},{"./entry":391,"eventemitter3":390}],393:[function(require,module,exports){
-// yy-random
-// by David Figatner
-// MIT license
-// copyright YOPEY YOPEY LLC 2016-17
-// https://github.com/davidfig/random
-
-const seedrandom = require('seedrandom')
-
-class Random
-{
-    constructor()
-    {
-        this.generator = Math.random
-    }
-
-    /**
-     * generates a seeded number
-     * @param {number} seed
-     * @param {object} [options]
-     * @param {string} [PRNG="alea"] - name of algorithm, see https://github.com/davidbau/seedrandom
-     * @param {boolean} [save=true]
-     */
-    seed(seed, options)
-    {
-        options = options || {}
-        this.generator = seedrandom[options.PRNG || 'alea'](seed, { state: options.state })
-        this.options = options
-    }
-
-    /**
-     * saves the state of the random generator
-     * can only be used after Random.seed() is called
-     * @returns {number} state
-     */
-    save()
-    {
-        if (this.generator !== Math.random)
-        {
-            return this.generator.state()
-        }
-    }
-
-    /**
-     * restores the state of the random generator
-     * @param {number} state
-     */
-    restore(state)
-    {
-        this.generator = seedrandom[this.options.PRNG || 'alea']('', { state })
-    }
-
-    /**
-     * changes the generator to use the old Math.sin-based random function
-     * based on : http://stackoverflow.com/questions/521295/javascript-random-seeds
-     * (deprecated) Use only for compatibility purposes
-     * @param {number} seed
-     */
-    seedOld(seed)
-    {
-        this.generator = function()
-        {
-            const x = Math.sin(seed++) * 10000
-            return x - Math.floor(x)
-        }
-    }
-
-    /**
-     * create a separate random generator using the seed
-     * @param {number} seed
-     * @return {object}
-     */
-    separateSeed(seed)
-    {
-        const random = new Random()
-        random.seed(seed)
-        return random
-    }
-
-    /**
-     * resets the random number this.generator to Math.random()
-     */
-    reset()
-    {
-        this.generator = Math.random
-    }
-
-    /**
-     * returns a random number using the this.generator between [0, ceiling - 1]
-     * @param {number} ceiling
-     * @param {boolean} [useFloat=false]
-     * @return {number}
-     */
-    get(ceiling, useFloat)
-    {
-        const negative = ceiling < 0 ? -1 : 1
-        ceiling *= negative
-        let result
-        if (useFloat)
-        {
-            result = this.generator() * ceiling
-        }
-        else
-        {
-            result = Math.floor(this.generator() * ceiling)
-        }
-        return result * negative
-    }
-
-    /**
-     * returns a random integer between 0 - Number.MAX_SAFE_INTEGER
-     * @return {number}
-     */
-    getHuge()
-    {
-        return this.get(Number.MAX_SAFE_INTEGER)
-    }
-
-    /**
-     * random number [middle - range, middle + range]
-     * @param {number} middle
-     * @param {number} delta
-     * @param {boolean} [useFloat=false]
-     * @return {number}
-     */
-    middle(middle, delta, useFloat)
-    {
-        const half = delta / 2
-        return this.range(middle - half, middle + half, useFloat)
-    }
-
-    /**
-     * random number [start, end]
-     * @param {number} start
-     * @param {number} end
-     * @param {boolean} [useFloat=false] if true, then range is (start, end)--i.e., not inclusive to start and end
-     * @return {number}
-     */
-    range(start, end, useFloat)
-    {
-        // case where there is no range
-        if (end === start)
-        {
-            return end
-        }
-
-        if (useFloat)
-        {
-            return this.get(end - start, true) + start
-        }
-        else
-        {
-            let range
-            if (start < 0 && end > 0)
-            {
-                range = -start + end + 1
-            }
-            else if (start === 0 && end > 0)
-            {
-                range = end + 1
-            }
-            else if (start < 0 && end === 0)
-            {
-                range = start - 1
-                start = 1
-            }
-            else if (start < 0 && end < 0)
-            {
-                range = end - start - 1
-            }
-            else
-            {
-                range = end - start + 1
-            }
-            return Math.floor(this.generator() * range) + start
-        }
-    }
-
-    /**
-     * an array of random numbers between [start, end]
-     * @param {number} start
-     * @param {number} end
-     * @param {number} count
-     * @param {boolean} [useFloat=false]
-     * @return {number[]}
-     */
-    rangeMultiple(start, end, count, useFloat)
-    {
-        var array = []
-        for (let i = 0; i < count; i++)
-        {
-            array.push(this.range(start, end, useFloat))
-        }
-        return array
-    }
-
-    /**
-     * an array of random numbers between [middle - range, middle + range]
-     * @param {number} middle
-     * @param {number} range
-     * @param {number} count
-     * @param {boolean} [useFloat=false]
-     * @return {number[]}
-     */
-    middleMultiple(middle, range, count, useFloat)
-    {
-        const array = []
-        for (let i = 0; i < count; i++)
-        {
-            array.push(middle(middle, range, useFloat))
-        }
-        return array
-    }
-
-    /**
-     * @param {number} [chance=0.5]
-     * returns random sign (either +1 or -1)
-     * @return {number}
-     */
-    sign(chance)
-    {
-        chance = chance || 0.5
-        return this.generator() < chance ? 1 : -1
-    }
-
-    /**
-     * tells you whether a random chance was achieved
-     * @param {number} [percent=0.5]
-     * @return {boolean}
-     */
-    chance(percent)
-    {
-        return this.generator() < (percent || 0.5)
-    }
-
-    /**
-     * returns a random angle in radians [0 - 2 * Math.PI)
-     */
-    angle()
-    {
-        return this.get(Math.PI * 2, true)
-    }
-
-    /**
-     * Shuffle array (either in place or copied)
-     * from http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-     * @param {Array} array
-     * @param {boolean} [copy=false] whether to shuffle in place (default) or return a new shuffled array
-     * @return {Array} a shuffled array
-     */
-    shuffle(array, copy)
-    {
-        if (copy)
-        {
-            array = array.slice()
-        }
-        if (array.length === 0)
-        {
-            return array
-        }
-
-        let currentIndex = array.length, temporaryValue, randomIndex
-
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex)
-        {
-            // Pick a remaining element...
-            randomIndex = this.get(currentIndex)
-            currentIndex -= 1
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex]
-            array[currentIndex] = array[randomIndex]
-            array[randomIndex] = temporaryValue
-        }
-        return array
-    }
-
-    /**
-     * picks a random element from an array
-     * @param {Array} array
-     * @return {*}
-     */
-    pick(array, remove)
-    {
-        if (!remove)
-        {
-            return array[this.get(array.length)]
-        }
-        else
-        {
-            const pick = this.get(array.length)
-            const temp = array[pick]
-            array.splice(pick, 1)
-            return temp
-        }
-    }
-
-    /**
-     * returns a random property from an object
-     * from http://stackoverflow.com/questions/2532218/pick-random-property-from-a-javascript-object
-     * @param {object} obj
-     * @return {*}
-     */
-    property(obj)
-    {
-        var result
-        var count = 0
-        for (var prop in obj)
-        {
-            if (this.chance(1 / ++count))
-            {
-                result = prop
-            }
-        }
-        return result
-    }
-
-    /**
-     * creates a random set where each entry is a value between [min, max]
-     * @param {number} min
-     * @param {number} max
-     * @param {number} amount of numbers in set
-     * @param {number[]}
-     */
-    set(min, max, amount)
-    {
-        var set = [], all = [], i
-        for (i = min; i < max; i++)
-        {
-            all.push(i)
-        }
-
-        for (i = 0; i < amount; i++)
-        {
-            var found = this.get(all.length)
-            set.push(all[found])
-            all.splice(found, 1)
-        }
-        return set
-    }
-
-
-    /**
-     * returns a set of numbers with a randomly even distribution (i.e., no overlapping and filling the space)
-     * @param {number} start position
-     * @param {number} end position
-     * @param {number} count of non-start/end points
-     * @param {boolean} [includeStart=false] includes start point (count++)
-     * @param {boolean} [includeEnd=false] includes end point (count++)
-     * @param {boolean} [useFloat=false]
-     * @param {number[]}
-     */
-    distribution(start, end, count, includeStart, includeEnd, useFloat)
-    {
-        var interval = Math.floor((end - start) / count)
-        var halfInterval = interval / 2
-        var quarterInterval = interval / 4
-        var set = []
-        if (includeStart)
-        {
-            set.push(start)
-        }
-        for (var i = 0; i < count; i++)
-        {
-            set.push(start + i * interval + halfInterval + this.range(-quarterInterval, quarterInterval, useFloat))
-        }
-        if (includeEnd)
-        {
-            set.push(end)
-        }
-        return set
-    }
-
-    /**
-     * returns a random number based on weighted probability between [min, max]
-     * from http://stackoverflow.com/questions/22656126/javascript-random-number-with-weighted-probability
-     * @param {number} min value
-     * @param {number} max value
-     * @param {number} target for average value
-     * @param {number} stddev - standard deviation
-     */
-    weightedProbabilityInt(min, max, target, stddev)
-    {
-        function normRand()
-        {
-            let x1, x2, rad
-            do
-            {
-                x1 = 2 * this.get(1, true) - 1
-                x2 = 2 * this.get(1, true) - 1
-                rad = x1 * x1 + x2 * x2
-            } while (rad >= 1 || rad === 0)
-            const c = Math.sqrt(-2 * Math.log(rad) / rad)
-            return x1 * c
-        }
-
-        stddev = stddev || 1
-        if (Math.random() < 0.81546)
-        {
-            while (true)
-            {
-                const sample = ((normRand() * stddev) + target)
-                if (sample >= min && sample <= max)
-                {
-                    return sample
-                }
-            }
-        }
-        else
-        {
-            return this.range(min, max)
-        }
-    }
-
-    /*
-     * returns a random hex color (0 - 0xffffff)
-     * @return {number}
-     */
-    color()
-    {
-        return this.get(0xffffff)
-    }
-}
-
-module.exports = new Random()
-},{"seedrandom":376}],394:[function(require,module,exports){
-// yy-renderer
-// by David Figatner
-// (c) YOPEY YOPEY LLC 2017
-// MIT License
-// https://github.com/davidfig/update
-
-const PIXI = require('pixi.js')
-const FPS = require('yy-fps')
-const Loop = require('yy-loop')
-const exists = require('exists')
-
-class Renderer extends Loop
-{
-    /**
-     * Wrapper for a pixi.js Renderer
-     * @param {object} [options]
-     * @param {boolean} [options.alwaysRender=false] update renderer every update tick
-     * @param {number} [options.FPS=60] desired FPS for rendering (otherwise render on every tick)
-     *
-     * @param {HTMLCanvasElement} [options.canvas] place renderer in this canvas
-     * @param {HTMLElement} [options.parent=document.body] if no canvas is provided, use parent to provide parent for generated canvas otherwise uses document.body
-     * @param {object} [options.styles] apply these CSS styles to the div
-     *
-     * @param {number} [options.aspectRatio] resizing will maintain aspect ratio by ensuring that the smaller dimension fits
-     * @param {boolean} [options.autoresize=false] automatically calls resize during resize events
-     * @param {number} [options.color=0xffffff] background color in hex
-     *
-     * @param {boolean} [options.noWebGL=false] use the PIXI.CanvasRenderer instead of PIXI.WebGLRenderer
-     * @param {boolean} [options.antialias=true] turn on antialias if native antialias is not used, uses FXAA
-     * @param {boolean} [options.forceFXAA=false] forces FXAA antialiasing to be used over native. FXAA is faster, but may not always look as great
-     * @param {number} [options.resolution=window.devicePixelRatio] / device pixel ratio of the renderer (e.g., original retina is 2)
-     * @param {boolean} [options.clearBeforeRender=true] sets if the CanvasRenderer will clear the canvas or before the render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.roundPixels=false] if true PIXI will Math.floor() x/y values when rendering, stopping pixel interpolation
-     *
-     * @param {boolean|string} [options.debug] false, true, or some combination of 'fps', 'dirty', and 'count' (e.g., 'count-dirty' or 'dirty')
-     * @param {object} [options.fpsOptions] options from yy-fps (https://github.com/davidfig/fps)
-     *
-     ** from yy-loop:
-     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
-     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
-     *
-     * @event each(elapsed, Loop, elapsedInLoop)
-     * @event start(Loop)
-     * @event stop(Loop)
-     */
-    constructor(options)
-    {
-        options = options || {}
-        super({ pauseOnBlur: options.pauseOnBlur, maxFrameTime: options.maxFrameTime })
-        this.canvas = options.canvas
-        this.autoResize = options.autoresize
-        this.aspectRatio = options.aspectRatio
-        this.FPS = exists(options.FPS) ? 1000 / options.FPS : 0
-        options.resolution = this.resolution = options.resolution || window.devicePixelRatio || 1
-        options.antialias = exists(options.antialias) ? options.antialias : true
-        options.transparent = true
-        if (!this.canvas) this.createCanvas(options)
-        options.view = this.canvas
-
-        const noWebGL = options.noWebGL || false
-        options.noWebGL = null
-        options.autoresize = null
-        const Renderer = noWebGL ? PIXI.CanvasRenderer : PIXI.WebGLRenderer
-
-        this.renderer = new Renderer(options)
-        if (options.color)
-        {
-            this.canvas.style.backgroundColor = options.color
-        }
-        if (options.styles)
-        {
-            for (let style in options.styles)
-            {
-                this.canvas.style[style] = options.styles[style]
-            }
-        }
-
-        if (options.debug) this.createDebug(options)
-        if (this.autoResize) window.addEventListener('resize', this.resize.bind(this))
-        this.time = 0
-        this.stage = new PIXI.Container()
-        this.dirty = this.alwaysRender = options.alwaysRender || false
-        this.resize(true)
-        this.updateRendererID = this.interval(this.updateRenderer.bind(this), this.FPS)
-    }
-
-    /**
-     * create canvas if one is not provided
-     * @private
-     */
-    createCanvas(options)
-    {
-        this.canvas = document.createElement('canvas')
-        this.canvas.style.width = '100vw'
-        this.canvas.style.height = '100vh'
-        if (options.parent)
-        {
-            options.parent.appendChild(this.canvas)
-            options.parent = null
-        }
-        else
-        {
-            document.body.appendChild(this.canvas)
-        }
-        var width = this.canvas.offsetWidth
-        var height = this.canvas.offsetHeight
-        this.canvas.style.position = 'absolute'
-        this.canvas.width = width * this.resolution
-        this.canvas.height = height * this.resolution
-        this.canvas.style.left = this.canvas.style.top = '0px'
-        this.canvas.style.overflow = 'auto'
-    }
-
-    /**
-     * create FPS meter and render indicator
-     * @param {object} options
-     */
-    createDebug(options)
-    {
-        this.debug = options.debug
-        const fpsOptions = options.fpsOptions || {}
-        fpsOptions.FPS = options.FPS
-        this.fpsMeter = new FPS(fpsOptions)
-        const indicator = document.createElement('div')
-        indicator.style.display = 'flex'
-        indicator.style.justifyContent = 'space-between'
-        this.fpsMeter.div.prepend(indicator)
-        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('dirty') !== -1)
-        {
-            this.dirtyIndicator = document.createElement('div')
-            indicator.appendChild(this.dirtyIndicator)
-            this.dirtyIndicator.innerHTML = '&#9624; '
-        }
-        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('count') !== -1)
-        {
-            this.countIndicator = document.createElement('div')
-            indicator.appendChild(this.countIndicator)
-        }
-    }
-
-    debugUpdate()
-    {
-        this.dirtyIndicator.color = this.dirty
-    }
-
-    /**
-     * immediately render without checking dirty flag
-     */
-    render()
-    {
-        this.renderer.render(this.stage)
-        this.dirty = this.alwaysRender
-    }
-
-    /**
-     * render the scene
-     * @private
-     */
-    updateRenderer()
-    {
-        if (this.fpsMeter)
-        {
-            this.fpsMeter.frame()
-            if (this.dirtyIndicator && this.lastDirty !== this.dirty)
-            {
-                this.dirtyIndicator.style.color = this.dirty ? 'white' : 'black'
-                this.lastDirty = this.dirty
-            }
-            if (this.countIndicator)
-            {
-                const count = this.countObjects()
-                if (this.lastCount !== count)
-                {
-                    this.countIndicator.innerText = count
-                    this.lastCount = count
-                }
-            }
-        }
-        if (this.dirty)
-        {
-            this.render()
-            this.dirty = this.alwaysRender
-        }
-    }
-
-    /**
-     * counts visible objects
-     */
-    countObjects()
-    {
-        function count(object)
-        {
-            if (!object.visible)
-            {
-                return
-            }
-            total++
-            for (var i = 0; i < object.children.length; i++)
-            {
-                count(object.children[i])
-            }
-        }
-
-        var total = 0
-        count(this.stage)
-        return total
-    }
-
-    /**
-     * sets the background color
-     * @param {string} color in CSS format
-     */
-    background(color)
-    {
-        this.canvas.style.backgroundColor = color
-    }
-
-    /**
-     * adds object to stage
-     * @param {PIXI.DisplayObject} object
-     * @param {number} [to] index to add
-     */
-    add(object, to)
-    {
-        if (typeof to === 'undefined')
-        {
-            to = this.stage.children.length
-        }
-        this.stage.addChildAt(object, to)
-        return object
-    }
-
-    /**
-     * alias for add
-     * @param {PIXI.DisplayObject} object
-     */
-    addChild(object)
-    {
-        return this.add(object)
-    }
-
-    /**
-     * alias for add
-     * @param {PIXI.DisplayObject} object
-     * @param {number} to - index to add
-     */
-    addChildTo(object, to)
-    {
-        return this.add(object, to)
-    }
-
-    /**
-     * remove child from stage
-     * @param {PIXI.DisplayObject} object
-     */
-    removeChild(object)
-    {
-        this.stage.removeChild(object)
-    }
-
-    /**
-     * clears the stage
-     */
-    clear()
-    {
-        this.stage.removeChildren()
-    }
-
-    /**
-     * resize
-     * @param {boolean} [force] resize, even if cached width/height remain unchanged
-     */
-    resize(force)
-    {
-        var width = this.canvas.offsetWidth
-        var height = this.canvas.offsetHeight
-        if (this.aspectRatio)
-        {
-            if (width > height)
-            {
-                width = height * this.aspectRatio
-            }
-            else
-            {
-                height = width / this.aspectRatio
-            }
-        }
-        if (force || width !== this.width || height !== this.height)
-        {
-            this.width = width
-            this.height = height
-            this.canvas.width = width * this.resolution
-            this.canvas.height = height * this.resolution
-            this.renderer.resize(this.width, this.height)
-            this.landscape = this.width > this.height
-            this.dirty = true
-        }
-    }
-
-    /**
-     * returns the smaller of the width/height based
-     * @return {number}
-     */
-    dimensionSmall()
-    {
-        return (this.landscape ? this.height : this.width)
-    }
-
-    /**
-     * returns the larger of the width/height based
-     * @return {number}
-     */
-    dimensionBig()
-    {
-        return (this.landscape ? this.width : this.height)
-    }
-
-    /**
-     * getter/setter to change desired FPS of renderer
-     */
-    get fps()
-    {
-        return this.FPS
-    }
-    set fps(value)
-    {
-        this.FPS = 1000 / value
-        this.removeInterval(this.updateRendererID)
-        this.updateRendererID = this.interval(this.updateRenderer.bind(this), this.FPS)
-        if (this.fpsMeter)
-        {
-            this.fpsMeter.fps = value
-        }
-    }
-
-
-    /**
-     * start the internal loop
-     * @inherited from yy-loop
-     * @returns {Renderer} this
-     */
-    // start()
-
-    /**
-     * stop the internal loop
-     * @inherited from yy-loop
-     * @returns {Renderer} this
-     */
-    // stop()
-
-    /**
-     * loop through updates; can be called manually each frame, or called automatically as part of start()
-     * @inherited from yy-loop
-     */
-    // update()
-
-    /**
-     * adds a callback to the loop
-     * @inherited from yy-loop
-     * @param {function} callback
-     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
-     * @param {number} [count=0] number of times to run this update (0=infinite)
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    // interval(callback, time, count)
-
-    /**
-     * adds a one-time callback to the loop
-     * @inherited from yy-loop
-     * @param {function} callback
-     * @param {number} time in milliseconds to call this update
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    // timeout(callback, time)
-
-    /**
-     * remove a callback from the loop
-     * @inherited from yy-loop
-     * @param {object} entry - returned by add()
-     */
-    // remove(entry)
-
-    /**
-     * @inherited from yy-loop
-     * removes all callbacks from the loop
-     */
-    // removeAll()
-
-    /**
-     * @inherited from yy-loop
-     * @type {number} count of all animations
-     */
-    // get count()
-
-    /**
-     * @inherited from yy-loop
-     * @type {number} count of running animations
-     */
-    // get countRunning()
-}
-
-module.exports = Renderer
-},{"exists":7,"pixi.js":334,"yy-fps":388,"yy-loop":389}],395:[function(require,module,exports){
-const Line = require('./line')
-const Polygon = require('./polygon')
-
-/**
- * box-point collision
- * @param {number} x1 top-left corner of box
- * @param {number} y1 top-left corner of box
- * @param {number} w1 width of box
- * @param {number} h1 height of box
- * @param {number} x2 of point
- * @param {number} y2 of point
- * @return {boolean}
- */
-function boxPoint(x1, y1, w1, h1, x2, y2)
-{
-    return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
-}
-
-/**
- * box-box collision
- * @param {number} x1 top-left corner of first box
- * @param {number} y1 top-left corner of first box
- * @param {number} w1 width of first box
- * @param {number} h1 height of first box
- * @param {number} x2 top-left corner of second box
- * @param {number} y2 top-left corner of second box
- * @param {number} w2 width of second box
- * @param {number} h2 height of second box
- */
-function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
-{
-    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2
-}
-
-/**
- * box-line collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- */
-function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
-{
-    return Line.lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
-}
-
-/**
- * box-polygon collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number[]} points of polygon
- */
-function boxPolygon(xb, yb, wb, hb, points)
-{
-    return Polygon.polygonBox(points, xb, yb, wb, hb)
-}
-
-/**
- * box-circle collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- */
-function boxCircle(xb, yb, wb, hb, xc, yc, rc)
-{
-    const hw = wb / 2
-    const hh = hb / 2
-    const distX = Math.abs(xc - (xb + wb / 2))
-    const distY = Math.abs(yc - (yb + hb / 2))
-
-    if (distX > hw + rc || distY > hh + rc)
-    {
-        return false
-    }
-
-    if (distX <= hw || distY <= hh)
-    {
-        return true
-    }
-
-    const x = distX - hw
-    const y = distY - hh
-    return x * x + y * y <= rc * rc
-}
-
-module.exports = {
-    boxPoint,
-    boxBox,
-    boxLine,
-    boxPolygon,
-    boxCircle
-}
-},{"./line":397,"./polygon":399}],396:[function(require,module,exports){
-const Polygon = require('./polygon')
-const Line = require('./line')
-const Box = require('./box')
-
-/**
- * circle-point collision
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 point
- * @param {number} y2 point
- * @return {boolean}
- */
-function circlePoint(x1, y1, r1, x2, y2)
-{
-    const x = x2 - x1
-    const y = y2 - y1
-    return x * x + y * y <= r1 * r1
-}
-
-/**
- * circle-circle collision
- * @param {number} x1 center of circle 1
- * @param {number} y1 center of circle 1
- * @param {number} r1 radius of circle 1
- * @param {number} x2 center of circle 2
- * @param {number} y2 center of circle 2
- * @param {number} r2 radius of circle 2
- * @return {boolean}
- */
-function circleCircle(x1, y1, r1, x2, y2, r2)
-{
-    const x = x1 - x2
-    const y = y2 - y1
-    const radii = r1 + r2
-    return x * x + y * y <= radii * radii
-}
-
-/**
- * circle-line collision
- * from http://stackoverflow.com/a/10392860/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- * @return {boolean}
- */
-function circleLine(xc, yc, rc, x1, y1, x2, y2)
-{
-    return Line.lineCircle(x1, y1, x2, y2, xc, yc, rc)
-}
-
-/**
- * circle-box (axis-oriented rectangle) collision
- * from http://stackoverflow.com/a/402010/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} xb top-left corner of rectangle
- * @param {number} yb top-left corner of rectangle
- * @param {number} wb width of rectangle
- * @param {number} hb height of rectangle
- */
-function circleBox(xc, yc, rc, xb, yb, wb, hb)
-{
-    return Box.boxCircle(xb, yb, wb, hb, xc, yc, rc)
-}
-
-/**
- * circle-polygon collision
- * from http://stackoverflow.com/a/402019/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- */
-function circlePolygon(xc, yc, rc, points)
-{
-    return Polygon.polygonCircle(points, xc, yc, rc)
-}
-
-module.exports = {
-    circlePoint,
-    circleCircle,
-    circleLine,
-    circleBox,
-    circlePolygon
-}
-},{"./box":395,"./line":397,"./polygon":399}],397:[function(require,module,exports){
-/**
- * line-line collision
- * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
- * @param {number} x1 first point in line 1
- * @param {number} y1 first point in line 1
- * @param {number} x2 second point in line 1
- * @param {number} y2 second point in line 1
- * @param {number} x3 first point in line 2
- * @param {number} y3 first point in line 2
- * @param {number} x4 second point in line 2
- * @param {number} y4 second point in line 2
- * @return {boolean}
- */
-function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
-{
-    const s1_x = x2 - x1
-    const s1_y = y2 - y1
-    const s2_x = x4 - x3
-    const s2_y = y4 - y3
-    const s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
-    const t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
-    return s >= 0 && s <= 1 && t >= 0 && t <= 1
-}
-
-/**
- * line-box collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xb top-left of box
- number @param {number} yb top-left of box
- number @param {number} wb width of box
- number @param {number} hb height of box
- */
-function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
-{
-    function boxPoint(x1, y1, w1, h1, x2, y2)
-    {
-        return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
-    }
-
-    if (boxPoint(xb, yb, wb, hb, x1, y1) || boxPoint(xb, yb, wb, hb, x2, y2))
-    {
-        return true
-    }
-    return lineLine(x1, y1, x2, y2, xb, yb, xb + wb, yb) ||
-        lineLine(x1, y1, x2, y2, xb + wb, yb, xb + wb, yb + hb) ||
-        lineLine(x1, y1, x2, y2, xb, yb + hb, xb + wb, yb + hb) ||
-        lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
-}
-
-/**
- * line-circle collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xc center of circle
- number @param {number} yc center of circle
- number @param {number} rc radius of circle
- */
-function lineCircle(x1, y1, x2, y2, xc, yc, rc)
-{
-    function dot(v1, v2)
-    {
-        return (v1[0] * v2[0]) + (v1[1] * v2[1])
-    }
-
-    const ac = [xc - x1, yc - y1]
-    const ab = [x2 - x1, y2 - y1]
-    const ab2 = dot(ab, ab)
-    const acab = dot(ac, ab)
-    let t = acab / ab2
-    t = (t < 0) ? 0 : t
-    t = (t > 1) ? 1 : t
-    let h = [(ab[0] * t + x1) - xc, (ab[1] * t + y1) - yc]
-    const h2 = dot(h, h)
-    return h2 <= rc * rc
-}
-
-function polygonPoint(points, x, y)
-{
-    const length = points.length
-    let c = false
-    for (let i = 0, j = length - 2; i < length; i += 2)
-    {
-        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
-        {
-            c = !c
-        }
-        j = i
-    }
-    return c
-}
-
-/**
- * line-polygon collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number[]} points of polygon
- */
-function linePolygon(x1, y1, x2, y2, points)
-{
-    const length = points.length
-
-    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
-    if (polygonPoint(points, x1, y1))
-    {
-        return true
-    }
-
-    // check for intersections for all of the sides
-    for (let i = 0; i < length; i += 2)
-    {
-        const j = (i + 2) % length
-        if (lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
-        {
-            return true
-        }
-    }
-    return false
-}
-
-module.exports = {
-    lineLine,
-    lineBox,
-    linePolygon,
-    lineCircle
-}
-},{}],398:[function(require,module,exports){
-const Box = require('./box')
-const Polygon = require('./polygon')
-const Circle = require('./circle')
-
-/**
- * point-box collision
- * @param {number} x1 point
- * @param {number} y1 point
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @return {boolean}
- */
-function pointBox(x1, y1, xb, yb, wb, hb)
-{
-    return Box.boxPoint(xb, yb, wb, hb, x1, y1)
-}
-
-/**
- * point-polygon collision
- * @param {number} x1
- * @param {number} y1
- * @param {number[]} points
- * @return {boolean}
- */
-function pointPolygon(x1, y1, points)
-{
-    return Polygon.polygonPoint(points, x1, y1)
-}
-
-function pointCircle(x1, y1, xc, yc, rc)
-{
-    return Circle.circlePoint(xc, yc, rc, x1, y1)
-}
-
-module.exports = {
-    pointBox,
-    pointPolygon,
-    pointCircle
-}
-},{"./box":395,"./circle":396,"./polygon":399}],399:[function(require,module,exports){
-const Line = require('./line')
-
-/**
- * polygon-point collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of point
- * @param {number} y of point
- */
-function polygonPoint(points, x, y)
-{
-    const length = points.length
-    let c = false
-    for (let i = 0, j = length - 2; i < length; i += 2)
-    {
-        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
-        {
-            c = !c
-        }
-        j = i
-    }
-    return c
-}
-
-/**
- * polygon-line collisions
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x1 first point in line
- * @param {number} y1 first point in line
- * @param {number} x2 second point in line
- * @param {number} y2 second point in line
- * @return {boolean}
- */
-function polygonLine(points, x1, y1, x2, y2)
-{
-    return Line.linePolygon(x1, y1, x2, y2, points)
-}
-
-/**
- * polygon-box collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of box
- * @param {number} y of box
- * @param {number} w of box
- * @param {number} h of box
- */
-function polygonBox(points, x, y, w, h)
-{
-    const points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
-    return polygonPolygon(points, points2)
-}
-
-/**
- * polygon-polygon collision
- * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
- * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
- * @return {boolean}
- */
-function polygonPolygon(points1, points2)
-{
-    const a = points1
-    const b = points2
-    const polygons = [a, b]
-    let minA, maxA, projected, minB, maxB
-    for (let i = 0; i < polygons.length; i++)
-    {
-        const polygon = polygons[i]
-        for (let i1 = 0; i1 < polygon.length; i1 += 2)
-        {
-            var i2 = (i1 + 2) % polygon.length
-            var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
-            minA = maxA = null
-            for (let j = 0; j < a.length; j += 2)
-            {
-                projected = normal.x * a[j] + normal.y * a[j + 1]
-                if (minA === null || projected < minA)
-                {
-                    minA = projected
-                }
-                if (maxA === null || projected > maxA)
-                {
-                    maxA = projected
-                }
-            }
-            minB = maxB = null
-            for (let j = 0; j < b.length; j += 2)
-            {
-                projected = normal.x * b[j] + normal.y * b[j + 1]
-                if (minB === null || projected < minB)
-                {
-                    minB = projected
-                }
-                if (maxB === null || projected > maxB)
-                {
-                    maxB = projected
-                }
-            }
-            if (maxA < minB || maxB < minA)
-            {
-                return false
-            }
-        }
-    }
-    return true
-}
-
-/**
- * polygon-circle collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- */
-function polygonCircle(points, xc, yc, rc)
-{
-    if (polygonPoint(points, xc, yc))
-    {
-        return true
-    }
-    const count = points.length
-    for (let i = 0; i < count - 2; i += 2)
-    {
-        if (Line.lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
-        {
-            return true
-        }
-    }
-    return Line.lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
-}
-
-module.exports = {
-    polygonPoint,
-    polygonLine,
-    polygonPolygon,
-    polygonBox,
-    polygonCircle
-}
-},{"./line":397}],400:[function(require,module,exports){
-
-},{}],401:[function(require,module,exports){
-(function (process){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
-  }
-
-  return parts;
-}
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-}).call(this,require('_process'))
-},{"_process":402}],402:[function(require,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],403:[function(require,module,exports){
-(function (global){
-/*! https://mths.be/punycode v1.4.1 by @mathias */
-;(function(root) {
-
-	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports &&
-		!exports.nodeType && exports;
-	var freeModule = typeof module == 'object' && module &&
-		!module.nodeType && module;
-	var freeGlobal = typeof global == 'object' && global;
-	if (
-		freeGlobal.global === freeGlobal ||
-		freeGlobal.window === freeGlobal ||
-		freeGlobal.self === freeGlobal
-	) {
-		root = freeGlobal;
-	}
-
-	/**
-	 * The `punycode` object.
-	 * @name punycode
-	 * @type Object
-	 */
-	var punycode,
-
-	/** Highest positive signed 32-bit float value */
-	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
-
-	/** Bootstring parameters */
-	base = 36,
-	tMin = 1,
-	tMax = 26,
-	skew = 38,
-	damp = 700,
-	initialBias = 72,
-	initialN = 128, // 0x80
-	delimiter = '-', // '\x2D'
-
-	/** Regular expressions */
-	regexPunycode = /^xn--/,
-	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
-
-	/** Error messages */
-	errors = {
-		'overflow': 'Overflow: input needs wider integers to process',
-		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
-		'invalid-input': 'Invalid input'
-	},
-
-	/** Convenience shortcuts */
-	baseMinusTMin = base - tMin,
-	floor = Math.floor,
-	stringFromCharCode = String.fromCharCode,
-
-	/** Temporary variable */
-	key;
-
-	/*--------------------------------------------------------------------------*/
-
-	/**
-	 * A generic error utility function.
-	 * @private
-	 * @param {String} type The error type.
-	 * @returns {Error} Throws a `RangeError` with the applicable error message.
-	 */
-	function error(type) {
-		throw new RangeError(errors[type]);
-	}
-
-	/**
-	 * A generic `Array#map` utility function.
-	 * @private
-	 * @param {Array} array The array to iterate over.
-	 * @param {Function} callback The function that gets called for every array
-	 * item.
-	 * @returns {Array} A new array of values returned by the callback function.
-	 */
-	function map(array, fn) {
-		var length = array.length;
-		var result = [];
-		while (length--) {
-			result[length] = fn(array[length]);
-		}
-		return result;
-	}
-
-	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings or email
-	 * addresses.
-	 * @private
-	 * @param {String} domain The domain name or email address.
-	 * @param {Function} callback The function that gets called for every
-	 * character.
-	 * @returns {Array} A new string of characters returned by the callback
-	 * function.
-	 */
-	function mapDomain(string, fn) {
-		var parts = string.split('@');
-		var result = '';
-		if (parts.length > 1) {
-			// In email addresses, only the domain name should be punycoded. Leave
-			// the local part (i.e. everything up to `@`) intact.
-			result = parts[0] + '@';
-			string = parts[1];
-		}
-		// Avoid `split(regex)` for IE8 compatibility. See #17.
-		string = string.replace(regexSeparators, '\x2E');
-		var labels = string.split('.');
-		var encoded = map(labels, fn).join('.');
-		return result + encoded;
-	}
-
-	/**
-	 * Creates an array containing the numeric code points of each Unicode
-	 * character in the string. While JavaScript uses UCS-2 internally,
-	 * this function will convert a pair of surrogate halves (each of which
-	 * UCS-2 exposes as separate characters) into a single code point,
-	 * matching UTF-16.
-	 * @see `punycode.ucs2.encode`
-	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-	 * @memberOf punycode.ucs2
-	 * @name decode
-	 * @param {String} string The Unicode input string (UCS-2).
-	 * @returns {Array} The new array of code points.
-	 */
-	function ucs2decode(string) {
-		var output = [],
-		    counter = 0,
-		    length = string.length,
-		    value,
-		    extra;
-		while (counter < length) {
-			value = string.charCodeAt(counter++);
-			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
-				// high surrogate, and there is a next character
-				extra = string.charCodeAt(counter++);
-				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
-					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
-				} else {
-					// unmatched surrogate; only append this code unit, in case the next
-					// code unit is the high surrogate of a surrogate pair
-					output.push(value);
-					counter--;
-				}
-			} else {
-				output.push(value);
-			}
-		}
-		return output;
-	}
-
-	/**
-	 * Creates a string based on an array of numeric code points.
-	 * @see `punycode.ucs2.decode`
-	 * @memberOf punycode.ucs2
-	 * @name encode
-	 * @param {Array} codePoints The array of numeric code points.
-	 * @returns {String} The new Unicode string (UCS-2).
-	 */
-	function ucs2encode(array) {
-		return map(array, function(value) {
-			var output = '';
-			if (value > 0xFFFF) {
-				value -= 0x10000;
-				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-				value = 0xDC00 | value & 0x3FF;
-			}
-			output += stringFromCharCode(value);
-			return output;
-		}).join('');
-	}
-
-	/**
-	 * Converts a basic code point into a digit/integer.
-	 * @see `digitToBasic()`
-	 * @private
-	 * @param {Number} codePoint The basic numeric code point value.
-	 * @returns {Number} The numeric value of a basic code point (for use in
-	 * representing integers) in the range `0` to `base - 1`, or `base` if
-	 * the code point does not represent a value.
-	 */
-	function basicToDigit(codePoint) {
-		if (codePoint - 48 < 10) {
-			return codePoint - 22;
-		}
-		if (codePoint - 65 < 26) {
-			return codePoint - 65;
-		}
-		if (codePoint - 97 < 26) {
-			return codePoint - 97;
-		}
-		return base;
-	}
-
-	/**
-	 * Converts a digit/integer into a basic code point.
-	 * @see `basicToDigit()`
-	 * @private
-	 * @param {Number} digit The numeric value of a basic code point.
-	 * @returns {Number} The basic code point whose value (when used for
-	 * representing integers) is `digit`, which needs to be in the range
-	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
-	 * used; else, the lowercase form is used. The behavior is undefined
-	 * if `flag` is non-zero and `digit` has no uppercase form.
-	 */
-	function digitToBasic(digit, flag) {
-		//  0..25 map to ASCII a..z or A..Z
-		// 26..35 map to ASCII 0..9
-		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
-	}
-
-	/**
-	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * https://tools.ietf.org/html/rfc3492#section-3.4
-	 * @private
-	 */
-	function adapt(delta, numPoints, firstTime) {
-		var k = 0;
-		delta = firstTime ? floor(delta / damp) : delta >> 1;
-		delta += floor(delta / numPoints);
-		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
-			delta = floor(delta / baseMinusTMin);
-		}
-		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
-	}
-
-	/**
-	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
-	 * symbols.
-	 * @memberOf punycode
-	 * @param {String} input The Punycode string of ASCII-only symbols.
-	 * @returns {String} The resulting string of Unicode symbols.
-	 */
-	function decode(input) {
-		// Don't use UCS-2
-		var output = [],
-		    inputLength = input.length,
-		    out,
-		    i = 0,
-		    n = initialN,
-		    bias = initialBias,
-		    basic,
-		    j,
-		    index,
-		    oldi,
-		    w,
-		    k,
-		    digit,
-		    t,
-		    /** Cached calculation results */
-		    baseMinusT;
-
-		// Handle the basic code points: let `basic` be the number of input code
-		// points before the last delimiter, or `0` if there is none, then copy
-		// the first basic code points to the output.
-
-		basic = input.lastIndexOf(delimiter);
-		if (basic < 0) {
-			basic = 0;
-		}
-
-		for (j = 0; j < basic; ++j) {
-			// if it's not a basic code point
-			if (input.charCodeAt(j) >= 0x80) {
-				error('not-basic');
-			}
-			output.push(input.charCodeAt(j));
-		}
-
-		// Main decoding loop: start just after the last delimiter if any basic code
-		// points were copied; start at the beginning otherwise.
-
-		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
-
-			// `index` is the index of the next character to be consumed.
-			// Decode a generalized variable-length integer into `delta`,
-			// which gets added to `i`. The overflow checking is easier
-			// if we increase `i` as we go, then subtract off its starting
-			// value at the end to obtain `delta`.
-			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
-
-				if (index >= inputLength) {
-					error('invalid-input');
-				}
-
-				digit = basicToDigit(input.charCodeAt(index++));
-
-				if (digit >= base || digit > floor((maxInt - i) / w)) {
-					error('overflow');
-				}
-
-				i += digit * w;
-				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-
-				if (digit < t) {
-					break;
-				}
-
-				baseMinusT = base - t;
-				if (w > floor(maxInt / baseMinusT)) {
-					error('overflow');
-				}
-
-				w *= baseMinusT;
-
-			}
-
-			out = output.length + 1;
-			bias = adapt(i - oldi, out, oldi == 0);
-
-			// `i` was supposed to wrap around from `out` to `0`,
-			// incrementing `n` each time, so we'll fix that now:
-			if (floor(i / out) > maxInt - n) {
-				error('overflow');
-			}
-
-			n += floor(i / out);
-			i %= out;
-
-			// Insert `n` at position `i` of the output
-			output.splice(i++, 0, n);
-
-		}
-
-		return ucs2encode(output);
-	}
-
-	/**
-	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
-	 * Punycode string of ASCII-only symbols.
-	 * @memberOf punycode
-	 * @param {String} input The string of Unicode symbols.
-	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
-	 */
-	function encode(input) {
-		var n,
-		    delta,
-		    handledCPCount,
-		    basicLength,
-		    bias,
-		    j,
-		    m,
-		    q,
-		    k,
-		    t,
-		    currentValue,
-		    output = [],
-		    /** `inputLength` will hold the number of code points in `input`. */
-		    inputLength,
-		    /** Cached calculation results */
-		    handledCPCountPlusOne,
-		    baseMinusT,
-		    qMinusT;
-
-		// Convert the input in UCS-2 to Unicode
-		input = ucs2decode(input);
-
-		// Cache the length
-		inputLength = input.length;
-
-		// Initialize the state
-		n = initialN;
-		delta = 0;
-		bias = initialBias;
-
-		// Handle the basic code points
-		for (j = 0; j < inputLength; ++j) {
-			currentValue = input[j];
-			if (currentValue < 0x80) {
-				output.push(stringFromCharCode(currentValue));
-			}
-		}
-
-		handledCPCount = basicLength = output.length;
-
-		// `handledCPCount` is the number of code points that have been handled;
-		// `basicLength` is the number of basic code points.
-
-		// Finish the basic string - if it is not empty - with a delimiter
-		if (basicLength) {
-			output.push(delimiter);
-		}
-
-		// Main encoding loop:
-		while (handledCPCount < inputLength) {
-
-			// All non-basic code points < n have been handled already. Find the next
-			// larger one:
-			for (m = maxInt, j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-				if (currentValue >= n && currentValue < m) {
-					m = currentValue;
-				}
-			}
-
-			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
-			// but guard against overflow
-			handledCPCountPlusOne = handledCPCount + 1;
-			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
-				error('overflow');
-			}
-
-			delta += (m - n) * handledCPCountPlusOne;
-			n = m;
-
-			for (j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-
-				if (currentValue < n && ++delta > maxInt) {
-					error('overflow');
-				}
-
-				if (currentValue == n) {
-					// Represent delta as a generalized variable-length integer
-					for (q = delta, k = base; /* no condition */; k += base) {
-						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-						if (q < t) {
-							break;
-						}
-						qMinusT = q - t;
-						baseMinusT = base - t;
-						output.push(
-							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
-						);
-						q = floor(qMinusT / baseMinusT);
-					}
-
-					output.push(stringFromCharCode(digitToBasic(q, 0)));
-					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
-					delta = 0;
-					++handledCPCount;
-				}
-			}
-
-			++delta;
-			++n;
-
-		}
-		return output.join('');
-	}
-
-	/**
-	 * Converts a Punycode string representing a domain name or an email address
-	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-	 * it doesn't matter if you call it on a string that has already been
-	 * converted to Unicode.
-	 * @memberOf punycode
-	 * @param {String} input The Punycoded domain name or email address to
-	 * convert to Unicode.
-	 * @returns {String} The Unicode representation of the given Punycode
-	 * string.
-	 */
-	function toUnicode(input) {
-		return mapDomain(input, function(string) {
-			return regexPunycode.test(string)
-				? decode(string.slice(4).toLowerCase())
-				: string;
-		});
-	}
-
-	/**
-	 * Converts a Unicode string representing a domain name or an email address to
-	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
-	 * i.e. it doesn't matter if you call it with a domain that's already in
-	 * ASCII.
-	 * @memberOf punycode
-	 * @param {String} input The domain name or email address to convert, as a
-	 * Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name or
-	 * email address.
-	 */
-	function toASCII(input) {
-		return mapDomain(input, function(string) {
-			return regexNonASCII.test(string)
-				? 'xn--' + encode(string)
-				: string;
-		});
-	}
-
-	/*--------------------------------------------------------------------------*/
-
-	/** Define the public API */
-	punycode = {
-		/**
-		 * A string representing the current Punycode.js version number.
-		 * @memberOf punycode
-		 * @type String
-		 */
-		'version': '1.4.1',
-		/**
-		 * An object of methods to convert from JavaScript's internal character
-		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-		 * @memberOf punycode
-		 * @type Object
-		 */
-		'ucs2': {
-			'decode': ucs2decode,
-			'encode': ucs2encode
-		},
-		'decode': decode,
-		'encode': encode,
-		'toASCII': toASCII,
-		'toUnicode': toUnicode
-	};
-
-	/** Expose `punycode` */
-	// Some AMD build optimizers, like r.js, check for specific condition patterns
-	// like the following:
-	if (
-		typeof define == 'function' &&
-		typeof define.amd == 'object' &&
-		define.amd
-	) {
-		define('punycode', function() {
-			return punycode;
-		});
-	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) {
-			// in Node.js, io.js, or RingoJS v0.8.0+
-			freeModule.exports = punycode;
-		} else {
-			// in Narwhal or RingoJS v0.7.0-
-			for (key in punycode) {
-				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
-			}
-		}
-	} else {
-		// in Rhino or a web browser
-		root.punycode = punycode;
-	}
-
-}(this));
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],404:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-// If obj.hasOwnProperty has been overridden, then calling
-// obj.hasOwnProperty(prop) will break.
-// See: https://github.com/joyent/node/issues/1707
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-module.exports = function(qs, sep, eq, options) {
-  sep = sep || '&';
-  eq = eq || '=';
-  var obj = {};
-
-  if (typeof qs !== 'string' || qs.length === 0) {
-    return obj;
-  }
-
-  var regexp = /\+/g;
-  qs = qs.split(sep);
-
-  var maxKeys = 1000;
-  if (options && typeof options.maxKeys === 'number') {
-    maxKeys = options.maxKeys;
-  }
-
-  var len = qs.length;
-  // maxKeys <= 0 means that we should not limit keys count
-  if (maxKeys > 0 && len > maxKeys) {
-    len = maxKeys;
-  }
-
-  for (var i = 0; i < len; ++i) {
-    var x = qs[i].replace(regexp, '%20'),
-        idx = x.indexOf(eq),
-        kstr, vstr, k, v;
-
-    if (idx >= 0) {
-      kstr = x.substr(0, idx);
-      vstr = x.substr(idx + 1);
-    } else {
-      kstr = x;
-      vstr = '';
-    }
-
-    k = decodeURIComponent(kstr);
-    v = decodeURIComponent(vstr);
-
-    if (!hasOwnProperty(obj, k)) {
-      obj[k] = v;
-    } else if (isArray(obj[k])) {
-      obj[k].push(v);
-    } else {
-      obj[k] = [obj[k], v];
-    }
-  }
-
-  return obj;
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-},{}],405:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var stringifyPrimitive = function(v) {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-};
-
-module.exports = function(obj, sep, eq, name) {
-  sep = sep || '&';
-  eq = eq || '=';
-  if (obj === null) {
-    obj = undefined;
-  }
-
-  if (typeof obj === 'object') {
-    return map(objectKeys(obj), function(k) {
-      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-      if (isArray(obj[k])) {
-        return map(obj[k], function(v) {
-          return ks + encodeURIComponent(stringifyPrimitive(v));
-        }).join(sep);
-      } else {
-        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-      }
-    }).join(sep);
-
-  }
-
-  if (!name) return '';
-  return encodeURIComponent(stringifyPrimitive(name)) + eq +
-         encodeURIComponent(stringifyPrimitive(obj));
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-function map (xs, f) {
-  if (xs.map) return xs.map(f);
-  var res = [];
-  for (var i = 0; i < xs.length; i++) {
-    res.push(f(xs[i], i));
-  }
-  return res;
-}
-
-var objectKeys = Object.keys || function (obj) {
-  var res = [];
-  for (var key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
-  }
-  return res;
-};
-
-},{}],406:[function(require,module,exports){
-'use strict';
-
-exports.decode = exports.parse = require('./decode');
-exports.encode = exports.stringify = require('./encode');
-
-},{"./decode":404,"./encode":405}],407:[function(require,module,exports){
+},{}],407:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -64330,7 +62633,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":408,"punycode":403,"querystring":406}],408:[function(require,module,exports){
+},{"./util":408,"punycode":387,"querystring":390}],408:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -64348,4 +62651,2259 @@ module.exports = {
   }
 };
 
-},{}]},{},[1]);
+},{}],409:[function(require,module,exports){
+// angle.js <https://github.com/davidfig/anglejs>
+// Released under MIT license <https://github.com/davidfig/angle/blob/master/LICENSE>
+// Author: David Figatner
+// Copyright (c) 2016-17 YOPEY YOPEY LLC
+
+const _toDegreeConversion = 180 / Math.PI
+const _toRadianConversion = Math.PI / 180
+
+
+/** @constant {number} */
+const UP = Math.PI / 2
+const DOWN = 3 * Math.PI / 2
+const LEFT = Math.PI
+const RIGHT = 0
+
+const NORTH = UP
+const SOUTH = DOWN
+const WEST = LEFT
+const EAST = RIGHT
+
+const PI_2 = Math.PI * 2
+const PI_QUARTER = Math.PI / 4
+const PI_HALF = Math.PI / 2
+
+/**
+ * converts from radians to degrees (all other functions expect radians)
+ * @param {number} radians
+ * @return {number} degrees
+ */
+function toDegrees(radians)
+{
+    return radians * _toDegreeConversion
+}
+
+/**
+ * converts from degrees to radians (all other functions expect radians)
+ * @param {number} degrees
+ * @return {number} radians
+ */
+function toRadians(degrees)
+{
+    return degrees * _toRadianConversion
+}
+
+/**
+ * returns whether the target angle is between angle1 and angle2 (in radians)
+ * (based on: http://stackoverflow.com/questions/11406189/determine-if-angle-lies-between-2-other-angles)
+ * @param {number} target angle
+ * @param {number} angle1
+ * @param {number} angle2
+ * @return {boolean}
+ */
+function isAngleBetween(target, angle1, angle2)
+{
+    const rAngle = ((angle2 - angle1) % PI_2 + PI_2) % PI_2
+    if (rAngle >= Math.PI)
+    {
+        const swap = angle1
+        angle1 = angle2
+        angle2 = swap
+    }
+
+    if (angle1 <= angle2)
+    {
+        return target >= angle1 && target <= angle2
+    }
+    else
+    {
+        return target >= angle1 || target <= angle2
+    }
+}
+
+/**
+ * returns +1 or -1 based on whether the difference between two angles is positive or negative (in radians)
+ * @param {number} target angle
+ * @param {number} source angle
+ * @return {number} 1 or -1
+ */
+function differenceAnglesSign(target, source)
+{
+    function mod(a, n)
+    {
+        return (a % n + n) % n
+    }
+
+    const a = target - source
+    return mod((a + Math.PI), PI_2) - Math.PI > 0 ? 1 : -1
+}
+
+/**
+ * returns the normalized difference between two angles (in radians)
+ * @param {number} a - first angle
+ * @param {number} b - second angle
+ * @return {number} normalized difference between a and b
+ */
+function differenceAngles(a, b)
+{
+    const c = Math.abs(a - b) % PI_2
+    return c > Math.PI ? (PI_2 - c) : c
+}
+
+/**
+ * returns a target angle that is the shortest way to rotate an object between start and to--may choose a negative angle
+ * @param {number} start
+ * @param {number} to
+ * @return {number} shortest target angle
+ */
+function shortestAngle(start, to)
+{
+    const difference = differenceAngles(to, start)
+    const sign = differenceAnglesSign(to, start)
+    const delta = difference * sign
+    return delta + start
+}
+
+/**
+ * returns the normalized angle (0 - PI x 2)
+ * @param {number} radians
+ * @return {number} normalized angle in radians
+ */
+function normalize(radians)
+{
+    return radians - PI_2 * Math.floor(radians / PI_2)
+}
+
+/**
+ * returns angle between two points (in radians)
+ * @param {Point} [point1] {x: x, y: y}
+ * @param {Point} [point2] {x: x, y: y}
+ * @param {number} [x1]
+ * @param {number} [y1]
+ * @param {number} [x2]
+ * @param {number} [y2]
+ * @return {number} angle
+ */
+function angleTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
+{
+    if (arguments.length === 4)
+    {
+        return Math.atan2(arguments[3] - arguments[1], arguments[2] - arguments[0])
+    }
+    else
+    {
+        return Math.atan2(arguments[1].y - arguments[0].y, arguments[1].x - arguments[0].x)
+    }
+}
+
+/**
+ * returns distance between two points
+ * @param {Point} [point1] {x: x, y: y}
+ * @param {Point} [point2] {x: x, y: y}
+ * @param {number} [x1]
+ * @param {number} [y1]
+ * @param {number} [x2]
+ * @param {number} [y2]
+ * @return {number} distance
+ */
+function distanceTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
+{
+    if (arguments.length === 2)
+    {
+        return Math.sqrt(Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2))
+    }
+    else
+    {
+        return Math.sqrt(Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2))
+    }
+}
+
+/**
+ * returns the squared distance between two points
+ * @param {Point} [point1] {x: x, y: y}
+ * @param {Point} [point2] {x: x, y: y}
+ * @param {number} [x1]
+ * @param {number} [y1]
+ * @param {number} [x2]
+ * @param {number} [y2]
+ * @return {number} squared distance
+ */
+function distanceTwoPointsSquared(/* (point1, point2) OR (x1, y1, x2, y2) */)
+{
+    if (arguments.length === 2)
+    {
+        return Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2)
+    }
+    else
+    {
+        return Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2)
+    }
+}
+
+/**
+ * returns the closest cardinal (N, S, E, W) to the given angle (in radians)
+ * @param {number} angle
+ * @return {number} closest cardinal in radians
+ */
+function closestAngle(angle)
+{
+    const left = differenceAngles(angle, LEFT)
+    const right = differenceAngles(angle, RIGHT)
+    const up = differenceAngles(angle, UP)
+    const down = differenceAngles(angle, DOWN)
+    if (left <= right && left <= up && left <= down)
+    {
+        return LEFT
+    }
+    else if (right <= up && right <= down)
+    {
+        return RIGHT
+    }
+    else if (up <= down)
+    {
+        return UP
+    }
+    else
+    {
+        return DOWN
+    }
+}
+
+/**
+ * checks whether angles a1 and a2 are equal (after normalizing)
+ * @param {number} a1
+ * @param {number} a2
+ * @param {number} [wiggle] return true if the difference between the angles is <= wiggle
+ * @return {boolean} a1 === a2
+ */
+function equals(a1, a2, wiggle)
+{
+    if (wiggle)
+    {
+        return differenceAngles(a1, a2) < wiggle
+    }
+    else
+    {
+        return normalize(a1) === normalize(a2)
+    }
+}
+
+/**
+ * return a text representation of the cardinal direction
+ * @param {number} angle
+ * @returns {string} UP, DOWN, LEFT, RIGHT, or NOT CARDINAL
+ */
+function explain(angle)
+{
+    switch (angle)
+    {
+        case UP: return 'UP'
+        case DOWN: return 'DOWN'
+        case LEFT: return 'LEFT'
+        case RIGHT: return 'RIGHT'
+        default: return 'NOT CARDINAL'
+    }
+}
+
+module.exports = {
+    UP, DOWN, LEFT, RIGHT,
+    NORTH, SOUTH, WEST, EAST,
+    PI_2, PI_QUARTER, PI_HALF,
+
+    toDegrees,
+    toRadians,
+    isAngleBetween,
+    differenceAnglesSign,
+    differenceAngles,
+    shortestAngle,
+    normalize,
+    angleTwoPoints,
+    distanceTwoPoints,
+    distanceTwoPointsSquared,
+    closestAngle,
+    equals,
+    explain
+}
+},{}],410:[function(require,module,exports){
+/**
+ * @file color.js
+ * @author David Figatner
+ * @license MIT
+ * @copyright YOPEY YOPEY LLC 2016
+ * {@link https://github.com/davidfig/color}
+ */
+
+const Random = require('yy-random');
+
+/** @class */
+class Color
+{
+    /**
+     * converts a #FFFFFF to 0x123456
+     * @param  {string} color
+     * @return {string}
+     */
+    poundToHex(color)
+    {
+        return '0x' + parseInt(color.substr(1)).toString(16);
+    }
+
+    /**
+     * converts a 0x123456 to #FFFFFF
+     * @param  {string} color
+     * @return {string}
+     */
+    hexToPound(color)
+    {
+        return '#' + color.substr(2);
+    }
+
+    /**
+     * converts a number to #FFFFFF
+     * @param  {number} color
+     * @return {string}
+     */
+    valueToPound(color)
+    {
+        return '#' + color.toString(16);
+    }
+
+    /**
+     * based on tinycolor
+     * https://github.com/bgrins/TinyColor
+     * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+     * @param {string} color
+     * @returns {object}
+     */
+    hexToHsl (color)
+    {
+        var rgb = this.hexToRgb(color),
+            r = rgb.r,
+            g = rgb.g,
+            b = rgb.b;
+        var max = Math.max(r, g, b),
+            min = Math.min(r, g, b);
+        var h, s, l = (max + min) / 2;
+
+        if (max === min)
+        {
+            h = s = 0; // achromatic
+        }
+        else
+        {
+            var d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+            }
+
+            h /= 6;
+        }
+
+        return { h: h, s: s, l: l };
+    }
+
+    /** based on tinycolor
+    * https://github.com/bgrins/TinyColor
+    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+    * @param {object|number} color {h, s, b} or h
+    * @param {number} [s]
+    * @param {number} [l]
+    * @returns number
+    */
+    hslToHex(color)
+    {
+        var r, g, b, h, s, l;
+        if (arguments.length === 1)
+        {
+            h = color.h,
+            s = color.s,
+            l = color.l;
+        }
+        else
+        {
+            h = arguments[0];
+            s = arguments[1];
+            l = arguments[2];
+        }
+
+        function hue2rgb(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        }
+
+        if (s === 0)
+        {
+            r = g = b = l; // achromatic
+        }
+        else
+        {
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+
+        return this.rgbToHex(r * 255, g * 255, b * 255);
+    }
+
+    /* darkens a color by the percentage
+    * @param {object} color in hex (0xabcdef)
+    * @param {number} amount
+    * @return {number}
+    */
+    darken(color, amount)
+    {
+        return this.blend(amount, color, 0);
+    }
+
+    /** based on tinycolor
+    * https://github.com/bgrins/TinyColor
+    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+    * @param {object} color
+    * @param {number} amount
+    */
+    saturate(color, amount)
+    {
+        amount = (amount === 0) ? 0 : (amount || 10);
+        var hsl = this.hexToHsl(color);
+        hsl.s += amount / 100;
+        hsl.s = Math.min(1, Math.max(0, hsl.s));
+        return this.hslToHex(hsl);
+    }
+
+    /** based on tinycolor
+    * https://github.com/bgrins/TinyColor
+    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+    * @param {object} color
+    * @param {number} amount
+    */
+    desaturate(color, amount) {
+        amount = (amount === 0) ? 0 : (amount || 10);
+        var hsl = this.hexToHsl(color);
+        hsl.s -= amount / 100;
+        hsl.s = Math.min(1, Math.max(0, hsl.s));
+        return this.hslToHex(hsl);
+    }
+
+    /**
+     * blends two colors together
+     * @param  {number} percent [0.0 - 1.0]
+     * @param  {string} color1 first color in 0x123456 format
+     * @param  {string} color2 second color in 0x123456 format
+     * @return {number}
+     */
+    blend(percent, color1, color2)
+    {
+        if (percent === 0)
+        {
+            return color1;
+        }
+        if (percent === 1)
+        {
+            return color2;
+        }
+        var r1 = color1 >> 16;
+        var g1 = color1 >> 8 & 0x0000ff;
+        var b1 = color1 & 0x0000ff;
+        var r2 = color2 >> 16;
+        var g2 = color2 >> 8 & 0x0000ff;
+        var b2 = color2 & 0x0000ff;
+        var percent1 = 1 - percent;
+        var r = percent1 * r1 + percent * r2;
+        var g = percent1 * g1 + percent * g2;
+        var b = percent1 * b1 + percent * b2;
+        return r << 16 | g << 8 | b;
+    }
+
+    /**
+     * returns a hex color into an rgb value
+     * @param  {number} hex
+     * @return {string}
+     */
+    hexToRgb(hex)
+    {
+        if (hex === 0)
+        {
+            hex = '0x000000';
+        }
+        else if (typeof hex !== 'string')
+        {
+            var s = '000000' + hex.toString(16);
+            hex = '0x' + s.substr(s.length - 6);
+        }
+        var result = /^0x?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    /**
+     * rgb color to hex in the form of 0x123456
+     * @param  {number|string} r first number or 'rgb(...)' string
+     * @param  {number|null} g
+     * @param  {number|null} b
+     * @return {string}
+     */
+    rgbToHex(r, g, b)
+    {
+        if (arguments.length === 1) {
+            if (Array.isArray(arguments[0])) {
+                var number = arguments[0];
+                r = number[0];
+                g = number[1];
+                b = number[2];
+            } else {
+                var parse = r.replace(/( *rgb *\( *)|( )|(\) *;?)/,'');
+                var numbers = parse.split(',');
+                r = numbers[0];
+                g = numbers[1];
+                b = numbers[2];
+            }
+        }
+        return '0x' + ((1 << 24) + (parseInt(r) << 16) + (parseInt(g) << 8) + parseInt(b)).toString(16).slice(1);
+    }
+
+    /**
+     * returns a random color with balanced r, g, b values (i.e., r, g, b either have the same value or are 0)
+     * @param {number} min value for random number
+     * @param {number} max value for random number
+     * @return {number} color
+     */
+    random(min, max)
+    {
+        function random()
+        {
+            return Random.range(min, max);
+        }
+
+        var colors = [{r:1, g:1, b:1}, {r:1, g:1, b:0}, {r:1,g:0,b:1}, {r:0,g:1,b:1}, {r:1,g:0,b:0}, {r:0,g:1,b:0}, {r:0,g:0,b:1}];
+        var color = Random.pick(colors);
+        min = min || 0;
+        max = max || 255;
+        return this.rgbToHex(color.r ? random() : 0, color.g ? random() : 0, color.b ? random() : 0);
+    }
+
+    // h: 0-360, s: 0-1, l: 0-1
+    /**
+     * returns a random color based on hsl
+     * @param {number} hMin [0, 360]
+     * @param {number} hMax [hMin, 360]
+     * @param {number} sMin [0, 1]
+     * @param {number} sMax [sMin, 1]
+     * @param {number} lMin [0, 1]
+     * @param {number} lMax [lMin, 1]
+     */
+    randomHSL(hMin, hMax, sMin, sMax, lMin, lMax)
+    {
+        var color = {
+            h: Random.range(hMin, hMax),
+            s: Random.range(sMin, sMax, true),
+            l: Random.range(lMin, lMax, true)
+        };
+        return this.hslToHex(color);
+    }
+
+    /**
+     * returns random colors based on HSL with different hues
+     * based on http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+     * @returns {number[]} colors in hex format (0x123456)
+     */
+    randomGoldenRatioHSL(count, saturation, luminosity)
+    {
+        const goldenRatio = 0.618033988749895;
+        let h = Random.get(1, true);
+        const colors = [];
+        for (let i = 0; i < count; i++)
+        {
+            colors.push(this.hslToHex(h, saturation, luminosity));
+            h = (h + goldenRatio) % 1;
+        }
+        return colors;
+    }
+};
+
+module.exports = new Color();
+},{"yy-random":416}],411:[function(require,module,exports){
+// yy-counter
+// In-browser counter to watch changeable values like counters or FPS
+// David Figatner
+// (c) YOPEY YOPEY LLC 2017
+// MIT License
+// https://github.com/davidfig/counter
+
+module.exports = class Counter
+{
+    /**
+     * @param {object} [options]
+     * @param {string} [options.side=rightbottom] side to place the panel (combination of right/left and bottom/top)
+     * @param {number} [options.padding=7px]
+     * @param {string} [options.color=white]
+     * @param {string} [options.background=rgba(0,0,0,0.5)]
+     * @param {*} {options.xxx} where xxx is a CSS style for the div
+     */
+    constructor(options)
+    {
+        options = options || {}
+        options.side = options.side || 'rightbottom'
+        options.side.toLowerCase()
+        options.padding = options.padding || '7px'
+        options.color = options.color || 'white'
+        options.background = options.background || 'rgba(0,0,0,0.5)'
+        this.div = document.createElement('div')
+        Counter.findParent(options.side).appendChild(this.div)
+        for (let style in options)
+        {
+            if (style !== 'parent' && style !== 'side')
+            {
+                this.div.style[style] = options[style]
+            }
+        }
+    }
+
+    /**
+     * find the parent div for one of the corners
+     * @param {string} [options.side] side to place the panel (combination of right/left and bottom/top)
+     * @return {HTMLElement}
+     */
+    static findParent(side)
+    {
+        const styles = []
+        let name = 'yy-counter-'
+        if (side.indexOf('left') !== -1)
+        {
+            name += 'left-'
+            styles['left'] = 0
+        }
+        else
+        {
+            name += 'right-'
+            styles['right'] = 0
+        }
+        if (side.indexOf('top') !== -1)
+        {
+            name += 'top'
+            styles['top'] = 0
+        }
+        else
+        {
+            name += 'bottom'
+            styles['bottom'] = 0
+        }
+        const test = document.getElementById(name)
+        if (test)
+        {
+            return test
+        }
+        const container = document.createElement('div')
+        container.id = name
+        container.style.overflow = 'hidden'
+        container.style.position = 'fixed'
+        container.style.zIndex = 10000
+        container.style.pointerEvents = 'none'
+        container.style.userSelect = 'none'
+        for (let style in styles)
+        {
+            container.style[style] = styles[style]
+        }
+        document.body.appendChild(container)
+        return container
+    }
+
+    /**
+     * replaces the innerHTML of the console
+     * @param {string|number} text1
+     * @param {string|number} [text2]
+     * @param {string|number} [...textn] any number of arguments
+     */
+    log()
+    {
+        let s = ''
+        for (let arg of arguments)
+        {
+            s += '<div>' + arg + '</div>'
+        }
+        this.div.innerHTML =  s
+    }
+
+    /**
+     * appends to the innerHTML of the console
+     * @param {string|number} text1
+     * @param {string|number} [text2]
+     * @param {string|number} [...textn] any number of arguments
+     */
+    append()
+    {
+        let s = this.div.innerHTML
+        for (let arg of arguments)
+        {
+            s += '<div>' + arg + '</div>'
+        }
+        this.div.innerHTML = s
+    }
+}
+},{}],412:[function(require,module,exports){
+const Color = require('tinycolor2')
+const Counter = require('yy-counter')
+
+const STYLES = {
+    'background': 'rgba(0, 0, 0, 0.5)',
+    'color': 'white',
+}
+
+const STYLES_FPS = {
+    'padding': '0.1em 0.5em'
+}
+
+const STYLES_METER = {
+}
+
+module.exports = class FPS
+{
+    /**
+     * @param {object} [options]
+     * @param {boolean} [options.meter=true] include a meter with the FPS
+     * @param {string} [options.side=bottom-right] include any combination of left/right and top/bottom
+     * @param {number} [options.FPS=60] desired FPS
+     * @param {number} [options.tolerance=1] minimum tolerance for fluctuations in FPS number
+     * @param {number} [options.meterWidth=100] width of meter div
+     * @param {number} [options.meterHeight=25] height of meter div
+     * @param {number} [options.meterLineHeight=4] height of meter line
+     * @param {styles[]} [options.styles] CSS styles to apply to the div (in javascript format)
+     * @param {styles[]} [options.stylesFPS] CSS styles to apply to the FPS text (in javascript format)
+     * @param {styles[]} [options.stylesMeter] CSS styles to apply to the FPS meter (in javascript format)
+     * @param {string} [options.text=" FPS"] change the text to the right of the FPS
+     */
+    constructor(options)
+    {
+        this.options = options || {}
+        this.tolerance = this.options.tolerance || 1
+        this.FPS = this.options.FPS || 60
+        this.meterWidth = this.options.meterWidth || 100
+        this.meterHeight = this.options.meterHeight || 25
+        this.meterLineHeight = this.options.meterLineHeight || 4
+        this.div = document.createElement('div')
+        Counter.findParent(this.options.side || 'bottom-right').appendChild(this.div)
+        this.style(this.div, STYLES, this.options.styles)
+        this.divFPS()
+        this.meter = typeof this.options.meter === 'undefined' || this.options.meter
+        this.lastTime = 0
+        this.frameNumber = 0
+        this.lastUpdate = 0
+        this.lastFPS = '--'
+    }
+
+    /**
+     * change desired FPS
+     * @type {number}
+     */
+    get fps()
+    {
+        return this.FPS
+    }
+    set fps(value)
+    {
+        this.FPS = value
+    }
+
+    /**
+     * remove meter from DOM
+     */
+    remove()
+    {
+        this.div.remove()
+    }
+
+    /**
+     * @type {boolean} meter (the FPS graph) is on or off
+     */
+    get meter()
+    {
+        return this._meter
+    }
+    set meter(value)
+    {
+        if (value)
+        {
+            this.divMeter()
+        }
+        else if (this.meterCanvas)
+        {
+            this.meterCanvas.style.display = 'none'
+        }
+    }
+
+    style(div, style1, style2)
+    {
+        for (let style in style1)
+        {
+            div.style[style] = style1[style]
+        }
+        if (style2)
+        {
+            for (let style in style2)
+            {
+                div.style[style] = style2[style]
+            }
+        }
+    }
+
+    /**
+     * create div for text FPS
+     * @private
+     * @param {HTMLElement} div
+     * @param {object} options (see contructor)
+     */
+    divFPS()
+    {
+        const div = this.div
+        const options = this.options
+        const divFPS = document.createElement('div')
+        div.appendChild(divFPS)
+        this.fpsSpan = document.createElement('span')
+        divFPS.appendChild(this.fpsSpan)
+        const span = document.createElement('span')
+        divFPS.appendChild(span)
+        span.innerText = typeof options.text !== 'undefined' ? options.text : ' FPS'
+        this.style(div, STYLES_FPS, options.stylesFPS)
+    }
+
+    /**
+     * create div for FPS meter
+     * @private
+     * @param {HTMLElement} div
+     * @param {object} options (see contructor)
+     */
+    divMeter()
+    {
+        const div = this.div
+        const options = this.options
+        if (!this.meterCanvas)
+        {
+            this.meterCanvas = document.createElement('canvas')
+            div.appendChild(this.meterCanvas)
+            this.meterCanvas.width = this.meterWidth
+            this.meterCanvas.height = this.meterHeight
+            this.meterCanvas.style.width = div.width + 'px'
+            this.meterCanvas.style.height = div.height + 'px'
+            this.style(this.meterCanvas, STYLES_METER, options.stylesMeter)
+        }
+        else
+        {
+            this.meterCanvas.style.display = 'block'
+        }
+    }
+
+    /**
+     * call this at the start of the frame to calculate FPS
+     */
+    frame()
+    {
+        this.frameNumber++
+        const currentTime = performance.now() - this.lastTime
+
+        // skip large differences to remove garbage
+        if (currentTime > 500)
+        {
+            if (this.lastTime !== 0)
+            {
+                this.lastFPS = Math.floor(this.frameNumber / (currentTime / 1000))
+                if (this.lastFPS >= this.FPS - this.tolerance && this.lastFPS <= this.FPS + this.tolerance)
+                {
+                    this.lastFPS = this.FPS
+                }
+            }
+            this.lastTime = performance.now()
+            this.frameNumber = 0
+        }
+        this.fpsSpan.innerText = this.lastFPS
+        if (this.meterCanvas && this.lastFPS !== '--')
+        {
+            this.meterUpdate(this.lastFPS / this.FPS)
+        }
+    }
+
+    meterUpdate(percent)
+    {
+        const c = this.meterCanvas.getContext('2d')
+        const data = c.getImageData(0, 0, this.meterCanvas.width, this.meterCanvas.height)
+        c.putImageData(data, -1, 0)
+        c.clearRect(this.meterCanvas.width - 1, 0, 1, this.meterCanvas.height)
+        if (percent < 0.5)
+        {
+            c.fillStyle = Color.mix('#ff0000', '0xffa500', percent * 200).toHexString()
+        }
+        else
+        {
+            c.fillStyle = Color.mix('#ffa500', '#00ff00', (percent - 0.5) * 200).toHexString()
+        }
+        const height = (this.meterCanvas.height - this.meterLineHeight) * (1 - percent)
+        c.fillRect(this.meterCanvas.width - 1, height, 1, this.meterLineHeight)
+    }
+
+    side(options)
+    {
+        if (options.side)
+        {
+            options.side = options.side.toLowerCase()
+            if (options.side.indexOf('left') !== -1)
+            {
+                STYLES['left'] = 0
+                delete STYLES['right']
+            }
+            else
+            {
+                STYLES['right'] = 0
+                delete STYLES['left']
+            }
+            if (options.side.indexOf('top') !== -1)
+            {
+                STYLES['top'] = 0
+                delete STYLES['bottom']
+            }
+            else
+            {
+                STYLES['bottom'] = 0
+                delete STYLES['top']
+            }
+        }
+        else
+        {
+            STYLES['right'] = 0
+            STYLES['bottom'] = 0
+        }
+    }
+}
+},{"tinycolor2":406,"yy-counter":411}],413:[function(require,module,exports){
+const Loop = require('./src/loop')
+Loop.entry = require('./src/entry')
+
+module.exports = Loop
+},{"./src/entry":414,"./src/loop":415}],414:[function(require,module,exports){
+const Events = require('eventemitter3')
+
+/** Entry class for Loop */
+class Entry extends Events
+{
+    /**
+     * create an entry in the update loop
+     * used by Loop
+     * @param {function} callback
+     * @param {number} [time=0] in milliseconds to call this update
+     * @param {number} [count] number of times to run this update (undefined=infinite)
+     */
+    constructor(callback, time, count)
+    {
+        super()
+        this.callback = callback
+        this.time = time
+        this.current = 0
+        this.count = count
+    }
+
+    /**
+     * run the callback if available
+     * @private
+     * @param {number} elapsed
+     */
+    _update(elapsed)
+    {
+        let result
+        if (this.callback)
+        {
+            result = this.callback(elapsed, this)
+        }
+        this.emit('each', elapsed, this)
+        if (result || (!isNaN(this.count) && !--this.count))
+        {
+            this.emit('done', this)
+            return true
+        }
+    }
+
+    /**
+     * update checks time and runs the callback
+     * @param {number} elapsed
+     * @return {boolean} whether entry is complete and may be removed from list
+     */
+    update(elapsed)
+    {
+        if (!this._pause)
+        {
+            if (this.time)
+            {
+                this.current += elapsed
+                if (this.current >= this.time)
+                {
+                    this.current -= this.time
+                    return this._update(elapsed)
+                }
+            }
+            else
+            {
+                return this._update(elapsed)
+            }
+        }
+    }
+
+    /**
+     * @type {boolean} pause this entry
+     */
+    set pause(value)
+    {
+        this._pause = value
+    }
+    get pause()
+    {
+        return this._pause
+    }
+}
+
+module.exports = Entry
+},{"eventemitter3":21}],415:[function(require,module,exports){
+/* Copyright (c) 2017 YOPEY YOPEY LLC */
+
+const Events = require('eventemitter3')
+
+class Loop extends Events
+{
+    /**
+     * basic loop support
+     * @param {object} [options]
+     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
+     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
+     *
+     * @event each(elapsed, Loop)
+     * @event start(Loop)
+     * @event stop(Loop)
+     */
+    constructor(options)
+    {
+        super()
+        options = options || {}
+        this.maxFrameTime = options.maxFrameTime || 1000 / 60
+        if (options.pauseOnBlur)
+        {
+            window.addEventListener('blur', () => this.stopBlur())
+            window.addEventListener('focus', () => this.startBlur())
+        }
+        this.list = []
+    }
+
+    /**
+     * start requestAnimationFrame() loop
+     * @return {Loop} this
+     */
+    start()
+    {
+        if (!this.running)
+        {
+            this.running = true
+            this.loop(0)
+            this.emit('start', this)
+        }
+        return this
+    }
+
+    /**
+     * handler for focus event
+     * @private
+     */
+    startBlur()
+    {
+        if (this.blurred)
+        {
+            this.start()
+            this.blurred = false
+        }
+    }
+
+    /**
+     * handler for blur event
+     * @private
+     */
+    stopBlur()
+    {
+        if (this.running)
+        {
+            this.stop()
+            this.blurred = true
+        }
+    }
+
+    /**
+     * stop loop
+     * @return {Loop} this
+     */
+    stop()
+    {
+        if (this.handle)
+        {
+            window.cancelAnimationFrame(this.handle)
+            this.handle = null
+        }
+        this.running = false
+        this.blurred = false
+        this.emit('stop', this)
+        return this
+    }
+
+    /**
+     * loop through updates; can be called manually each frame, or called automatically as part of start()
+     * @param {number} elapsed time since last call (will be clamped to this.maxFrameTime)
+     */
+    update(elapsed)
+    {
+        const maxFrameTime = this.maxFrameTime
+        elapsed = elapsed > maxFrameTime ? maxFrameTime : elapsed
+        for (let i = 0, _i = this.list.length; i < _i; i++)
+        {
+            if (this.list[i].update(elapsed))
+            {
+                this.list.splice(i, 1)
+                i--
+                _i--
+            }
+        }
+        this.emit('each', elapsed, this)
+    }
+
+    /**
+     * internal loop through animations
+     * @private
+     */
+    loop(elapsed)
+    {
+        if (this.running)
+        {
+            this.update(elapsed)
+            this.handle = requestAnimationFrame((elapsed) => this.loop(elapsed))
+        }
+    }
+
+    /**
+     * adds a callback to the loop
+     * @deprecated use add() instead
+     * @param {function} callback
+     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
+     * @param {number} [count=0] number of times to run this update (0=infinite)
+     * @return {object} entry - used to remove or change the parameters of the update
+     */
+    interval(callback, time, count)
+    {
+        console.warn('yy-loop: interval() deprecated. Use add() instead.')
+        this.add(callback, time, count)
+    }
+
+    /**
+     * adds a callback to the loop
+     * @param {function} callback
+     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
+     * @param {number} [count=0] number of times to run this update (0=infinite)
+     * @return {object} entry - used to remove or change the parameters of the update
+     */
+    add(callback, time, count)
+    {
+        const entry = new Entry(callback, time, count)
+        this.list.push(entry)
+        return entry
+    }
+
+    /**
+     * adds a one-time callback to the loop
+     * @param {function} callback
+     * @param {number} time in milliseconds to call this update
+     * @return {object} entry - used to remove or change the parameters of the update
+     */
+    timeout(callback, time)
+    {
+        return this.add(callback, time, 1)
+    }
+
+    /**
+     * remove a callback from the loop
+     * @param {object} entry - returned by add()
+     */
+    remove(entry)
+    {
+        const index = this.list.indexOf(entry)
+        if (index !== -1)
+        {
+            this.list.splice(index, 1)
+        }
+    }
+
+    /**
+     * removes all callbacks from the loop
+     */
+    removeAll()
+    {
+        this.list = []
+    }
+
+    /**
+     * @type {number} count of all animations
+     */
+    get count()
+    {
+        return this.list.length
+    }
+
+    /**
+     * @type {number} count of running animations
+     */
+    get countRunning()
+    {
+        let count = 0
+        for (let entry of this.list)
+        {
+            if (!entry.pause)
+            {
+                count++
+            }
+        }
+        return count
+    }
+}
+
+const Entry = require('./entry')
+
+Loop.entry = Entry
+module.exports = Loop
+},{"./entry":414,"eventemitter3":21}],416:[function(require,module,exports){
+// yy-random
+// by David Figatner
+// MIT license
+// copyright YOPEY YOPEY LLC 2016-17
+// https://github.com/davidfig/random
+
+const seedrandom = require('seedrandom')
+
+class Random
+{
+    constructor()
+    {
+        this.generator = Math.random
+    }
+
+    /**
+     * generates a seeded number
+     * @param {number} seed
+     * @param {object} [options]
+     * @param {string} [PRNG="alea"] - name of algorithm, see https://github.com/davidbau/seedrandom
+     * @param {boolean} [save=true]
+     */
+    seed(seed, options)
+    {
+        options = options || {}
+        this.generator = seedrandom[options.PRNG || 'alea'](seed, { state: options.state })
+        this.options = options
+    }
+
+    /**
+     * saves the state of the random generator
+     * can only be used after Random.seed() is called
+     * @returns {number} state
+     */
+    save()
+    {
+        if (this.generator !== Math.random)
+        {
+            return this.generator.state()
+        }
+    }
+
+    /**
+     * restores the state of the random generator
+     * @param {number} state
+     */
+    restore(state)
+    {
+        this.generator = seedrandom[this.options.PRNG || 'alea']('', { state })
+    }
+
+    /**
+     * changes the generator to use the old Math.sin-based random function
+     * based on : http://stackoverflow.com/questions/521295/javascript-random-seeds
+     * (deprecated) Use only for compatibility purposes
+     * @param {number} seed
+     */
+    seedOld(seed)
+    {
+        this.generator = function()
+        {
+            const x = Math.sin(seed++) * 10000
+            return x - Math.floor(x)
+        }
+    }
+
+    /**
+     * create a separate random generator using the seed
+     * @param {number} seed
+     * @return {object}
+     */
+    separateSeed(seed)
+    {
+        const random = new Random()
+        random.seed(seed)
+        return random
+    }
+
+    /**
+     * resets the random number this.generator to Math.random()
+     */
+    reset()
+    {
+        this.generator = Math.random
+    }
+
+    /**
+     * returns a random number using the this.generator between [0, ceiling - 1]
+     * @param {number} ceiling
+     * @param {boolean} [useFloat=false]
+     * @return {number}
+     */
+    get(ceiling, useFloat)
+    {
+        const negative = ceiling < 0 ? -1 : 1
+        ceiling *= negative
+        let result
+        if (useFloat)
+        {
+            result = this.generator() * ceiling
+        }
+        else
+        {
+            result = Math.floor(this.generator() * ceiling)
+        }
+        return result * negative
+    }
+
+    /**
+     * returns a random integer between 0 - Number.MAX_SAFE_INTEGER
+     * @return {number}
+     */
+    getHuge()
+    {
+        return this.get(Number.MAX_SAFE_INTEGER)
+    }
+
+    /**
+     * random number [middle - range, middle + range]
+     * @param {number} middle
+     * @param {number} delta
+     * @param {boolean} [useFloat=false]
+     * @return {number}
+     */
+    middle(middle, delta, useFloat)
+    {
+        const half = delta / 2
+        return this.range(middle - half, middle + half, useFloat)
+    }
+
+    /**
+     * random number [start, end]
+     * @param {number} start
+     * @param {number} end
+     * @param {boolean} [useFloat=false] if true, then range is (start, end)--i.e., not inclusive to start and end
+     * @return {number}
+     */
+    range(start, end, useFloat)
+    {
+        // case where there is no range
+        if (end === start)
+        {
+            return end
+        }
+
+        if (useFloat)
+        {
+            return this.get(end - start, true) + start
+        }
+        else
+        {
+            let range
+            if (start < 0 && end > 0)
+            {
+                range = -start + end + 1
+            }
+            else if (start === 0 && end > 0)
+            {
+                range = end + 1
+            }
+            else if (start < 0 && end === 0)
+            {
+                range = start - 1
+                start = 1
+            }
+            else if (start < 0 && end < 0)
+            {
+                range = end - start - 1
+            }
+            else
+            {
+                range = end - start + 1
+            }
+            return Math.floor(this.generator() * range) + start
+        }
+    }
+
+    /**
+     * an array of random numbers between [start, end]
+     * @param {number} start
+     * @param {number} end
+     * @param {number} count
+     * @param {boolean} [useFloat=false]
+     * @return {number[]}
+     */
+    rangeMultiple(start, end, count, useFloat)
+    {
+        var array = []
+        for (let i = 0; i < count; i++)
+        {
+            array.push(this.range(start, end, useFloat))
+        }
+        return array
+    }
+
+    /**
+     * an array of random numbers between [middle - range, middle + range]
+     * @param {number} middle
+     * @param {number} range
+     * @param {number} count
+     * @param {boolean} [useFloat=false]
+     * @return {number[]}
+     */
+    middleMultiple(middle, range, count, useFloat)
+    {
+        const array = []
+        for (let i = 0; i < count; i++)
+        {
+            array.push(middle(middle, range, useFloat))
+        }
+        return array
+    }
+
+    /**
+     * @param {number} [chance=0.5]
+     * returns random sign (either +1 or -1)
+     * @return {number}
+     */
+    sign(chance)
+    {
+        chance = chance || 0.5
+        return this.generator() < chance ? 1 : -1
+    }
+
+    /**
+     * tells you whether a random chance was achieved
+     * @param {number} [percent=0.5]
+     * @return {boolean}
+     */
+    chance(percent)
+    {
+        return this.generator() < (percent || 0.5)
+    }
+
+    /**
+     * returns a random angle in radians [0 - 2 * Math.PI)
+     */
+    angle()
+    {
+        return this.get(Math.PI * 2, true)
+    }
+
+    /**
+     * Shuffle array (either in place or copied)
+     * from http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+     * @param {Array} array
+     * @param {boolean} [copy=false] whether to shuffle in place (default) or return a new shuffled array
+     * @return {Array} a shuffled array
+     */
+    shuffle(array, copy)
+    {
+        if (copy)
+        {
+            array = array.slice()
+        }
+        if (array.length === 0)
+        {
+            return array
+        }
+
+        let currentIndex = array.length, temporaryValue, randomIndex
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex)
+        {
+            // Pick a remaining element...
+            randomIndex = this.get(currentIndex)
+            currentIndex -= 1
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex]
+            array[currentIndex] = array[randomIndex]
+            array[randomIndex] = temporaryValue
+        }
+        return array
+    }
+
+    /**
+     * picks a random element from an array
+     * @param {Array} array
+     * @return {*}
+     */
+    pick(array, remove)
+    {
+        if (!remove)
+        {
+            return array[this.get(array.length)]
+        }
+        else
+        {
+            const pick = this.get(array.length)
+            const temp = array[pick]
+            array.splice(pick, 1)
+            return temp
+        }
+    }
+
+    /**
+     * returns a random property from an object
+     * from http://stackoverflow.com/questions/2532218/pick-random-property-from-a-javascript-object
+     * @param {object} obj
+     * @return {*}
+     */
+    property(obj)
+    {
+        var result
+        var count = 0
+        for (var prop in obj)
+        {
+            if (this.chance(1 / ++count))
+            {
+                result = prop
+            }
+        }
+        return result
+    }
+
+    /**
+     * creates a random set where each entry is a value between [min, max]
+     * @param {number} min
+     * @param {number} max
+     * @param {number} amount of numbers in set
+     * @param {number[]}
+     */
+    set(min, max, amount)
+    {
+        var set = [], all = [], i
+        for (i = min; i < max; i++)
+        {
+            all.push(i)
+        }
+
+        for (i = 0; i < amount; i++)
+        {
+            var found = this.get(all.length)
+            set.push(all[found])
+            all.splice(found, 1)
+        }
+        return set
+    }
+
+
+    /**
+     * returns a set of numbers with a randomly even distribution (i.e., no overlapping and filling the space)
+     * @param {number} start position
+     * @param {number} end position
+     * @param {number} count of non-start/end points
+     * @param {boolean} [includeStart=false] includes start point (count++)
+     * @param {boolean} [includeEnd=false] includes end point (count++)
+     * @param {boolean} [useFloat=false]
+     * @param {number[]}
+     */
+    distribution(start, end, count, includeStart, includeEnd, useFloat)
+    {
+        var interval = Math.floor((end - start) / count)
+        var halfInterval = interval / 2
+        var quarterInterval = interval / 4
+        var set = []
+        if (includeStart)
+        {
+            set.push(start)
+        }
+        for (var i = 0; i < count; i++)
+        {
+            set.push(start + i * interval + halfInterval + this.range(-quarterInterval, quarterInterval, useFloat))
+        }
+        if (includeEnd)
+        {
+            set.push(end)
+        }
+        return set
+    }
+
+    /**
+     * returns a random number based on weighted probability between [min, max]
+     * from http://stackoverflow.com/questions/22656126/javascript-random-number-with-weighted-probability
+     * @param {number} min value
+     * @param {number} max value
+     * @param {number} target for average value
+     * @param {number} stddev - standard deviation
+     */
+    weightedProbabilityInt(min, max, target, stddev)
+    {
+        function normRand()
+        {
+            let x1, x2, rad
+            do
+            {
+                x1 = 2 * this.get(1, true) - 1
+                x2 = 2 * this.get(1, true) - 1
+                rad = x1 * x1 + x2 * x2
+            } while (rad >= 1 || rad === 0)
+            const c = Math.sqrt(-2 * Math.log(rad) / rad)
+            return x1 * c
+        }
+
+        stddev = stddev || 1
+        if (Math.random() < 0.81546)
+        {
+            while (true)
+            {
+                const sample = ((normRand() * stddev) + target)
+                if (sample >= min && sample <= max)
+                {
+                    return sample
+                }
+            }
+        }
+        else
+        {
+            return this.range(min, max)
+        }
+    }
+
+    /*
+     * returns a random hex color (0 - 0xffffff)
+     * @return {number}
+     */
+    color()
+    {
+        return this.get(0xffffff)
+    }
+}
+
+module.exports = new Random()
+},{"seedrandom":398}],417:[function(require,module,exports){
+// yy-renderer
+// by David Figatner
+// (c) YOPEY YOPEY LLC 2017
+// MIT License
+// https://github.com/davidfig/update
+
+const PIXI = require('pixi.js')
+const FPS = require('yy-fps')
+const Loop = require('yy-loop')
+const exists = require('exists')
+
+class Renderer
+{
+    /**
+     * Wrapper for a pixi.js Renderer
+     * @param {object} [options]
+     * @param {boolean} [options.alwaysRender=false] update renderer every update tick
+     * @param {number} [options.FPS=60] desired FPS for rendering (otherwise render on every tick)
+     *
+     * @param {HTMLCanvasElement} [options.canvas] place renderer in this canvas
+     * @param {HTMLElement} [options.parent=document.body] if no canvas is provided, use parent to provide parent for generated canvas otherwise uses document.body
+     * @param {object} [options.styles] apply these CSS styles to the div
+     *
+     * @param {number} [options.aspectRatio] resizing will maintain aspect ratio by ensuring that the smaller dimension fits
+     * @param {boolean} [options.autoresize=false] automatically calls resize during resize events
+     * @param {number} [options.color=0xffffff] background color in hex
+     *
+     * @param {boolean} [options.turnOffTicker] turn off PIXI.shared.ticker
+     * @param {boolean} [options.turnOffInteraction] turn off PIXI.Interaction manager (saves cycles)
+     *
+     * @param {boolean} [options.noWebGL=false] use the PIXI.CanvasRenderer instead of PIXI.WebGLRenderer
+     * @param {boolean} [options.antialias=true] turn on antialias if native antialias is not used, uses FXAA
+     * @param {boolean} [options.forceFXAA=false] forces FXAA antialiasing to be used over native. FXAA is faster, but may not always look as great
+     * @param {number} [options.resolution=window.devicePixelRatio] / device pixel ratio of the renderer (e.g., original retina is 2)
+     * @param {boolean} [options.clearBeforeRender=true] sets if the CanvasRenderer will clear the canvas or before the render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
+     * @param {boolean} [options.preserveDrawingBuffer=false] enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.roundPixels=false] if true PIXI will Math.floor() x/y values when rendering, stopping pixel interpolation
+     *
+     * @param {boolean|string} [options.debug] false, true, or some combination of 'fps', 'dirty', and 'count' (e.g., 'count-dirty' or 'dirty')
+     * @param {object} [options.fpsOptions] options from yy-fps (https://github.com/davidfig/fps)
+     *
+     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
+     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
+     *
+     * @event each(elapsed, Loop, elapsedInLoop)
+     * @event start(Loop)
+     * @event stop(Loop)
+     */
+    constructor(options)
+    {
+        options = options || {}
+        this.options = options
+        this.loop = new Loop({ pauseOnBlur: options.pauseOnBlur, maxFrameTime: options.maxFrameTime })
+        this.canvas = options.canvas
+        this.autoResize = options.autoresize
+        this.aspectRatio = options.aspectRatio
+        this.FPS = exists(options.FPS) ? 1000 / options.FPS : 0
+        options.resolution = this.resolution = options.resolution || window.devicePixelRatio || 1
+        options.antialias = exists(options.antialias) ? options.antialias : true
+        options.transparent = true
+        if (!this.canvas) this.createCanvas(options)
+        options.view = this.canvas
+
+        if (options.turnoffTicker)
+        {
+            const ticker = PIXI.ticker.shared
+            ticker.autoStart = false
+            ticker.stop()
+        }
+
+        const noWebGL = options.noWebGL || false
+        options.noWebGL = null
+        options.autoresize = null
+        const Renderer = noWebGL ? PIXI.CanvasRenderer : PIXI.WebGLRenderer
+
+        this.renderer = new Renderer(options)
+        if (options.turnOffInteraction)
+        {
+            this.renderer.plugins.interaction.destroy()
+        }
+        if (options.color)
+        {
+            this.canvas.style.backgroundColor = options.color
+        }
+        if (options.styles)
+        {
+            for (let style in options.styles)
+            {
+                this.canvas.style[style] = options.styles[style]
+            }
+        }
+
+        if (options.debug) this.createDebug(options)
+        if (this.autoResize) window.addEventListener('resize', () => this.resize())
+        this.time = 0
+        this.stage = new PIXI.Container()
+        this.dirty = this.alwaysRender = options.alwaysRender || false
+        this.resize(true)
+    }
+
+    /**
+     * create canvas if one is not provided
+     * @private
+     */
+    createCanvas(options)
+    {
+        this.canvas = document.createElement('canvas')
+        this.canvas.style.width = '100vw'
+        this.canvas.style.height = '100vh'
+        if (options.parent)
+        {
+            options.parent.appendChild(this.canvas)
+            options.parent = null
+        }
+        else
+        {
+            document.body.appendChild(this.canvas)
+        }
+        var width = this.canvas.offsetWidth
+        var height = this.canvas.offsetHeight
+        this.canvas.style.position = 'absolute'
+        this.canvas.width = width * this.resolution
+        this.canvas.height = height * this.resolution
+        this.canvas.style.left = this.canvas.style.top = '0px'
+        this.canvas.style.overflow = 'auto'
+    }
+
+    /**
+     * create FPS meter and render indicator
+     * @param {object} options
+     */
+    createDebug(options)
+    {
+        this.debug = options.debug
+        const fpsOptions = options.fpsOptions || {}
+        fpsOptions.FPS = options.FPS
+        this.fpsMeter = new FPS(fpsOptions)
+        const indicator = document.createElement('div')
+        indicator.style.display = 'flex'
+        indicator.style.justifyContent = 'space-between'
+        this.fpsMeter.div.prepend(indicator)
+        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('dirty') !== -1)
+        {
+            this.dirtyIndicator = document.createElement('div')
+            indicator.appendChild(this.dirtyIndicator)
+            this.dirtyIndicator.innerHTML = '&#9624; '
+        }
+        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('count') !== -1)
+        {
+            this.countIndicator = document.createElement('div')
+            indicator.appendChild(this.countIndicator)
+        }
+    }
+
+    debugUpdate()
+    {
+        this.dirtyIndicator.color = this.dirty
+    }
+
+    /**
+     * immediately render without checking dirty flag
+     */
+    render()
+    {
+        this.renderer.render(this.stage)
+        this.dirty = this.alwaysRender
+    }
+
+    /**
+     * @private
+     */
+    update()
+    {
+        if (this.fpsMeter)
+        {
+            this.fpsMeter.frame()
+            if (this.dirtyIndicator && this.lastDirty !== this.dirty)
+            {
+                this.dirtyIndicator.style.color = this.dirty ? 'white' : 'black'
+                this.lastDirty = this.dirty
+            }
+            if (this.countIndicator)
+            {
+                const count = this.countObjects()
+                if (this.lastCount !== count)
+                {
+                    this.countIndicator.innerText = count
+                    this.lastCount = count
+                }
+            }
+        }
+        if (this.dirty)
+        {
+            this.render()
+            this.dirty = this.alwaysRender
+        }
+    }
+
+    /**
+     * counts visible objects
+     */
+    countObjects()
+    {
+        function count(object)
+        {
+            if (!object.visible)
+            {
+                return
+            }
+            total++
+            for (let i = 0, _i = object.children.length; i < _i; i++)
+            {
+                count(object.children[i])
+            }
+        }
+
+        var total = 0
+        count(this.stage)
+        return total
+    }
+
+    /**
+     * sets the background color
+     * @param {string} color in CSS format
+     */
+    background(color)
+    {
+        this.canvas.style.backgroundColor = color
+    }
+
+    /**
+     * adds object to stage
+     * @param {PIXI.DisplayObject} object
+     * @param {number} [to] index to add
+     */
+    add(object, to)
+    {
+        if (typeof to === 'undefined')
+        {
+            to = this.stage.children.length
+        }
+        this.stage.addChildAt(object, to)
+        return object
+    }
+
+    /**
+     * alias for add
+     * @param {PIXI.DisplayObject} object
+     */
+    addChild(object)
+    {
+        return this.add(object)
+    }
+
+    /**
+     * alias for add
+     * @param {PIXI.DisplayObject} object
+     * @param {number} to - index to add
+     */
+    addChildTo(object, to)
+    {
+        return this.add(object, to)
+    }
+
+    /**
+     * remove child from stage
+     * @param {PIXI.DisplayObject} object
+     */
+    removeChild(object)
+    {
+        this.stage.removeChild(object)
+    }
+
+    /**
+     * clears the stage
+     */
+    clear()
+    {
+        this.stage.removeChildren()
+    }
+
+    /**
+     * resize
+     * @param {boolean} [force] resize, even if cached width/height remain unchanged
+     */
+    resize(force)
+    {
+        var width = this.canvas.offsetWidth
+        var height = this.canvas.offsetHeight
+        if (this.aspectRatio)
+        {
+            if (width > height)
+            {
+                width = height * this.aspectRatio
+            }
+            else
+            {
+                height = width / this.aspectRatio
+            }
+        }
+        if (force || width !== this.width || height !== this.height)
+        {
+            this.width = width
+            this.height = height
+            this.canvas.width = width * this.resolution
+            this.canvas.height = height * this.resolution
+            this.renderer.resize(this.width, this.height)
+            this.landscape = this.width > this.height
+            this.dirty = true
+        }
+    }
+
+    /**
+     * returns the smaller of the width/height based
+     * @return {number}
+     */
+    dimensionSmall()
+    {
+        return (this.landscape ? this.height : this.width)
+    }
+
+    /**
+     * returns the larger of the width/height based
+     * @return {number}
+     */
+    dimensionBig()
+    {
+        return (this.landscape ? this.width : this.height)
+    }
+
+    /**
+     * getter/setter to change desired FPS of renderer
+     */
+    get fps()
+    {
+        return this.FPS
+    }
+    set fps(value)
+    {
+        this.FPS = 1000 / value
+        if (this.loop)
+        {
+            this.loop.remove(this.loopSave)
+            this.loopSave = this.loop.add(() => this.update(), this.FPS)
+        }
+        if (this.fpsMeter)
+        {
+            this.fpsMeter.fps = value
+        }
+    }
+
+    /**
+     * Add a listener for a given event to yy-loop
+     * @param {(String|Symbol)} event The event name.
+     * @param {Function} fn The listener function.
+     * @param {*} [context=this] The context to invoke the listener with.
+     * @returns {EventEmitter} `this`.
+     */
+    on()
+    {
+        this.loop.on(...arguments)
+    }
+
+    /**
+     * Add a one-time listener for a given event to yy-loop
+     * @param {(String|Symbol)} event The event name.
+     * @param {Function} fn The listener function.
+     * @param {*} [context=this] The context to invoke the listener with.
+     * @returns {EventEmitter} `this`.
+     * @public
+     */
+    once()
+    {
+        this.loop.once(...arguments)
+    }
+
+    /**
+     * start the internal loop
+     * @returns {Renderer} this
+     */
+    start()
+    {
+        this.loopSave = this.loop.add(() => this.update(), this.FPS)
+        this.loop.start()
+        return this
+    }
+
+    /**
+     * stop the internal loop
+     * @inherited from yy-loop
+     * @returns {Renderer} this
+     */
+    stop()
+    {
+        this.loop.stop()
+    }
+}
+
+module.exports = Renderer
+},{"exists":22,"pixi.js":350,"yy-fps":412,"yy-loop":413}],418:[function(require,module,exports){
+'use strict'
+
+var boxPoint = require('./box-point')
+
+/**
+ * point-box collision
+ * @param {number} x1 point
+ * @param {number} y1 point
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @return {boolean}
+ */
+module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
+{
+    return boxPoint(xb, yb, wb, hb, x1, y1)
+}
+
+},{"./box-point":4}],419:[function(require,module,exports){
+'use strict'
+
+var circlePoint = require('./circle-point')
+
+module.exports = function pointCircle(x1, y1, xc, yc, rc)
+{
+    return circlePoint(xc, yc, rc, x1, y1)
+}
+
+},{"./circle-point":9}],420:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+
+/**
+ * point-polygon collision
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number[]} points
+ * @return {boolean}
+ */
+module.exports = function pointPolygon(x1, y1, points)
+{
+    return polygonPoint(points, x1, y1)
+}
+
+},{"./polygon-point":424}],421:[function(require,module,exports){
+'use strict'
+
+var polygonPolygon = require('./polygon-polygon')
+
+/**
+ * polygon-box collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x of box
+ * @param {number} y of box
+ * @param {number} w of box
+ * @param {number} h of box
+ */
+module.exports = function polygonBox(points, x, y, w, h)
+{
+    var points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
+    return polygonPolygon(points, points2)
+}
+
+},{"./polygon-polygon":425}],422:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+var lineCircle = require('./line-circle')
+
+
+/**
+ * polygon-circle collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+module.exports = function polygonCircle(points, xc, yc, rc)
+{
+    if (polygonPoint(points, xc, yc))
+    {
+        return true
+    }
+    var count = points.length
+    for (var i = 0; i < count - 2; i += 2)
+    {
+        if (lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
+        {
+            return true
+        }
+    }
+    return lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
+}
+
+},{"./line-circle":15,"./polygon-point":424}],423:[function(require,module,exports){
+'use strict'
+
+var linePolygon = require('./line-polygon')
+
+/**
+ * polygon-line collisions
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
+module.exports = function polygonLine(points, x1, y1, x2, y2)
+{
+    return linePolygon(x1, y1, x2, y2, points)
+}
+
+},{"./line-polygon":17}],424:[function(require,module,exports){
+'use strict'
+
+/**
+ * polygon-point collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x of point
+ * @param {number} y of point
+ */
+module.exports = function polygonPoint(points, x, y)
+{
+    var length = points.length
+    var c = false
+    for (var i = 0, j = length - 2; i < length; i += 2)
+    {
+        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
+        {
+            c = !c
+        }
+        j = i
+    }
+    return c
+}
+
+},{}],425:[function(require,module,exports){
+'use strict'
+
+/**
+ * polygon-polygon collision
+ * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
+ * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
+ * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
+ * @return {boolean}
+ */
+module.exports = function polygonPolygon(points1, points2)
+{
+    var a = points1
+    var b = points2
+    var polygons = [a, b]
+    var minA, maxA, projected, minB, maxB, j
+    for (var i = 0; i < polygons.length; i++)
+    {
+        var polygon = polygons[i]
+        for (var i1 = 0; i1 < polygon.length; i1 += 2)
+        {
+            var i2 = (i1 + 2) % polygon.length
+            var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
+            minA = maxA = null
+            for (j = 0; j < a.length; j += 2)
+            {
+                projected = normal.x * a[j] + normal.y * a[j + 1]
+                if (minA === null || projected < minA)
+                {
+                    minA = projected
+                }
+                if (maxA === null || projected > maxA)
+                {
+                    maxA = projected
+                }
+            }
+            minB = maxB = null
+            for (j = 0; j < b.length; j += 2)
+            {
+                projected = normal.x * b[j] + normal.y * b[j + 1]
+                if (minB === null || projected < minB)
+                {
+                    minB = projected
+                }
+                if (maxB === null || projected > maxB)
+                {
+                    maxB = projected
+                }
+            }
+            if (maxA < minB || maxB < minA)
+            {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+},{}]},{},[11]);
