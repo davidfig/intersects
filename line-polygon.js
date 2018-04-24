@@ -11,7 +11,7 @@ var lineLine = require('./line-line')
  number @param {number} y2 point 2 of line
  number @param {number[]} points of polygon
  */
-function linePolygon(x1, y1, x2, y2, points)
+module.exports = function linePolygon(x1, y1, x2, y2, points)
 {
     var length = points.length
 

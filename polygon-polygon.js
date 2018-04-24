@@ -12,7 +12,7 @@ module.exports = function polygonPolygon(points1, points2)
     var a = points1
     var b = points2
     var polygons = [a, b]
-    var minA, maxA, projected, minB, maxB
+    var minA, maxA, projected, minB, maxB, j
     for (var i = 0; i < polygons.length; i++)
     {
         var polygon = polygons[i]
@@ -21,7 +21,7 @@ module.exports = function polygonPolygon(points1, points2)
             var i2 = (i1 + 2) % polygon.length
             var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
             minA = maxA = null
-            for (var j = 0; j < a.length; j += 2)
+            for (j = 0; j < a.length; j += 2)
             {
                 projected = normal.x * a[j] + normal.y * a[j + 1]
                 if (minA === null || projected < minA)
@@ -34,7 +34,7 @@ module.exports = function polygonPolygon(points1, points2)
                 }
             }
             minB = maxB = null
-            for (var j = 0; j < b.length; j += 2)
+            for (j = 0; j < b.length; j += 2)
             {
                 projected = normal.x * b[j] + normal.y * b[j + 1]
                 if (minB === null || projected < minB)
