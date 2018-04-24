@@ -318,8 +318,6 @@ function next()
     }
 }
 
-ease.start()
-
 function setupRenderer()
 {
     renderer = new Renderer({ debug: true, transparent: true, autoresize: true, alwaysRender: true })
