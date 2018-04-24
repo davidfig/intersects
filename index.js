@@ -1,34 +1,30 @@
-const Circle = require('./src/circle')
-const Polygon = require('./src/polygon')
-const Box = require('./src/box')
-const Line = require('./src/line')
-const Point = require('./src/point')
+'use strict'
 
 module.exports = {
-    circlePoint: Circle.circlePoint,
-    circleCircle: Circle.circleCircle,
-    circleLine: Circle.circleLine,
-    circleBox: Circle.circleBox,
-    circlePolygon: Circle.circlePolygon,
+    circlePoint: require('./circle-point'),
+    circleCircle: require('./circle-circle'),
+    circleLine: require('./circle-line'),
+    circleBox: require('./circle-box'),
+    circlePolygon: require('./circle-polygon'),
 
-    polygonPoint: Polygon.polygonPoint,
-    polygonLine: Polygon.polygonLine,
-    polygonPolygon: Polygon.polygonPolygon,
-    polygonBox: Polygon.polygonBox,
-    polygonCircle: Polygon.polygonCircle,
+    polygonPoint: require('./polygon-point'),
+    polygonLine: require('./polygon-line'),
+    polygonPolygon: require('./polygon-polygon'),
+    polygonBox: require('./polygon-box'),
+    polygonCircle: require('./polygon-circle'),
 
-    boxPoint: Box.boxPoint,
-    boxBox: Box.boxBox,
-    boxLine: Box.boxLine,
-    boxPolygon: Box.boxPolygon,
-    boxCircle: Box.boxCircle,
+    boxPoint: require('./box-point'),
+    boxBox: require('./box-box'),
+    boxLine: require('./box-line'),
+    boxPolygon: require('./box-polygon'),
+    boxCircle: require('./box-circle'),
 
-    pointBox: Point.pointBox,
-    pointPolygon: Point.pointPolygon,
-    pointCircle: Point.pointCircle,
+    pointBox: require('./point-box'),
+    pointPolygon: require('./point-polygon'),
+    pointCircle: require('./point-circle'),
 
-    lineLine: Line.lineLine,
-    lineBox: Line.lineBox,
-    linePolygon: Line.linePolygon,
-    lineCircle: Line.lineCircle
+    lineLine: require('./line-line'),
+    lineBox: require('./line-box'),
+    linePolygon: require('./line-polygon'),
+    lineCircle: require('./line-circle')
 }
