@@ -22,7 +22,7 @@ or
     var intersected = circleBox(x, y, r, x1, y1, w1, h1);
 ```
 
-# API 
+## API 
 ```js
 /**
  * box-box collision
@@ -269,7 +269,6 @@ module.exports = function polygonPolygon(points1, points2)
 
 
 ```
-
 ## license  
 MIT License  
 (c) 2018 [YOPEY YOPEY LLC](https://yopeyopey.com/) by [David Figatner](https://twitter.com/yopey_yopey/)
