@@ -4,11 +4,10 @@ Collection of 2d collision/intersection checkers, supporting points, circles, li
 
 [**Live Example**](https://davidfig.github.io/intersects/)
 
-## Installation
-
-[![npm i intersects](https://nodei.co/npm/intersects.png?mini=true)](https://npmjs.org/package/intersects/)
 
 ## Usage
+
+[![npm i intersects](https://nodei.co/npm/intersects.png?mini=true)](https://npmjs.org/package/intersects/)
 
 ```js
 var x = require('intersects');
@@ -335,7 +334,8 @@ Param | Meaning
 
 
 
-## license
+## License
 
 MIT License
+
 (c) 2018 [YOPEY YOPEY LLC](https://yopeyopey.com/) by [David Figatner](https://twitter.com/yopey_yopey/)
