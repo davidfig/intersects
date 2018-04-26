@@ -1,274 +1,301 @@
-## intersects
-a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons
+## intersects [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges)
 
-## rationale
-I wanted a simplified collection of collision functions that work across different shapes.
+Collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons.
 
-## Live Example
-https://davidfig.github.io/intersects/
+[**Live Example**](https://davidfig.github.io/intersects/)
 
 ## Installation
 
-    npm i intersects
+[![npm i intersects](https://nodei.co/npm/intersects.png?mini=true)](https://npmjs.org/package/intersects/)
 
 ## Usage
+
 ```js
-    var intesect = require('intersects');
-    var intersected = intersect.boxBox(x1, y1, w1, h1, x2, y2, w2, h2);
+var x = require('intersects');
+var intersects = x.boxBox(x1, y1, w1, h1, x2, y2, w2, h2);
 ```
+
 or
+
 ```js
-    var circleBox = require('intersects/circle-box');
-    var intersected = circleBox(x, y, r, x1, y1, w1, h1);
+var x = require('intersects/circle-box');
+var intersects = x(x, y, r, x1, y1, w1, h1);
 ```
 
-## API 
-```js
-/**
- * box-box collision
- * @param {number} x1 top-left corner of first box
- * @param {number} y1 top-left corner of first box
- * @param {number} w1 width of first box
- * @param {number} h1 height of first box
- * @param {number} x2 top-left corner of second box
- * @param {number} y2 top-left corner of second box
- * @param {number} w2 width of second box
- * @param {number} h2 height of second box
- */
-module.exports = function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
+## API
 
-/**
- * box-circle collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- */
-module.exports = function boxCircle(xb, yb, wb, hb, xc, yc, rc)
+### `boxBox(x1, y1, w1, h1, x2, y2, w2, h2)`
 
-/**
- * box-line collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- */
-module.exports = function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
+Box-box collision
 
-/**
- * box-point collision
- * @param {number} x1 top-left corner of box
- * @param {number} y1 top-left corner of box
- * @param {number} w1 width of box
- * @param {number} h1 height of box
- * @param {number} x2 of point
- * @param {number} y2 of point
- * @return {boolean}
- */
-module.exports = function boxPoint(x1, y1, w1, h1, x2, y2)
+Param | Meaning
+---|---
+`x1` | top-left corner of first box
+`y1` | top-left corner of first box
+`w1` | width of first box
+`h1` | height of first box
+`x2` | top-left corner of second box
+`y2` | top-left corner of second box
+`w2` | width of second box
+`h2` | height of second box
 
-/**
- * box-polygon collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number[]} points of polygon
- */
-module.exports = function boxPolygon(xb, yb, wb, hb, points)
+### `boxCircle(xb, yb, wb, hb, xc, yc, rc)`
 
+Box-circle collision
 
-/**
- * circle-box (axis-oriented rectangle) collision
- * from http://stackoverflow.com/a/402010/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} xb top-left corner of rectangle
- * @param {number} yb top-left corner of rectangle
- * @param {number} wb width of rectangle
- * @param {number} hb height of rectangle
- */
-module.exports = function circleBox(xc, yc, rc, xb, yb, wb, hb)
+Param | Meaning
+---|---
+`xb` | top-left corner of box
+`yb` | top-left corner of box
+`wb` | width of box
+`hb` | height of box
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
 
-/**
- * circle-circle collision
- * @param {number} x1 center of circle 1
- * @param {number} y1 center of circle 1
- * @param {number} r1 radius of circle 1
- * @param {number} x2 center of circle 2
- * @param {number} y2 center of circle 2
- * @param {number} r2 radius of circle 2
- * @return {boolean}
- */
-module.exports = function circleCircle(x1, y1, r1, x2, y2, r2)
+### `boxLine(xb, yb, wb, hb, x1, y1, x2, y2)`
 
-/**
- * circle-line collision
- * from http://stackoverflow.com/a/10392860/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- * @return {boolean}
- */
-module.exports = function circleLine(xc, yc, rc, x1, y1, x2, y2)
+Box-line collision
 
-/**
- * circle-point collision
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 point
- * @param {number} y2 point
- * @return {boolean}
- */
-module.exports = function circlePoint(x1, y1, r1, x2, y2)
+Param | Meaning
+---|---
+`xb` | top-left corner of box
+`yb` | top-left corner of box
+`wb` | width of box
+`hb` | height of box
+`x1` | first point of line
+`y1` | first point of line
+`x2` | second point of line
+`y2` | second point of line
 
-/**
- * circle-polygon collision
- * from http://stackoverflow.com/a/402019/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- */
-module.exports = function circlePolygon(xc, yc, rc, points)
+### `boxPoint(x1, y1, w1, h1, x2, y2)`
 
+Box-point collision
 
-/**
- * line-box collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xb top-left of box
- number @param {number} yb top-left of box
- number @param {number} wb width of box
- number @param {number} hb height of box
- */
-module.exports = function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
+Param | Meaning
+---|---
+`x1` | top-left corner of box
+`y1` | top-left corner of box
+`w1` | width of box
+`h1` | height of box
+`x2` | point x
+`y2` | point y
 
-/**
- * line-circle collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xc center of circle
- number @param {number} yc center of circle
- number @param {number} rc radius of circle
- */
-module.exports = function lineCircle(x1, y1, x2, y2, xc, yc, rc)
+### `boxPolygon(xb, yb, wb, hb, points)`
 
-/**
- * line-line collision
- * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
- * @param {number} x1 first point in line 1
- * @param {number} y1 first point in line 1
- * @param {number} x2 second point in line 1
- * @param {number} y2 second point in line 1
- * @param {number} x3 first point in line 2
- * @param {number} y3 first point in line 2
- * @param {number} x4 second point in line 2
- * @param {number} y4 second point in line 2
- * @return {boolean}
- */
-module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
+Box-polygon collision
 
-/**
- * line-polygon collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number[]} points of polygon
- */
-module.exports = function linePolygon(x1, y1, x2, y2, points)
+Param | Meaning
+---|---
+`xb` | top-left corner of box
+`yb` | top-left corner of box
+`wb` | width of box
+`hb` | height of box
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
 
+### `circleBox(xc, yc, rc, xb, yb, wb, hb)`
 
-/**
- * point-box collision
- * @param {number} x1 point
- * @param {number} y1 point
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @return {boolean}
- */
-module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
+Circle-box (axis-oriented rectangle) collision
 
+Param | Meaning
+---|---
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+`xb` | top-left corner of rectangle
+`yb` | top-left corner of rectangle
+`wb` | width of rectangle
+`hb` | height of rectangle
 
-/**
- * point-polygon collision
- * @param {number} x1
- * @param {number} y1
- * @param {number[]} points
- * @return {boolean}
- */
-module.exports = function pointPolygon(x1, y1, points)
+### `circleCircle(x1, y1, r1, x2, y2, r2)`
+
+Circle-circle collision
+
+Param | Meaning
+---|---
+`x1` | center of circle 1
+`y1` | center of circle 1
+`r1` | radius of circle 1
+`x2` | center of circle 2
+`y2` | center of circle 2
+`r2` | radius of circle 2
+
+### `circleLine(xc, yc, rc, x1, y1, x2, y2)`
+
+Circle-line collision
+
+Param | Meaning
+---|---
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+`x1` | first point of line
+`y1` | first point of line
+`x2` | second point of line
+`y2` | second point of line
+
+### `circlePoint(x1, y1, r1, x2, y2)`
+
+Circle-point collision
+
+Param | Meaning
+---|---
+`x1` | center of circle
+`y1` | center of circle
+`r1` | radius of circle
+`x2` | point x
+`y2` | point y
+
+### `circlePolygon(xc, yc, rc, points)`
+
+Circle-polygon collision
+
+Param | Meaning
+---|---
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+
+### `lineBox(x1, y1, x2, y2, xb, yb, wb, hb)`
+
+Line-box collision
+
+Param | Meaning
+---|---
+`x1` | point 1 of line
+`y1` | point 1 of line
+`x2` | point 2 of line
+`y2` | point 2 of line
+`xb` | top-left of box
+`yb` | top-left of box
+`wb` | width of box
+`hb` | height of box
+
+### `lineCircle(x1, y1, x2, y2, xc, yc, rc)`
+
+Line-circle collision
+
+Param | Meaning
+---|---
+`x1` | point 1 of line
+`y1` | point 1 of line
+`x2` | point 2 of line
+`y2` | point 2 of line
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+
+### `lineLine(x1, y1, x2, y2, x3, y3, x4, y4)`
+
+Line-line collision
+
+Param | Meaning
+---|---
+`x1` | first point in line 1
+`y1` | first point in line 1
+`x2` | second point in line 1
+`y2` | second point in line 1
+`x3` | first point in line 2
+`y3` | first point in line 2
+`x4` | second point in line 2
+`y4` | second point in line 2
+
+### `linePolygon(x1, y1, x2, y2, points)`
+
+Line-polygon collision
+
+Param | Meaning
+---|---
+`x1` | point 1 of line
+`y1` | point 1 of line
+`x2` | point 2 of line
+`y2` | point 2 of line
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
 
 
-/**
- * polygon-box collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of box
- * @param {number} y of box
- * @param {number} w of box
- * @param {number} h of box
- */
-module.exports = function polygonBox(points, x, y, w, h)
+### `pointBox(x1, y1, xb, yb, wb, hb)`
 
-/**
- * polygon-circle collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- */
-module.exports = function polygonCircle(points, xc, yc, rc)
+Point-box collision
 
-/**
- * polygon-line collisions
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x1 first point in line
- * @param {number} y1 first point in line
- * @param {number} x2 second point in line
- * @param {number} y2 second point in line
- * @return {boolean}
- */
-module.exports = function polygonLine(points, x1, y1, x2, y2)
-
-/**
- * polygon-point collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of point
- * @param {number} y of point
- */
-module.exports = function polygonPoint(points, x, y)
-
-/**
- * polygon-polygon collision
- * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
- * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
- * @return {boolean}
- */
-module.exports = function polygonPolygon(points1, points2)
+Param | Meaning
+---|---
+`x1` | point x
+`y1` | point y
+`xb` | top-left corner of box
+`yb` | top-left corner of box
+`wb` | width of box
+`hb` | height of box
 
 
-```
-## license  
-MIT License  
+### `pointPolygon(x1, y1, points)`
+
+Point-polygon collision
+
+Param | Meaning
+---|---
+`x1` | point x
+`y1` | point y
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+
+
+### `polygonBox(points, x, y, w, h)`
+
+Polygon-box collision
+
+Param | Meaning
+---|---
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`x` | of box
+`y` | of box
+`w` | of box
+`h` | of box
+
+### `polygonCircle(points, xc, yc, rc)`
+
+Polygon-circle collision
+
+Param | Meaning
+---|---
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+
+### `polygonLine(points, x1, y1, x2, y2)`
+
+Polygon-line collisions
+
+Param | Meaning
+---|---
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`x1` | first point in line
+`y1` | first point in line
+`x2` | second point in line
+`y2` | second point in line
+
+### `polygonPoint(points, x, y)`
+
+Polygon-point collision
+
+Param | Meaning
+---|---
+`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`x` | of point
+`y` | of point
+
+### `polygonPolygon(points1, points2)`
+
+Polygon-polygon collision
+
+Param | Meaning
+---|---
+`points1` | [x1, y1, x2, y2, ... xn, yn] of first polygon
+`points2` | [x1, y1, x2, y2, ... xn, yn] of second polygon
+
+
+
+## license
+
+MIT License
 (c) 2018 [YOPEY YOPEY LLC](https://yopeyopey.com/) by [David Figatner](https://twitter.com/yopey_yopey/)
