@@ -2,7 +2,7 @@
 a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons
 
 ## rationale
-I wanted a simplified collection of collision functions that work across different shapes. If you want a more advanced implementation designed for pixi.js. 
+I wanted a simplified collection of collision functions that work across different shapes.
 
 ## Live Example
 https://davidfig.github.io/intersects/
