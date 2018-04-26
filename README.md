@@ -1,6 +1,6 @@
 ## intersects [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges)
 
-Collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons.
+Collection of 2d collision/intersection checkers, supporting points, circles, lines, rectangles, and polygons.
 
 [**Live Example**](https://davidfig.github.io/intersects/)
 
@@ -26,7 +26,7 @@ var intersects = x(x, y, r, x1, y1, w1, h1);
 
 ### `boxBox(x1, y1, w1, h1, x2, y2, w2, h2)`
 
-Box-box collision
+Box-box collision.
 
 Param | Meaning
 ---|---
@@ -39,9 +39,11 @@ Param | Meaning
 `w2` | width of second box
 `h2` | height of second box
 
+---
+
 ### `boxCircle(xb, yb, wb, hb, xc, yc, rc)`
 
-Box-circle collision
+Box-circle collision.
 
 Param | Meaning
 ---|---
@@ -53,9 +55,11 @@ Param | Meaning
 `yc` | center of circle
 `rc` | radius of circle
 
+---
+
 ### `boxLine(xb, yb, wb, hb, x1, y1, x2, y2)`
 
-Box-line collision
+Box-line collision.
 
 Param | Meaning
 ---|---
@@ -68,9 +72,11 @@ Param | Meaning
 `x2` | second point of line
 `y2` | second point of line
 
+---
+
 ### `boxPoint(x1, y1, w1, h1, x2, y2)`
 
-Box-point collision
+Box-point collision.
 
 Param | Meaning
 ---|---
@@ -81,9 +87,11 @@ Param | Meaning
 `x2` | point x
 `y2` | point y
 
+---
+
 ### `boxPolygon(xb, yb, wb, hb, points)`
 
-Box-polygon collision
+Box-polygon collision.
 
 Param | Meaning
 ---|---
@@ -91,11 +99,13 @@ Param | Meaning
 `yb` | top-left corner of box
 `wb` | width of box
 `hb` | height of box
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
+
+---
 
 ### `circleBox(xc, yc, rc, xb, yb, wb, hb)`
 
-Circle-box (axis-oriented rectangle) collision
+Circle-box (axis-oriented rectangle) collision.
 
 Param | Meaning
 ---|---
@@ -107,9 +117,11 @@ Param | Meaning
 `wb` | width of rectangle
 `hb` | height of rectangle
 
+---
+
 ### `circleCircle(x1, y1, r1, x2, y2, r2)`
 
-Circle-circle collision
+Circle-circle collision.
 
 Param | Meaning
 ---|---
@@ -120,9 +132,11 @@ Param | Meaning
 `y2` | center of circle 2
 `r2` | radius of circle 2
 
+---
+
 ### `circleLine(xc, yc, rc, x1, y1, x2, y2)`
 
-Circle-line collision
+Circle-line collision.
 
 Param | Meaning
 ---|---
@@ -134,9 +148,11 @@ Param | Meaning
 `x2` | second point of line
 `y2` | second point of line
 
+---
+
 ### `circlePoint(x1, y1, r1, x2, y2)`
 
-Circle-point collision
+Circle-point collision.
 
 Param | Meaning
 ---|---
@@ -146,20 +162,24 @@ Param | Meaning
 `x2` | point x
 `y2` | point y
 
+---
+
 ### `circlePolygon(xc, yc, rc, points)`
 
-Circle-polygon collision
+Circle-polygon collision.
 
 Param | Meaning
 ---|---
 `xc` | center of circle
 `yc` | center of circle
 `rc` | radius of circle
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
+
+---
 
 ### `lineBox(x1, y1, x2, y2, xb, yb, wb, hb)`
 
-Line-box collision
+Line-box collision.
 
 Param | Meaning
 ---|---
@@ -172,9 +192,11 @@ Param | Meaning
 `wb` | width of box
 `hb` | height of box
 
+---
+
 ### `lineCircle(x1, y1, x2, y2, xc, yc, rc)`
 
-Line-circle collision
+Line-circle collision.
 
 Param | Meaning
 ---|---
@@ -186,9 +208,11 @@ Param | Meaning
 `yc` | center of circle
 `rc` | radius of circle
 
+---
+
 ### `lineLine(x1, y1, x2, y2, x3, y3, x4, y4)`
 
-Line-line collision
+Line-line collision.
 
 Param | Meaning
 ---|---
@@ -201,9 +225,11 @@ Param | Meaning
 `x4` | second point in line 2
 `y4` | second point in line 2
 
+---
+
 ### `linePolygon(x1, y1, x2, y2, points)`
 
-Line-polygon collision
+Line-polygon collision.
 
 Param | Meaning
 ---|---
@@ -211,12 +237,14 @@ Param | Meaning
 `y1` | point 1 of line
 `x2` | point 2 of line
 `y2` | point 2 of line
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 
+
+---
 
 ### `pointBox(x1, y1, xb, yb, wb, hb)`
 
-Point-box collision
+Point-box collision.
 
 Param | Meaning
 ---|---
@@ -228,70 +256,82 @@ Param | Meaning
 `hb` | height of box
 
 
+---
+
 ### `pointPolygon(x1, y1, points)`
 
-Point-polygon collision
+Point-polygon collision.
 
 Param | Meaning
 ---|---
 `x1` | point x
 `y1` | point y
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 
+
+---
 
 ### `polygonBox(points, x, y, w, h)`
 
-Polygon-box collision
+Polygon-box collision.
 
 Param | Meaning
 ---|---
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 `x` | of box
 `y` | of box
 `w` | of box
 `h` | of box
 
+---
+
 ### `polygonCircle(points, xc, yc, rc)`
 
-Polygon-circle collision
+Polygon-circle collision.
 
 Param | Meaning
 ---|---
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 `xc` | center of circle
 `yc` | center of circle
 `rc` | radius of circle
 
+---
+
 ### `polygonLine(points, x1, y1, x2, y2)`
 
-Polygon-line collisions
+Polygon-line collisions.
 
 Param | Meaning
 ---|---
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 `x1` | first point in line
 `y1` | first point in line
 `x2` | second point in line
 `y2` | second point in line
 
+---
+
 ### `polygonPoint(points, x, y)`
 
-Polygon-point collision
+Polygon-point collision.
 
 Param | Meaning
 ---|---
-`points` | [x1, y1, x2, y2, ... xn, yn] of polygon
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 `x` | of point
 `y` | of point
 
+---
+
 ### `polygonPolygon(points1, points2)`
 
-Polygon-polygon collision
+Polygon-polygon collision.
 
 Param | Meaning
 ---|---
-`points1` | [x1, y1, x2, y2, ... xn, yn] of first polygon
-`points2` | [x1, y1, x2, y2, ... xn, yn] of second polygon
+`points1` | `[x1, y1, x2, y2, ... xn, yn]` of first polygon
+`points2` | `[x1, y1, x2, y2, ... xn, yn]` of second polygon
 
 
 
