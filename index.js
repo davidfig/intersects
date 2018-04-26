@@ -1,30 +1,30 @@
 'use strict'
 
 module.exports = {
-    circlePoint: require('./circle-point'),
-    circleCircle: require('./circle-circle'),
-    circleLine: require('./circle-line'),
-    circleBox: require('./circle-box'),
-    circlePolygon: require('./circle-polygon'),
+    circlePoint: require('./src/circle-point'),
+    circleCircle: require('./src/circle-circle'),
+    circleLine: require('./src/circle-line'),
+    circleBox: require('./src/circle-box'),
+    circlePolygon: require('./src/circle-polygon'),
 
-    polygonPoint: require('./polygon-point'),
-    polygonLine: require('./polygon-line'),
-    polygonPolygon: require('./polygon-polygon'),
-    polygonBox: require('./polygon-box'),
-    polygonCircle: require('./polygon-circle'),
+    polygonPoint: require('./src/polygon-point'),
+    polygonLine: require('./src/polygon-line'),
+    polygonPolygon: require('./src/polygon-polygon'),
+    polygonBox: require('./src/polygon-box'),
+    polygonCircle: require('./src/polygon-circle'),
 
-    boxPoint: require('./box-point'),
-    boxBox: require('./box-box'),
-    boxLine: require('./box-line'),
-    boxPolygon: require('./box-polygon'),
-    boxCircle: require('./box-circle'),
+    boxPoint: require('./src/box-point'),
+    boxBox: require('./src/box-box'),
+    boxLine: require('./src/box-line'),
+    boxPolygon: require('./src/box-polygon'),
+    boxCircle: require('./src/box-circle'),
 
-    pointBox: require('./point-box'),
-    pointPolygon: require('./point-polygon'),
-    pointCircle: require('./point-circle'),
+    pointBox: require('./src/point-box'),
+    pointPolygon: require('./src/point-polygon'),
+    pointCircle: require('./src/point-circle'),
 
-    lineLine: require('./line-line'),
-    lineBox: require('./line-box'),
-    linePolygon: require('./line-polygon'),
-    lineCircle: require('./line-circle')
+    lineLine: require('./src/line-line'),
+    lineBox: require('./src/line-box'),
+    linePolygon: require('./src/line-polygon'),
+    lineCircle: require('./src/line-circle')
 }
