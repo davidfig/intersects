@@ -1,6 +1,6 @@
 {
   "name": "intersects",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons",
   "main": "index.js",
   "scripts": {
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/davidfig/simple-intersect.git"
+    "url": "git+ssh://git@github.com/davidfig/intersects.git"
   },
   "author": "david figatner",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/davidfig/simple-intersect/issues"
+    "url": "https://github.com/davidfig/intersects/issues"
   },
-  "homepage": "https://github.com/davidfig/simple-intersect#readme",
+  "homepage": "https://github.com/davidfig/intersects#readme",
   "devDependencies": {
     "browserify": "^16.2.0",
     "budo": "^11.2.0",
