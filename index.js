@@ -22,9 +22,11 @@ module.exports = {
     pointBox: require('./point-box'),
     pointPolygon: require('./point-polygon'),
     pointCircle: require('./point-circle'),
+    pointLine: require('./point-line'),
 
     lineLine: require('./line-line'),
     lineBox: require('./line-box'),
     linePolygon: require('./line-polygon'),
-    lineCircle: require('./line-circle')
+    lineCircle: require('./line-circle'),
+    linePoint: require('./line-point')
 }

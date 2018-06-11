@@ -238,6 +238,20 @@ Param | Meaning
 `y2` | point 2 of line
 `points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 
+---
+
+### `linePoint(x1, y1, x2, y2, xp, yp)`
+
+Line-point collision.
+
+Param | Meaning
+---|---
+`x1` | point 1 of line
+`y1` | point 1 of line
+`x2` | point 2 of line
+`y2` | point 2 of line
+`xp` | point x
+`yp` | point y 
 
 ---
 
@@ -267,6 +281,20 @@ Param | Meaning
 `y1` | point y
 `points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 
+---
+
+### `pointLine(xp, yp, x1, y1, x2, y2)`
+
+point-line collision.
+
+Param | Meaning
+---|---
+`xp` | point x
+`yp` | point y 
+`x1` | point 1 of line
+`y1` | point 1 of line
+`x2` | point 2 of line
+`y2` | point 2 of line
 
 ---
 

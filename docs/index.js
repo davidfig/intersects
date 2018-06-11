@@ -1,4 +1,4 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict'
 
 /**
@@ -109,7 +109,7 @@ module.exports = function boxPolygon(xb, yb, wb, hb, points)
     return polygonBox(points, xb, yb, wb, hb)
 }
 
-},{"./polygon-box":420}],6:[function(require,module,exports){
+},{"./polygon-box":413}],6:[function(require,module,exports){
 'use strict'
 
 var boxCircle = require('./box-circle')
@@ -211,7 +211,7 @@ module.exports = function circlePolygon(xc, yc, rc, points)
     return polygonCircle(points, xc, yc, rc)
 }
 
-},{"./polygon-circle":421}],11:[function(require,module,exports){
+},{"./polygon-circle":414}],11:[function(require,module,exports){
 const PIXI = require('pixi.js')
 const Renderer = require('yy-renderer')
 const Ease = require('pixi-ease')
@@ -225,7 +225,7 @@ const TIME = 3000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
 let x = SHAPE, y = SHAPE
 
 // set to true to test the reverse (e.g., pointCircle instead of circlePoint)
-const REVERSE = false
+const REVERSE = true
 
 circlePoint(); next()
 circleCircle(); next()
@@ -239,6 +239,9 @@ boxPoint(); next()
 boxBox(); next()
 lineLine(); next()
 lineBox(); next()
+linePoint(); next()
+
+polygonPointSpecial(); next()
 
 function circlePoint()
 {
@@ -435,6 +438,22 @@ function polygonPoint()
     text('polygonPoint')
 }
 
+// test for points on edge of polygon
+// see https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html (point on edge)
+function polygonPointSpecial()
+{
+    const xPos = x + SIZE / 2 - SHAPE / 2
+    const yPos = y + SIZE / 2 - SHAPE / 2
+    const points = [xPos + SHAPE / 2, yPos, xPos, yPos + SHAPE, xPos + SHAPE, yPos + SHAPE]
+    const polygon = drawPolygon(points)
+    const c = drawCircle(x, y, DOT)
+    c.tint = 0
+    c.x = xPos + SHAPE / 2
+    c.y = yPos
+    polygon.tint = Intersects.polygonPoint(points, c.x, c.y) ? 0xff0000 : 0x00ff00
+    text('point on polygon edge')
+}
+
 function lineLine()
 {
     const lines = renderer.addChild(new PIXI.Graphics())
@@ -473,6 +492,24 @@ function lineBox()
         to.on('each', () => box1.tint = line.tint = Intersects.lineBox(l.x1, l.y1, l.x2, l.y2, box1.x, box1.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00)
     }
     text('lineBox')
+}
+
+function linePoint()
+{
+    const adjust = -SIZE * 0.1
+    const l = { x1: x + SIZE / 2 - adjust, y1: y, x2: x + SIZE / 2 + adjust, y2: y + SIZE }
+    const line = drawLine(l)
+    const point = drawCircle(x, y, DOT, 0)
+    const to = ease.to(point, { x: x + SIZE, y: y + SIZE }, TIME, options)
+    if (REVERSE)
+    {
+        to.on('each', () => line.tint = Intersects.pointLine(point.x, point.y, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => line.tint = Intersects.linePoint(l.x1, l.y1, l.x2, l.y2, point.x, point.y) ? 0xff0000 : 0x00ff00)
+    }
+    text('linePoint')
 }
 
 function drawCircle(x, y, r, color)
@@ -560,7 +597,7 @@ window.onload = function()
 // for eslint
 /* globals window, XMLHttpRequest, document */
 
-},{"..":12,"highlight.js":23,"pixi-ease":208,"pixi.js":349,"yy-renderer":416}],12:[function(require,module,exports){
+},{"..":12,"highlight.js":23,"pixi-ease":207,"pixi.js":348,"yy-renderer":408}],12:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -585,14 +622,16 @@ module.exports = {
     pointBox: require('./point-box'),
     pointPolygon: require('./point-polygon'),
     pointCircle: require('./point-circle'),
+    pointLine: require('./point-line'),
 
     lineLine: require('./line-line'),
     lineBox: require('./line-box'),
     linePolygon: require('./line-polygon'),
-    lineCircle: require('./line-circle')
+    lineCircle: require('./line-circle'),
+    linePoint: require('./line-point')
 }
 
-},{"./box-box":1,"./box-circle":2,"./box-line":3,"./box-point":4,"./box-polygon":5,"./circle-box":6,"./circle-circle":7,"./circle-line":8,"./circle-point":9,"./circle-polygon":10,"./line-box":13,"./line-circle":14,"./line-line":15,"./line-polygon":16,"./point-box":417,"./point-circle":418,"./point-polygon":419,"./polygon-box":420,"./polygon-circle":421,"./polygon-line":422,"./polygon-point":423,"./polygon-polygon":424}],13:[function(require,module,exports){
+},{"./box-box":1,"./box-circle":2,"./box-line":3,"./box-point":4,"./box-polygon":5,"./circle-box":6,"./circle-circle":7,"./circle-line":8,"./circle-point":9,"./circle-polygon":10,"./line-box":13,"./line-circle":14,"./line-line":15,"./line-point":16,"./line-polygon":17,"./point-box":409,"./point-circle":410,"./point-line":411,"./point-polygon":412,"./polygon-box":413,"./polygon-circle":414,"./polygon-line":415,"./polygon-point":416,"./polygon-polygon":417}],13:[function(require,module,exports){
 'use strict'
 
 var boxPoint = require('./box-point')
@@ -683,6 +722,31 @@ module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4)
 },{}],16:[function(require,module,exports){
 'use strict'
 
+function distanceSquared(x1, y1, x2, y2)
+{
+    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
+}
+
+/**
+ * line-point collision
+ * from https://stackoverflow.com/a/17693146/1955997
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @param {number} xp point
+ * @param {number} yp point
+ * @param {number} [tolerance=1]
+ * @return {boolean}
+ */
+module.exports = function linePoint(x1, y1, x2, y2, xp, yp, tolerance)
+{
+    tolerance = tolerance || 1
+    return Math.abs(distanceSquared(x1, y1, x2, y2) - (distanceSquared(x1, y1, xp, yp) + distanceSquared(x2, y2, xp, yp))) <= tolerance
+}
+},{}],17:[function(require,module,exports){
+'use strict'
+
 var polygonPoint = require('./polygon-point')
 var lineLine = require('./line-line')
 
@@ -716,7 +780,7 @@ module.exports = function linePolygon(x1, y1, x2, y2, points)
     return false
 }
 
-},{"./line-line":15,"./polygon-point":423}],17:[function(require,module,exports){
+},{"./line-line":15,"./polygon-point":416}],18:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -921,8 +985,6 @@ exports.nextCombination = function(v) {
   return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
 }
 
-
-},{}],18:[function(require,module,exports){
 
 },{}],19:[function(require,module,exports){
 'use strict';
@@ -19190,234 +19252,6 @@ module.exports = function parseURI (str, opts) {
 }
 
 },{}],204:[function(require,module,exports){
-(function (process){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
-  }
-
-  return parts;
-}
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-}).call(this,require('_process'))
-},{"_process":385}],205:[function(require,module,exports){
 
 /*
 	Copyright © 2001 Robert Penner
@@ -19685,7 +19519,7 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this);
 
-},{}],206:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -19773,7 +19607,7 @@ var angle = function (_wait) {
 
 module.exports = angle;
 
-},{"./wait":216}],207:[function(require,module,exports){
+},{"./wait":215}],206:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -19860,7 +19694,7 @@ var face = function (_wait) {
 
 module.exports = face;
 
-},{"./wait":216,"yy-angle":408}],208:[function(require,module,exports){
+},{"./wait":215,"yy-angle":400}],207:[function(require,module,exports){
 'use strict';
 
 var list = require('./list');
@@ -19878,7 +19712,7 @@ module.exports = {
     load: require('./load')
 };
 
-},{"./angle":206,"./face":207,"./list":209,"./load":210,"./movie":211,"./shake":212,"./target":213,"./tint":214,"./to":215,"./wait":216}],209:[function(require,module,exports){
+},{"./angle":205,"./face":206,"./list":208,"./load":209,"./movie":210,"./shake":211,"./target":212,"./tint":213,"./to":214,"./wait":215}],208:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20229,7 +20063,7 @@ var Ease = function (_Events) {
 
 module.exports = Ease;
 
-},{"./angle":206,"./face":207,"./load":210,"./movie":211,"./shake":212,"./target":213,"./tint":214,"./to":215,"./wait":216,"eventemitter3":20,"pixi.js":349}],210:[function(require,module,exports){
+},{"./angle":205,"./face":206,"./load":209,"./movie":210,"./shake":211,"./target":212,"./tint":213,"./to":214,"./wait":215,"eventemitter3":20,"pixi.js":348}],209:[function(require,module,exports){
 'use strict';
 
 var wait = require('./wait');
@@ -20272,7 +20106,7 @@ function load(object, load) {
 
 module.exports = load;
 
-},{"./angle":206,"./face":207,"./movie":211,"./shake":212,"./target":213,"./tint":214,"./to":215,"./wait":216}],211:[function(require,module,exports){
+},{"./angle":205,"./face":206,"./movie":210,"./shake":211,"./target":212,"./tint":213,"./to":214,"./wait":215}],210:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20391,7 +20225,7 @@ var movie = function (_wait) {
 
 module.exports = movie;
 
-},{"./wait":216}],212:[function(require,module,exports){
+},{"./wait":215}],211:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20507,7 +20341,7 @@ var shake = function (_wait) {
 
 module.exports = shake;
 
-},{"./wait":216}],213:[function(require,module,exports){
+},{"./wait":215}],212:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20596,7 +20430,7 @@ var target = function (_wait) {
 
 module.exports = target;
 
-},{"./wait":216}],214:[function(require,module,exports){
+},{"./wait":215}],213:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20758,7 +20592,7 @@ var tint = function (_wait) {
 
 module.exports = tint;
 
-},{"./wait":216,"yy-color":409}],215:[function(require,module,exports){
+},{"./wait":215,"yy-color":401}],214:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20957,7 +20791,7 @@ var to = function (_wait) {
 
 module.exports = to;
 
-},{"./wait":216}],216:[function(require,module,exports){
+},{"./wait":215}],215:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -21166,7 +21000,7 @@ var wait = function (_EventEmitter) {
 
 module.exports = wait;
 
-},{"eventemitter3":20,"penner":205}],217:[function(require,module,exports){
+},{"eventemitter3":20,"penner":204}],216:[function(require,module,exports){
 var EMPTY_ARRAY_BUFFER = new ArrayBuffer(0);
 
 /**
@@ -21287,7 +21121,7 @@ Buffer.prototype.destroy = function(){
 
 module.exports = Buffer;
 
-},{}],218:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 
 var Texture = require('./GLTexture');
 
@@ -21515,7 +21349,7 @@ Framebuffer.createFloat32 = function(gl, width, height, data)
 
 module.exports = Framebuffer;
 
-},{"./GLTexture":220}],219:[function(require,module,exports){
+},{"./GLTexture":219}],218:[function(require,module,exports){
 
 var compileProgram = require('./shader/compileProgram'),
 	extractAttributes = require('./shader/extractAttributes'),
@@ -21611,7 +21445,7 @@ Shader.prototype.destroy = function()
 
 module.exports = Shader;
 
-},{"./shader/compileProgram":225,"./shader/extractAttributes":227,"./shader/extractUniforms":228,"./shader/generateUniformAccessObject":229,"./shader/setPrecision":233}],220:[function(require,module,exports){
+},{"./shader/compileProgram":224,"./shader/extractAttributes":226,"./shader/extractUniforms":227,"./shader/generateUniformAccessObject":228,"./shader/setPrecision":232}],219:[function(require,module,exports){
 
 /**
  * Helper class to create a WebGL Texture
@@ -21946,7 +21780,7 @@ Texture.fromData = function(gl, data, width, height)
 
 module.exports = Texture;
 
-},{}],221:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 
 // state object//
 var setVertexAttribArrays = require( './setVertexAttribArrays' );
@@ -22214,7 +22048,7 @@ VertexArrayObject.prototype.getSize = function()
     return attrib.buffer.data.length / (( attrib.stride/4 ) || attrib.attribute.size);
 };
 
-},{"./setVertexAttribArrays":224}],222:[function(require,module,exports){
+},{"./setVertexAttribArrays":223}],221:[function(require,module,exports){
 
 /**
  * Helper class to create a webGL Context
@@ -22242,7 +22076,7 @@ var createContext = function(canvas, options)
 
 module.exports = createContext;
 
-},{}],223:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 var gl = {
     createContext:          require('./createContext'),
     setVertexAttribArrays:  require('./setVertexAttribArrays'),
@@ -22269,7 +22103,7 @@ if (typeof window !== 'undefined')
     window.PIXI.glCore = gl;
 }
 
-},{"./GLBuffer":217,"./GLFramebuffer":218,"./GLShader":219,"./GLTexture":220,"./VertexArrayObject":221,"./createContext":222,"./setVertexAttribArrays":224,"./shader":230}],224:[function(require,module,exports){
+},{"./GLBuffer":216,"./GLFramebuffer":217,"./GLShader":218,"./GLTexture":219,"./VertexArrayObject":220,"./createContext":221,"./setVertexAttribArrays":223,"./shader":229}],223:[function(require,module,exports){
 // var GL_MAP = {};
 
 /**
@@ -22326,7 +22160,7 @@ var setVertexAttribArrays = function (gl, attribs, state)
 
 module.exports = setVertexAttribArrays;
 
-},{}],225:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 
 /**
  * @class
@@ -22408,7 +22242,7 @@ var compileShader = function (gl, type, src)
 
 module.exports = compileProgram;
 
-},{}],226:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI.glCore.shader
@@ -22488,7 +22322,7 @@ var booleanArray = function(size)
 
 module.exports = defaultValue;
 
-},{}],227:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 
 var mapType = require('./mapType');
 var mapSize = require('./mapSize');
@@ -22531,7 +22365,7 @@ var pointer = function(type, normalized, stride, start){
 
 module.exports = extractAttributes;
 
-},{"./mapSize":231,"./mapType":232}],228:[function(require,module,exports){
+},{"./mapSize":230,"./mapType":231}],227:[function(require,module,exports){
 var mapType = require('./mapType');
 var defaultValue = require('./defaultValue');
 
@@ -22568,7 +22402,7 @@ var extractUniforms = function(gl, program)
 
 module.exports = extractUniforms;
 
-},{"./defaultValue":226,"./mapType":232}],229:[function(require,module,exports){
+},{"./defaultValue":225,"./mapType":231}],228:[function(require,module,exports){
 /**
  * Extracts the attributes
  * @class
@@ -22691,7 +22525,7 @@ function getUniformGroup(nameTokens, uniform)
 
 module.exports = generateUniformAccessObject;
 
-},{}],230:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 module.exports = {
     compileProgram: require('./compileProgram'),
     defaultValue: require('./defaultValue'),
@@ -22702,7 +22536,7 @@ module.exports = {
     mapSize: require('./mapSize'),
     mapType: require('./mapType')
 };
-},{"./compileProgram":225,"./defaultValue":226,"./extractAttributes":227,"./extractUniforms":228,"./generateUniformAccessObject":229,"./mapSize":231,"./mapType":232,"./setPrecision":233}],231:[function(require,module,exports){
+},{"./compileProgram":224,"./defaultValue":225,"./extractAttributes":226,"./extractUniforms":227,"./generateUniformAccessObject":228,"./mapSize":230,"./mapType":231,"./setPrecision":232}],230:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI.glCore.shader
@@ -22740,7 +22574,7 @@ var GLSL_TO_SIZE = {
 
 module.exports = mapSize;
 
-},{}],232:[function(require,module,exports){
+},{}],231:[function(require,module,exports){
 
 
 var mapType = function(gl, type) 
@@ -22788,7 +22622,7 @@ var GL_TO_GLSL_TYPES = {
 
 module.exports = mapType;
 
-},{}],233:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 /**
  * Sets the float precision on the shader. If the precision is already present this function will do nothing
  * @param {string} src       the shader source
@@ -22808,7 +22642,7 @@ var setPrecision = function(src, precision)
 
 module.exports = setPrecision;
 
-},{}],234:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23302,7 +23136,7 @@ exports.default = AccessibilityManager;
 core.WebGLRenderer.registerPlugin('accessibility', AccessibilityManager);
 core.CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
-},{"../core":259,"./accessibleTarget":235,"ismobilejs":200}],235:[function(require,module,exports){
+},{"../core":258,"./accessibleTarget":234,"ismobilejs":200}],234:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -23360,7 +23194,7 @@ exports.default = {
   _accessibleDiv: false
 };
 
-},{}],236:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23385,7 +23219,7 @@ Object.defineProperty(exports, 'AccessibilityManager', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./AccessibilityManager":234,"./accessibleTarget":235}],237:[function(require,module,exports){
+},{"./AccessibilityManager":233,"./accessibleTarget":234}],236:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23609,7 +23443,7 @@ var Application = function () {
 
 exports.default = Application;
 
-},{"./autoDetectRenderer":239,"./const":240,"./display/Container":242,"./settings":295,"./ticker":315}],238:[function(require,module,exports){
+},{"./autoDetectRenderer":238,"./const":239,"./display/Container":241,"./settings":294,"./ticker":314}],237:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23676,7 +23510,7 @@ var Shader = function (_GLShader) {
 
 exports.default = Shader;
 
-},{"./settings":295,"pixi-gl-core":223}],239:[function(require,module,exports){
+},{"./settings":294,"pixi-gl-core":222}],238:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -23745,7 +23579,7 @@ function autoDetectRenderer(options, arg1, arg2, arg3) {
     return new _CanvasRenderer2.default(options, arg1, arg2);
 }
 
-},{"./renderers/canvas/CanvasRenderer":271,"./renderers/webgl/WebGLRenderer":278,"./utils":319}],240:[function(require,module,exports){
+},{"./renderers/canvas/CanvasRenderer":270,"./renderers/webgl/WebGLRenderer":277,"./utils":318}],239:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24088,7 +23922,7 @@ var UPDATE_PRIORITY = exports.UPDATE_PRIORITY = {
   UTILITY: -50
 };
 
-},{}],241:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -24431,7 +24265,7 @@ var Bounds = function () {
 
 exports.default = Bounds;
 
-},{"../math":264}],242:[function(require,module,exports){
+},{"../math":263}],241:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25049,7 +24883,7 @@ var Container = function (_DisplayObject) {
 exports.default = Container;
 Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
-},{"../utils":319,"./DisplayObject":243}],243:[function(require,module,exports){
+},{"../utils":318,"./DisplayObject":242}],242:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25743,7 +25577,7 @@ var DisplayObject = function (_EventEmitter) {
 exports.default = DisplayObject;
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
-},{"../const":240,"../math":264,"../settings":295,"./Bounds":241,"./Transform":244,"./TransformStatic":246,"eventemitter3":384}],244:[function(require,module,exports){
+},{"../const":239,"../math":263,"../settings":294,"./Bounds":240,"./Transform":243,"./TransformStatic":245,"eventemitter3":383}],243:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -25924,7 +25758,7 @@ var Transform = function (_TransformBase) {
 
 exports.default = Transform;
 
-},{"../math":264,"./TransformBase":245}],245:[function(require,module,exports){
+},{"../math":263,"./TransformBase":244}],244:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -26011,7 +25845,7 @@ TransformBase.prototype.updateWorldTransform = TransformBase.prototype.updateTra
 
 TransformBase.IDENTITY = new TransformBase();
 
-},{"../math":264}],246:[function(require,module,exports){
+},{"../math":263}],245:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -26221,7 +26055,7 @@ var TransformStatic = function (_TransformBase) {
 
 exports.default = TransformStatic;
 
-},{"../math":264,"./TransformBase":245}],247:[function(require,module,exports){
+},{"../math":263,"./TransformBase":244}],246:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27426,7 +27260,7 @@ exports.default = Graphics;
 
 Graphics._SPRITE_TEXTURE = null;
 
-},{"../const":240,"../display/Bounds":241,"../display/Container":242,"../math":264,"../renderers/canvas/CanvasRenderer":271,"../sprites/Sprite":296,"../textures/RenderTexture":307,"../textures/Texture":309,"../utils":319,"./GraphicsData":248,"./utils/bezierCurveTo":250}],248:[function(require,module,exports){
+},{"../const":239,"../display/Bounds":240,"../display/Container":241,"../math":263,"../renderers/canvas/CanvasRenderer":270,"../sprites/Sprite":295,"../textures/RenderTexture":306,"../textures/Texture":308,"../utils":318,"./GraphicsData":247,"./utils/bezierCurveTo":249}],247:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -27562,7 +27396,7 @@ var GraphicsData = function () {
 
 exports.default = GraphicsData;
 
-},{}],249:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -27831,7 +27665,7 @@ exports.default = CanvasGraphicsRenderer;
 
 _CanvasRenderer2.default.registerPlugin('graphics', CanvasGraphicsRenderer);
 
-},{"../../const":240,"../../renderers/canvas/CanvasRenderer":271}],250:[function(require,module,exports){
+},{"../../const":239,"../../renderers/canvas/CanvasRenderer":270}],249:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -27881,7 +27715,7 @@ function bezierCurveTo(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY) {
     return path;
 }
 
-},{}],251:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28146,7 +27980,7 @@ exports.default = GraphicsRenderer;
 
 _WebGLRenderer2.default.registerPlugin('graphics', GraphicsRenderer);
 
-},{"../../const":240,"../../renderers/webgl/WebGLRenderer":278,"../../renderers/webgl/utils/ObjectRenderer":288,"../../utils":319,"./WebGLGraphicsData":252,"./shaders/PrimitiveShader":253,"./utils/buildCircle":254,"./utils/buildPoly":256,"./utils/buildRectangle":257,"./utils/buildRoundedRectangle":258}],252:[function(require,module,exports){
+},{"../../const":239,"../../renderers/webgl/WebGLRenderer":277,"../../renderers/webgl/utils/ObjectRenderer":287,"../../utils":318,"./WebGLGraphicsData":251,"./shaders/PrimitiveShader":252,"./utils/buildCircle":253,"./utils/buildPoly":255,"./utils/buildRectangle":256,"./utils/buildRoundedRectangle":257}],251:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28289,7 +28123,7 @@ var WebGLGraphicsData = function () {
 
 exports.default = WebGLGraphicsData;
 
-},{"pixi-gl-core":223}],253:[function(require,module,exports){
+},{"pixi-gl-core":222}],252:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28334,7 +28168,7 @@ var PrimitiveShader = function (_Shader) {
 
 exports.default = PrimitiveShader;
 
-},{"../../../Shader":238}],254:[function(require,module,exports){
+},{"../../../Shader":237}],253:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28427,7 +28261,7 @@ function buildCircle(graphicsData, webGLData, webGLDataNativeLines) {
     }
 }
 
-},{"../../../const":240,"../../../utils":319,"./buildLine":255}],255:[function(require,module,exports){
+},{"../../../const":239,"../../../utils":318,"./buildLine":254}],254:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28697,7 +28531,7 @@ function buildNativeLine(graphicsData, webGLData) {
     }
 }
 
-},{"../../../math":264,"../../../utils":319}],256:[function(require,module,exports){
+},{"../../../math":263,"../../../utils":318}],255:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28783,7 +28617,7 @@ function buildPoly(graphicsData, webGLData, webGLDataNativeLines) {
     }
 }
 
-},{"../../../utils":319,"./buildLine":255,"earcut":19}],257:[function(require,module,exports){
+},{"../../../utils":318,"./buildLine":254,"earcut":19}],256:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -28859,7 +28693,7 @@ function buildRectangle(graphicsData, webGLData, webGLDataNativeLines) {
     }
 }
 
-},{"../../../utils":319,"./buildLine":255}],258:[function(require,module,exports){
+},{"../../../utils":318,"./buildLine":254}],257:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29015,7 +28849,7 @@ function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
     return points;
 }
 
-},{"../../../utils":319,"./buildLine":255,"earcut":19}],259:[function(require,module,exports){
+},{"../../../utils":318,"./buildLine":254,"earcut":19}],258:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29401,7 +29235,7 @@ exports.WebGLRenderer = _WebGLRenderer2.default; /**
                                                   * @namespace PIXI
                                                   */
 
-},{"./Application":237,"./Shader":238,"./autoDetectRenderer":239,"./const":240,"./display/Bounds":241,"./display/Container":242,"./display/DisplayObject":243,"./display/Transform":244,"./display/TransformBase":245,"./display/TransformStatic":246,"./graphics/Graphics":247,"./graphics/GraphicsData":248,"./graphics/canvas/CanvasGraphicsRenderer":249,"./graphics/webgl/GraphicsRenderer":251,"./math":264,"./renderers/canvas/CanvasRenderer":271,"./renderers/canvas/utils/CanvasRenderTarget":273,"./renderers/webgl/WebGLRenderer":278,"./renderers/webgl/filters/Filter":280,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":283,"./renderers/webgl/managers/WebGLManager":287,"./renderers/webgl/utils/ObjectRenderer":288,"./renderers/webgl/utils/Quad":289,"./renderers/webgl/utils/RenderTarget":290,"./settings":295,"./sprites/Sprite":296,"./sprites/canvas/CanvasSpriteRenderer":297,"./sprites/canvas/CanvasTinter":298,"./sprites/webgl/SpriteRenderer":300,"./text/Text":302,"./text/TextMetrics":303,"./text/TextStyle":304,"./textures/BaseRenderTexture":305,"./textures/BaseTexture":306,"./textures/RenderTexture":307,"./textures/Spritesheet":308,"./textures/Texture":309,"./textures/TextureMatrix":310,"./textures/TextureUvs":311,"./textures/VideoBaseTexture":312,"./ticker":315,"./utils":319,"pixi-gl-core":223}],260:[function(require,module,exports){
+},{"./Application":236,"./Shader":237,"./autoDetectRenderer":238,"./const":239,"./display/Bounds":240,"./display/Container":241,"./display/DisplayObject":242,"./display/Transform":243,"./display/TransformBase":244,"./display/TransformStatic":245,"./graphics/Graphics":246,"./graphics/GraphicsData":247,"./graphics/canvas/CanvasGraphicsRenderer":248,"./graphics/webgl/GraphicsRenderer":250,"./math":263,"./renderers/canvas/CanvasRenderer":270,"./renderers/canvas/utils/CanvasRenderTarget":272,"./renderers/webgl/WebGLRenderer":277,"./renderers/webgl/filters/Filter":279,"./renderers/webgl/filters/spriteMask/SpriteMaskFilter":282,"./renderers/webgl/managers/WebGLManager":286,"./renderers/webgl/utils/ObjectRenderer":287,"./renderers/webgl/utils/Quad":288,"./renderers/webgl/utils/RenderTarget":289,"./settings":294,"./sprites/Sprite":295,"./sprites/canvas/CanvasSpriteRenderer":296,"./sprites/canvas/CanvasTinter":297,"./sprites/webgl/SpriteRenderer":299,"./text/Text":301,"./text/TextMetrics":302,"./text/TextStyle":303,"./textures/BaseRenderTexture":304,"./textures/BaseTexture":305,"./textures/RenderTexture":306,"./textures/Spritesheet":307,"./textures/Texture":308,"./textures/TextureMatrix":309,"./textures/TextureUvs":310,"./textures/VideoBaseTexture":311,"./ticker":314,"./utils":318,"pixi-gl-core":222}],259:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -29594,7 +29428,7 @@ var GroupD8 = {
 
 exports.default = GroupD8;
 
-},{"./Matrix":261}],261:[function(require,module,exports){
+},{"./Matrix":260}],260:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30116,7 +29950,7 @@ var Matrix = function () {
 
 exports.default = Matrix;
 
-},{"../const":240,"./Point":263}],262:[function(require,module,exports){
+},{"../const":239,"./Point":262}],261:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -30233,7 +30067,7 @@ var ObservablePoint = function () {
 
 exports.default = ObservablePoint;
 
-},{}],263:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -30324,7 +30158,7 @@ var Point = function () {
 
 exports.default = Point;
 
-},{}],264:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30412,7 +30246,7 @@ Object.defineProperty(exports, 'RoundedRectangle', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./GroupD8":260,"./Matrix":261,"./ObservablePoint":262,"./Point":263,"./shapes/Circle":265,"./shapes/Ellipse":266,"./shapes/Polygon":267,"./shapes/Rectangle":268,"./shapes/RoundedRectangle":269}],265:[function(require,module,exports){
+},{"./GroupD8":259,"./Matrix":260,"./ObservablePoint":261,"./Point":262,"./shapes/Circle":264,"./shapes/Ellipse":265,"./shapes/Polygon":266,"./shapes/Rectangle":267,"./shapes/RoundedRectangle":268}],264:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30526,7 +30360,7 @@ var Circle = function () {
 
 exports.default = Circle;
 
-},{"../../const":240,"./Rectangle":268}],266:[function(require,module,exports){
+},{"../../const":239,"./Rectangle":267}],265:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30648,7 +30482,7 @@ var Ellipse = function () {
 
 exports.default = Ellipse;
 
-},{"../../const":240,"./Rectangle":268}],267:[function(require,module,exports){
+},{"../../const":239,"./Rectangle":267}],266:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -30779,7 +30613,7 @@ var Polygon = function () {
 
 exports.default = Polygon;
 
-},{"../../const":240,"../Point":263}],268:[function(require,module,exports){
+},{"../../const":239,"../Point":262}],267:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31042,7 +30876,7 @@ var Rectangle = function () {
 
 exports.default = Rectangle;
 
-},{"../../const":240}],269:[function(require,module,exports){
+},{"../../const":239}],268:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31175,7 +31009,7 @@ var RoundedRectangle = function () {
 
 exports.default = RoundedRectangle;
 
-},{"../../const":240}],270:[function(require,module,exports){
+},{"../../const":239}],269:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31540,7 +31374,7 @@ var SystemRenderer = function (_EventEmitter) {
 
 exports.default = SystemRenderer;
 
-},{"../const":240,"../display/Container":242,"../math":264,"../settings":295,"../textures/RenderTexture":307,"../utils":319,"eventemitter3":384}],271:[function(require,module,exports){
+},{"../const":239,"../display/Container":241,"../math":263,"../settings":294,"../textures/RenderTexture":306,"../utils":318,"eventemitter3":383}],270:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -31905,7 +31739,7 @@ var CanvasRenderer = function (_SystemRenderer) {
 exports.default = CanvasRenderer;
 _utils.pluginTarget.mixin(CanvasRenderer);
 
-},{"../../const":240,"../../settings":295,"../../utils":319,"../SystemRenderer":270,"./utils/CanvasMaskManager":272,"./utils/CanvasRenderTarget":273,"./utils/mapCanvasBlendModesToPixi":275}],272:[function(require,module,exports){
+},{"../../const":239,"../../settings":294,"../../utils":318,"../SystemRenderer":269,"./utils/CanvasMaskManager":271,"./utils/CanvasRenderTarget":272,"./utils/mapCanvasBlendModesToPixi":274}],271:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32074,7 +31908,7 @@ var CanvasMaskManager = function () {
 
 exports.default = CanvasMaskManager;
 
-},{"../../../const":240}],273:[function(require,module,exports){
+},{"../../../const":239}],272:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32198,7 +32032,7 @@ var CanvasRenderTarget = function () {
 
 exports.default = CanvasRenderTarget;
 
-},{"../../../settings":295}],274:[function(require,module,exports){
+},{"../../../settings":294}],273:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32259,7 +32093,7 @@ function canUseNewCanvasBlendModes() {
     return data[0] === 255 && data[1] === 0 && data[2] === 0;
 }
 
-},{}],275:[function(require,module,exports){
+},{}],274:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32331,7 +32165,7 @@ function mapCanvasBlendModesToPixi() {
     return array;
 }
 
-},{"../../../const":240,"./canUseNewCanvasBlendModes":274}],276:[function(require,module,exports){
+},{"../../../const":239,"./canUseNewCanvasBlendModes":273}],275:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32451,7 +32285,7 @@ var TextureGarbageCollector = function () {
 
 exports.default = TextureGarbageCollector;
 
-},{"../../const":240,"../../settings":295}],277:[function(require,module,exports){
+},{"../../const":239,"../../settings":294}],276:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -32707,7 +32541,7 @@ var TextureManager = function () {
 
 exports.default = TextureManager;
 
-},{"../../const":240,"../../utils":319,"./utils/RenderTarget":290,"pixi-gl-core":223}],278:[function(require,module,exports){
+},{"../../const":239,"../../utils":318,"./utils/RenderTarget":289,"pixi-gl-core":222}],277:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33524,7 +33358,7 @@ var WebGLRenderer = function (_SystemRenderer) {
 exports.default = WebGLRenderer;
 _utils.pluginTarget.mixin(WebGLRenderer);
 
-},{"../../const":240,"../../textures/BaseTexture":306,"../../utils":319,"../SystemRenderer":270,"./TextureGarbageCollector":276,"./TextureManager":277,"./WebGLState":279,"./managers/FilterManager":284,"./managers/MaskManager":285,"./managers/StencilManager":286,"./utils/ObjectRenderer":288,"./utils/RenderTarget":290,"./utils/mapWebGLDrawModesToPixi":293,"./utils/validateContext":294,"pixi-gl-core":223}],279:[function(require,module,exports){
+},{"../../const":239,"../../textures/BaseTexture":305,"../../utils":318,"../SystemRenderer":269,"./TextureGarbageCollector":275,"./TextureManager":276,"./WebGLState":278,"./managers/FilterManager":283,"./managers/MaskManager":284,"./managers/StencilManager":285,"./utils/ObjectRenderer":287,"./utils/RenderTarget":289,"./utils/mapWebGLDrawModesToPixi":292,"./utils/validateContext":293,"pixi-gl-core":222}],278:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -33804,7 +33638,7 @@ var WebGLState = function () {
 
 exports.default = WebGLState;
 
-},{"./utils/mapWebGLBlendModesToPixi":292}],280:[function(require,module,exports){
+},{"./utils/mapWebGLBlendModesToPixi":291}],279:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34000,7 +33834,7 @@ var Filter = function () {
 
 exports.default = Filter;
 
-},{"../../../const":240,"../../../settings":295,"../../../utils":319,"./extractUniformsFromSrc":281}],281:[function(require,module,exports){
+},{"../../../const":239,"../../../settings":294,"../../../utils":318,"./extractUniformsFromSrc":280}],280:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34062,7 +33896,7 @@ function extractUniformsFromString(string) {
     return uniforms;
 }
 
-},{"pixi-gl-core":223}],282:[function(require,module,exports){
+},{"pixi-gl-core":222}],281:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34122,7 +33956,7 @@ function calculateSpriteMatrix(outputMatrix, filterArea, textureSize, sprite) {
     return mappedMatrix;
 }
 
-},{"../../../math":264}],283:[function(require,module,exports){
+},{"../../../math":263}],282:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34210,7 +34044,7 @@ var SpriteMaskFilter = function (_Filter) {
 
 exports.default = SpriteMaskFilter;
 
-},{"../../../../math":264,"../../../../textures/TextureMatrix":310,"../Filter":280,"path":204}],284:[function(require,module,exports){
+},{"../../../../math":263,"../../../../textures/TextureMatrix":309,"../Filter":279,"path":419}],283:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -34850,7 +34684,7 @@ var FilterManager = function (_WebGLManager) {
 
 exports.default = FilterManager;
 
-},{"../../../Shader":238,"../../../math":264,"../filters/filterTransforms":282,"../utils/Quad":289,"../utils/RenderTarget":290,"./WebGLManager":287,"bit-twiddle":17}],285:[function(require,module,exports){
+},{"../../../Shader":237,"../../../math":263,"../filters/filterTransforms":281,"../utils/Quad":288,"../utils/RenderTarget":289,"./WebGLManager":286,"bit-twiddle":18}],284:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35060,7 +34894,7 @@ var MaskManager = function (_WebGLManager) {
 
 exports.default = MaskManager;
 
-},{"../filters/spriteMask/SpriteMaskFilter":283,"./WebGLManager":287}],286:[function(require,module,exports){
+},{"../filters/spriteMask/SpriteMaskFilter":282,"./WebGLManager":286}],285:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35213,7 +35047,7 @@ var StencilManager = function (_WebGLManager) {
 
 exports.default = StencilManager;
 
-},{"./WebGLManager":287}],287:[function(require,module,exports){
+},{"./WebGLManager":286}],286:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35268,7 +35102,7 @@ var WebGLManager = function () {
 
 exports.default = WebGLManager;
 
-},{}],288:[function(require,module,exports){
+},{}],287:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35346,7 +35180,7 @@ var ObjectRenderer = function (_WebGLManager) {
 
 exports.default = ObjectRenderer;
 
-},{"../managers/WebGLManager":287}],289:[function(require,module,exports){
+},{"../managers/WebGLManager":286}],288:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35527,7 +35361,7 @@ var Quad = function () {
 
 exports.default = Quad;
 
-},{"../../../utils/createIndicesForQuads":317,"pixi-gl-core":223}],290:[function(require,module,exports){
+},{"../../../utils/createIndicesForQuads":316,"pixi-gl-core":222}],289:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35854,7 +35688,7 @@ var RenderTarget = function () {
 
 exports.default = RenderTarget;
 
-},{"../../../const":240,"../../../math":264,"../../../settings":295,"pixi-gl-core":223}],291:[function(require,module,exports){
+},{"../../../const":239,"../../../math":263,"../../../settings":294,"pixi-gl-core":222}],290:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35929,7 +35763,7 @@ function generateIfTestSrc(maxIfs) {
     return src;
 }
 
-},{"pixi-gl-core":223}],292:[function(require,module,exports){
+},{"pixi-gl-core":222}],291:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -35978,7 +35812,7 @@ function mapWebGLBlendModesToPixi(gl) {
     return array;
 }
 
-},{"../../../const":240}],293:[function(require,module,exports){
+},{"../../../const":239}],292:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36010,7 +35844,7 @@ function mapWebGLDrawModesToPixi(gl) {
   return object;
 }
 
-},{"../../../const":240}],294:[function(require,module,exports){
+},{"../../../const":239}],293:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36026,7 +35860,7 @@ function validateContext(gl) {
     }
 }
 
-},{}],295:[function(require,module,exports){
+},{}],294:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36271,7 +36105,7 @@ exports.default = {
   MESH_CANVAS_PADDING: 0
 };
 
-},{"./utils/canUploadSameBuffer":316,"./utils/maxRecommendedTextures":321}],296:[function(require,module,exports){
+},{"./utils/canUploadSameBuffer":315,"./utils/maxRecommendedTextures":320}],295:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -36894,7 +36728,7 @@ var Sprite = function (_Container) {
 
 exports.default = Sprite;
 
-},{"../const":240,"../display/Container":242,"../math":264,"../textures/Texture":309,"../utils":319}],297:[function(require,module,exports){
+},{"../const":239,"../display/Container":241,"../math":263,"../textures/Texture":308,"../utils":318}],296:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37047,7 +36881,7 @@ exports.default = CanvasSpriteRenderer;
 
 _CanvasRenderer2.default.registerPlugin('sprite', CanvasSpriteRenderer);
 
-},{"../../const":240,"../../math":264,"../../renderers/canvas/CanvasRenderer":271,"./CanvasTinter":298}],298:[function(require,module,exports){
+},{"../../const":239,"../../math":263,"../../renderers/canvas/CanvasRenderer":270,"./CanvasTinter":297}],297:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37298,7 +37132,7 @@ CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMul
 
 exports.default = CanvasTinter;
 
-},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":274,"../../utils":319}],299:[function(require,module,exports){
+},{"../../renderers/canvas/utils/canUseNewCanvasBlendModes":273,"../../utils":318}],298:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -37351,7 +37185,7 @@ var Buffer = function () {
 
 exports.default = Buffer;
 
-},{}],300:[function(require,module,exports){
+},{}],299:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37902,7 +37736,7 @@ exports.default = SpriteRenderer;
 
 _WebGLRenderer2.default.registerPlugin('sprite', SpriteRenderer);
 
-},{"../../renderers/webgl/WebGLRenderer":278,"../../renderers/webgl/utils/ObjectRenderer":288,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":291,"../../settings":295,"../../utils":319,"../../utils/createIndicesForQuads":317,"./BatchBuffer":299,"./generateMultiTextureShader":301,"bit-twiddle":17,"pixi-gl-core":223}],301:[function(require,module,exports){
+},{"../../renderers/webgl/WebGLRenderer":277,"../../renderers/webgl/utils/ObjectRenderer":287,"../../renderers/webgl/utils/checkMaxIfStatmentsInShader":290,"../../settings":294,"../../utils":318,"../../utils/createIndicesForQuads":316,"./BatchBuffer":298,"./generateMultiTextureShader":300,"bit-twiddle":18,"pixi-gl-core":222}],300:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -37965,7 +37799,7 @@ function generateSampleSrc(maxTextures) {
     return src;
 }
 
-},{"../../Shader":238,"path":204}],302:[function(require,module,exports){
+},{"../../Shader":237,"path":419}],301:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -38620,7 +38454,7 @@ var Text = function (_Sprite) {
 
 exports.default = Text;
 
-},{"../const":240,"../math":264,"../settings":295,"../sprites/Sprite":296,"../textures/Texture":309,"../utils":319,"../utils/trimCanvas":324,"./TextMetrics":303,"./TextStyle":304}],303:[function(require,module,exports){
+},{"../const":239,"../math":263,"../settings":294,"../sprites/Sprite":295,"../textures/Texture":308,"../utils":318,"../utils/trimCanvas":323,"./TextMetrics":302,"./TextStyle":303}],302:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -39000,7 +38834,7 @@ TextMetrics._context = canvas.getContext('2d');
  */
 TextMetrics._fonts = {};
 
-},{}],304:[function(require,module,exports){
+},{}],303:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -39802,7 +39636,7 @@ function deepCopyProperties(target, source, propertyObj) {
     }
 }
 
-},{"../const":240,"../utils":319}],305:[function(require,module,exports){
+},{"../const":239,"../utils":318}],304:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -39964,7 +39798,7 @@ var BaseRenderTexture = function (_BaseTexture) {
 
 exports.default = BaseRenderTexture;
 
-},{"../settings":295,"./BaseTexture":306}],306:[function(require,module,exports){
+},{"../settings":294,"./BaseTexture":305}],305:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -40810,7 +40644,7 @@ var BaseTexture = function (_EventEmitter) {
 
 exports.default = BaseTexture;
 
-},{"../settings":295,"../utils":319,"../utils/determineCrossOrigin":318,"bit-twiddle":17,"eventemitter3":384}],307:[function(require,module,exports){
+},{"../settings":294,"../utils":318,"../utils/determineCrossOrigin":317,"bit-twiddle":18,"eventemitter3":383}],306:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -40964,7 +40798,7 @@ var RenderTexture = function (_Texture) {
 
 exports.default = RenderTexture;
 
-},{"./BaseRenderTexture":305,"./Texture":309}],308:[function(require,module,exports){
+},{"./BaseRenderTexture":304,"./Texture":308}],307:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -41229,7 +41063,7 @@ var Spritesheet = function () {
 
 exports.default = Spritesheet;
 
-},{"../":259,"../utils":319}],309:[function(require,module,exports){
+},{"../":258,"../utils":318}],308:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -41921,7 +41755,7 @@ Texture.WHITE = createWhiteTexture();
 removeAllHandlers(Texture.WHITE);
 removeAllHandlers(Texture.WHITE.baseTexture);
 
-},{"../math":264,"../settings":295,"../utils":319,"./BaseTexture":306,"./TextureUvs":311,"./VideoBaseTexture":312,"eventemitter3":384}],310:[function(require,module,exports){
+},{"../math":263,"../settings":294,"../utils":318,"./BaseTexture":305,"./TextureUvs":310,"./VideoBaseTexture":311,"eventemitter3":383}],309:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42085,7 +41919,7 @@ var TextureMatrix = function () {
 
 exports.default = TextureMatrix;
 
-},{"../math/Matrix":261}],311:[function(require,module,exports){
+},{"../math/Matrix":260}],310:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42190,7 +42024,7 @@ var TextureUvs = function () {
 
 exports.default = TextureUvs;
 
-},{"../math/GroupD8":260}],312:[function(require,module,exports){
+},{"../math/GroupD8":259}],311:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -42532,7 +42366,7 @@ function createSource(path, type) {
     return source;
 }
 
-},{"../const":240,"../ticker":315,"../utils":319,"../utils/determineCrossOrigin":318,"./BaseTexture":306}],313:[function(require,module,exports){
+},{"../const":239,"../ticker":314,"../utils":318,"../utils/determineCrossOrigin":317,"./BaseTexture":305}],312:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43005,7 +42839,7 @@ var Ticker = function () {
 
 exports.default = Ticker;
 
-},{"../const":240,"../settings":295,"./TickerListener":314}],314:[function(require,module,exports){
+},{"../const":239,"../settings":294,"./TickerListener":313}],313:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -43179,7 +43013,7 @@ var TickerListener = function () {
 
 exports.default = TickerListener;
 
-},{}],315:[function(require,module,exports){
+},{}],314:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43259,7 +43093,7 @@ shared.destroy = function () {
 exports.shared = shared;
 exports.Ticker = _Ticker2.default;
 
-},{"./Ticker":313}],316:[function(require,module,exports){
+},{"./Ticker":312}],315:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -43273,7 +43107,7 @@ function canUploadSameBuffer() {
 	return !ios;
 }
 
-},{}],317:[function(require,module,exports){
+},{}],316:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -43307,7 +43141,7 @@ function createIndicesForQuads(size) {
     return indices;
 }
 
-},{}],318:[function(require,module,exports){
+},{}],317:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43363,7 +43197,7 @@ function determineCrossOrigin(url) {
     return '';
 }
 
-},{"url":406}],319:[function(require,module,exports){
+},{"url":425}],318:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43845,7 +43679,7 @@ function premultiplyTintToRgba(tint, alpha, out, premultiply) {
     return out;
 }
 
-},{"../const":240,"../settings":295,"./mapPremultipliedBlendModes":320,"./mixin":322,"./pluginTarget":323,"earcut":19,"eventemitter3":384,"ismobilejs":200,"remove-array-items":390}],320:[function(require,module,exports){
+},{"../const":239,"../settings":294,"./mapPremultipliedBlendModes":319,"./mixin":321,"./pluginTarget":322,"earcut":19,"eventemitter3":383,"ismobilejs":200,"remove-array-items":384}],319:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43888,7 +43722,7 @@ function mapPremultipliedBlendModes() {
     return array;
 }
 
-},{"../const":240}],321:[function(require,module,exports){
+},{"../const":239}],320:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -43910,7 +43744,7 @@ function maxRecommendedTextures(max) {
     return max;
 }
 
-},{"ismobilejs":200}],322:[function(require,module,exports){
+},{"ismobilejs":200}],321:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -43972,7 +43806,7 @@ function performMixins() {
     mixins.length = 0;
 }
 
-},{}],323:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -44038,7 +43872,7 @@ exports.default = {
     }
 };
 
-},{}],324:[function(require,module,exports){
+},{}],323:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -44114,7 +43948,7 @@ function trimCanvas(canvas) {
     };
 }
 
-},{}],325:[function(require,module,exports){
+},{}],324:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -45270,7 +45104,7 @@ function deprecation(core) {
     }
 }
 
-},{}],326:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -45450,7 +45284,7 @@ exports.default = CanvasExtract;
 
 core.CanvasRenderer.registerPlugin('extract', CanvasExtract);
 
-},{"../../core":259}],327:[function(require,module,exports){
+},{"../../core":258}],326:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -45475,7 +45309,7 @@ Object.defineProperty(exports, 'canvas', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./canvas/CanvasExtract":326,"./webgl/WebGLExtract":328}],328:[function(require,module,exports){
+},{"./canvas/CanvasExtract":325,"./webgl/WebGLExtract":327}],327:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -45710,7 +45544,7 @@ exports.default = WebGLExtract;
 
 core.WebGLRenderer.registerPlugin('extract', WebGLExtract);
 
-},{"../../core":259}],329:[function(require,module,exports){
+},{"../../core":258}],328:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46119,7 +45953,7 @@ var AnimatedSprite = function (_core$Sprite) {
 
 exports.default = AnimatedSprite;
 
-},{"../core":259}],330:[function(require,module,exports){
+},{"../core":258}],329:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -46710,7 +46544,7 @@ exports.default = BitmapText;
 
 BitmapText.fonts = {};
 
-},{"../core":259,"../core/math/ObservablePoint":262,"../core/settings":295,"../core/utils":319}],331:[function(require,module,exports){
+},{"../core":258,"../core/math/ObservablePoint":261,"../core/settings":294,"../core/utils":318}],330:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47156,7 +46990,7 @@ var TilingSprite = function (_core$Sprite) {
 
 exports.default = TilingSprite;
 
-},{"../core":259,"../core/sprites/canvas/CanvasTinter":298}],332:[function(require,module,exports){
+},{"../core":258,"../core/sprites/canvas/CanvasTinter":297}],331:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -47560,7 +47394,7 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(o
     this.destroy(options);
 };
 
-},{"../core":259,"../core/textures/BaseTexture":306,"../core/textures/Texture":309,"../core/utils":319}],333:[function(require,module,exports){
+},{"../core":258,"../core/textures/BaseTexture":305,"../core/textures/Texture":308,"../core/utils":318}],332:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -47595,7 +47429,7 @@ core.Container.prototype.getChildByName = function getChildByName(name) {
     return null;
 };
 
-},{"../core":259}],334:[function(require,module,exports){
+},{"../core":258}],333:[function(require,module,exports){
 'use strict';
 
 var _core = require('../core');
@@ -47629,7 +47463,7 @@ core.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition() {
     return point;
 };
 
-},{"../core":259}],335:[function(require,module,exports){
+},{"../core":258}],334:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47681,7 +47515,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // imported for side effect of extending the prototype only, contains no exports
 
-},{"./AnimatedSprite":329,"./BitmapText":330,"./TilingSprite":331,"./cacheAsBitmap":332,"./getChildByName":333,"./getGlobalPosition":334,"./webgl/TilingSpriteRenderer":336}],336:[function(require,module,exports){
+},{"./AnimatedSprite":328,"./BitmapText":329,"./TilingSprite":330,"./cacheAsBitmap":331,"./getChildByName":332,"./getGlobalPosition":333,"./webgl/TilingSpriteRenderer":335}],335:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47843,7 +47677,7 @@ exports.default = TilingSpriteRenderer;
 
 core.WebGLRenderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-},{"../../core":259,"../../core/const":240,"path":204}],337:[function(require,module,exports){
+},{"../../core":258,"../../core/const":239,"path":419}],336:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -47927,7 +47761,7 @@ var AlphaFilter = function (_core$Filter) {
 
 exports.default = AlphaFilter;
 
-},{"../../core":259,"path":204}],338:[function(require,module,exports){
+},{"../../core":258,"path":419}],337:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48101,7 +47935,7 @@ var BlurFilter = function (_core$Filter) {
 
 exports.default = BlurFilter;
 
-},{"../../core":259,"./BlurXFilter":339,"./BlurYFilter":340}],339:[function(require,module,exports){
+},{"../../core":258,"./BlurXFilter":338,"./BlurYFilter":339}],338:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48267,7 +48101,7 @@ var BlurXFilter = function (_core$Filter) {
 
 exports.default = BlurXFilter;
 
-},{"../../core":259,"./generateBlurFragSource":341,"./generateBlurVertSource":342,"./getMaxBlurKernelSize":343}],340:[function(require,module,exports){
+},{"../../core":258,"./generateBlurFragSource":340,"./generateBlurVertSource":341,"./getMaxBlurKernelSize":342}],339:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48432,7 +48266,7 @@ var BlurYFilter = function (_core$Filter) {
 
 exports.default = BlurYFilter;
 
-},{"../../core":259,"./generateBlurFragSource":341,"./generateBlurVertSource":342,"./getMaxBlurKernelSize":343}],341:[function(require,module,exports){
+},{"../../core":258,"./generateBlurFragSource":340,"./generateBlurVertSource":341,"./getMaxBlurKernelSize":342}],340:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48479,7 +48313,7 @@ function generateFragBlurSource(kernelSize) {
     return fragSource;
 }
 
-},{}],342:[function(require,module,exports){
+},{}],341:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -48523,7 +48357,7 @@ function generateVertBlurSource(kernelSize, x) {
     return vertSource;
 }
 
-},{}],343:[function(require,module,exports){
+},{}],342:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -48539,7 +48373,7 @@ function getMaxKernelSize(gl) {
     return kernelSize;
 }
 
-},{}],344:[function(require,module,exports){
+},{}],343:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49090,7 +48924,7 @@ var ColorMatrixFilter = function (_core$Filter) {
 exports.default = ColorMatrixFilter;
 ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
-},{"../../core":259,"path":204}],345:[function(require,module,exports){
+},{"../../core":258,"path":419}],344:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49198,7 +49032,7 @@ var DisplacementFilter = function (_core$Filter) {
 
 exports.default = DisplacementFilter;
 
-},{"../../core":259,"path":204}],346:[function(require,module,exports){
+},{"../../core":258,"path":419}],345:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49252,7 +49086,7 @@ var FXAAFilter = function (_core$Filter) {
 
 exports.default = FXAAFilter;
 
-},{"../../core":259,"path":204}],347:[function(require,module,exports){
+},{"../../core":258,"path":419}],346:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49331,7 +49165,7 @@ Object.defineProperty(exports, 'AlphaFilter', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./alpha/AlphaFilter":337,"./blur/BlurFilter":338,"./blur/BlurXFilter":339,"./blur/BlurYFilter":340,"./colormatrix/ColorMatrixFilter":344,"./displacement/DisplacementFilter":345,"./fxaa/FXAAFilter":346,"./noise/NoiseFilter":348}],348:[function(require,module,exports){
+},{"./alpha/AlphaFilter":336,"./blur/BlurFilter":337,"./blur/BlurXFilter":338,"./blur/BlurYFilter":339,"./colormatrix/ColorMatrixFilter":343,"./displacement/DisplacementFilter":344,"./fxaa/FXAAFilter":345,"./noise/NoiseFilter":347}],347:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49428,7 +49262,7 @@ var NoiseFilter = function (_core$Filter) {
 
 exports.default = NoiseFilter;
 
-},{"../../core":259,"path":204}],349:[function(require,module,exports){
+},{"../../core":258,"path":419}],348:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -49542,7 +49376,7 @@ if (typeof _deprecation2.default === 'function') {
 global.PIXI = exports; // eslint-disable-line
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./accessibility":236,"./core":259,"./deprecation":325,"./extract":327,"./extras":335,"./filters":347,"./interaction":354,"./loaders":357,"./mesh":366,"./particles":369,"./polyfill":376,"./prepare":380}],350:[function(require,module,exports){
+},{"./accessibility":235,"./core":258,"./deprecation":324,"./extract":326,"./extras":334,"./filters":346,"./interaction":353,"./loaders":356,"./mesh":365,"./particles":368,"./polyfill":375,"./prepare":379}],349:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -49765,7 +49599,7 @@ var InteractionData = function () {
 
 exports.default = InteractionData;
 
-},{"../core":259}],351:[function(require,module,exports){
+},{"../core":258}],350:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -49848,7 +49682,7 @@ var InteractionEvent = function () {
 
 exports.default = InteractionEvent;
 
-},{}],352:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51619,7 +51453,7 @@ exports.default = InteractionManager;
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":259,"./InteractionData":350,"./InteractionEvent":351,"./InteractionTrackingData":353,"./interactiveTarget":355,"eventemitter3":384}],353:[function(require,module,exports){
+},{"../core":258,"./InteractionData":349,"./InteractionEvent":350,"./InteractionTrackingData":352,"./interactiveTarget":354,"eventemitter3":383}],352:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -51795,7 +51629,7 @@ InteractionTrackingData.FLAGS = Object.freeze({
     RIGHT_DOWN: 1 << 2
 });
 
-},{}],354:[function(require,module,exports){
+},{}],353:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51847,7 +51681,7 @@ Object.defineProperty(exports, 'InteractionEvent', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./InteractionData":350,"./InteractionEvent":351,"./InteractionManager":352,"./InteractionTrackingData":353,"./interactiveTarget":355}],355:[function(require,module,exports){
+},{"./InteractionData":349,"./InteractionEvent":350,"./InteractionManager":351,"./InteractionTrackingData":352,"./interactiveTarget":354}],354:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -51964,7 +51798,7 @@ exports.default = {
   _trackedPointers: undefined
 };
 
-},{}],356:[function(require,module,exports){
+},{}],355:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52056,7 +51890,7 @@ function parse(resource, texture) {
     resource.bitmapFont = _extras.BitmapText.registerFont(resource.data, texture);
 }
 
-},{"../core":259,"../extras":335,"path":204,"resource-loader":395}],357:[function(require,module,exports){
+},{"../core":258,"../extras":334,"path":419,"resource-loader":389}],356:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52184,7 +52018,7 @@ AppPrototype.destroy = function destroy(removeView) {
     this._parentDestroy(removeView);
 };
 
-},{"../core/Application":237,"./bitmapFontParser":356,"./loader":358,"./spritesheetParser":359,"./textureParser":360,"resource-loader":395}],358:[function(require,module,exports){
+},{"../core/Application":236,"./bitmapFontParser":355,"./loader":357,"./spritesheetParser":358,"./textureParser":359,"resource-loader":389}],357:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52355,7 +52189,7 @@ var Resource = _resourceLoader2.default.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
 
-},{"./bitmapFontParser":356,"./spritesheetParser":359,"./textureParser":360,"eventemitter3":384,"resource-loader":395,"resource-loader/lib/middlewares/parsing/blob":396}],359:[function(require,module,exports){
+},{"./bitmapFontParser":355,"./spritesheetParser":358,"./textureParser":359,"eventemitter3":383,"resource-loader":389,"resource-loader/lib/middlewares/parsing/blob":390}],358:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52419,7 +52253,7 @@ function getResourcePath(resource, baseUrl) {
     return _url2.default.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
 }
 
-},{"../core":259,"resource-loader":395,"url":406}],360:[function(require,module,exports){
+},{"../core":258,"resource-loader":389,"url":425}],359:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52442,7 +52276,7 @@ var _Texture2 = _interopRequireDefault(_Texture);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"../core/textures/Texture":309,"resource-loader":395}],361:[function(require,module,exports){
+},{"../core/textures/Texture":308,"resource-loader":389}],360:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -52811,7 +52645,7 @@ Mesh.DRAW_MODES = {
   TRIANGLES: 1
 };
 
-},{"../core":259,"../core/textures/Texture":309}],362:[function(require,module,exports){
+},{"../core":258,"../core/textures/Texture":308}],361:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53198,7 +53032,7 @@ var NineSlicePlane = function (_Plane) {
 
 exports.default = NineSlicePlane;
 
-},{"./Plane":363}],363:[function(require,module,exports){
+},{"./Plane":362}],362:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53339,7 +53173,7 @@ var Plane = function (_Mesh) {
 
 exports.default = Plane;
 
-},{"./Mesh":361}],364:[function(require,module,exports){
+},{"./Mesh":360}],363:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53575,7 +53409,7 @@ var Rope = function (_Mesh) {
 
 exports.default = Rope;
 
-},{"./Mesh":361}],365:[function(require,module,exports){
+},{"./Mesh":360}],364:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53861,7 +53695,7 @@ exports.default = MeshSpriteRenderer;
 
 core.CanvasRenderer.registerPlugin('mesh', MeshSpriteRenderer);
 
-},{"../../core":259,"../Mesh":361}],366:[function(require,module,exports){
+},{"../../core":258,"../Mesh":360}],365:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -53922,7 +53756,7 @@ Object.defineProperty(exports, 'Rope', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./Mesh":361,"./NineSlicePlane":362,"./Plane":363,"./Rope":364,"./canvas/CanvasMeshRenderer":365,"./webgl/MeshRenderer":367}],367:[function(require,module,exports){
+},{"./Mesh":360,"./NineSlicePlane":361,"./Plane":362,"./Rope":363,"./canvas/CanvasMeshRenderer":364,"./webgl/MeshRenderer":366}],366:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54073,7 +53907,7 @@ exports.default = MeshRenderer;
 
 core.WebGLRenderer.registerPlugin('mesh', MeshRenderer);
 
-},{"../../core":259,"../Mesh":361,"path":204,"pixi-gl-core":223}],368:[function(require,module,exports){
+},{"../../core":258,"../Mesh":360,"path":419,"pixi-gl-core":222}],367:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54463,7 +54297,7 @@ var ParticleContainer = function (_core$Container) {
 
 exports.default = ParticleContainer;
 
-},{"../core":259,"../core/utils":319}],369:[function(require,module,exports){
+},{"../core":258,"../core/utils":318}],368:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54488,7 +54322,7 @@ Object.defineProperty(exports, 'ParticleRenderer', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./ParticleContainer":368,"./webgl/ParticleRenderer":371}],370:[function(require,module,exports){
+},{"./ParticleContainer":367,"./webgl/ParticleRenderer":370}],369:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -54737,7 +54571,7 @@ var ParticleBuffer = function () {
 
 exports.default = ParticleBuffer;
 
-},{"../../core/utils/createIndicesForQuads":317,"pixi-gl-core":223}],371:[function(require,module,exports){
+},{"../../core/utils/createIndicesForQuads":316,"pixi-gl-core":222}],370:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -55218,7 +55052,7 @@ exports.default = ParticleRenderer;
 
 core.WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
-},{"../../core":259,"../../core/utils":319,"./ParticleBuffer":370,"./ParticleShader":372}],372:[function(require,module,exports){
+},{"../../core":258,"../../core/utils":318,"./ParticleBuffer":369,"./ParticleShader":371}],371:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -55261,7 +55095,7 @@ var ParticleShader = function (_Shader) {
 
 exports.default = ParticleShader;
 
-},{"../../core/Shader":238}],373:[function(require,module,exports){
+},{"../../core/Shader":237}],372:[function(require,module,exports){
 "use strict";
 
 // References:
@@ -55279,7 +55113,7 @@ if (!Math.sign) {
     };
 }
 
-},{}],374:[function(require,module,exports){
+},{}],373:[function(require,module,exports){
 'use strict';
 
 // References:
@@ -55291,7 +55125,7 @@ if (!Number.isInteger) {
     };
 }
 
-},{}],375:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -55306,7 +55140,7 @@ if (!Object.assign) {
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 
-},{"object-assign":202}],376:[function(require,module,exports){
+},{"object-assign":202}],375:[function(require,module,exports){
 'use strict';
 
 require('./Object.assign');
@@ -55333,7 +55167,7 @@ if (!window.Uint16Array) {
     window.Uint16Array = Array;
 }
 
-},{"./Math.sign":373,"./Number.isInteger":374,"./Object.assign":375,"./requestAnimationFrame":377}],377:[function(require,module,exports){
+},{"./Math.sign":372,"./Number.isInteger":373,"./Object.assign":374,"./requestAnimationFrame":376}],376:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -55410,7 +55244,7 @@ if (!global.cancelAnimationFrame) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],378:[function(require,module,exports){
+},{}],377:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -55898,7 +55732,7 @@ function findTextStyle(item, queue) {
     return false;
 }
 
-},{"../core":259,"./limiters/CountLimiter":381}],379:[function(require,module,exports){
+},{"../core":258,"./limiters/CountLimiter":380}],378:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -56018,7 +55852,7 @@ function uploadBaseTextures(prepare, item) {
 
 core.CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
 
-},{"../../core":259,"../BasePrepare":378}],380:[function(require,module,exports){
+},{"../../core":258,"../BasePrepare":377}],379:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -56070,7 +55904,7 @@ Object.defineProperty(exports, 'TimeLimiter', {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-},{"./BasePrepare":378,"./canvas/CanvasPrepare":379,"./limiters/CountLimiter":381,"./limiters/TimeLimiter":382,"./webgl/WebGLPrepare":383}],381:[function(require,module,exports){
+},{"./BasePrepare":377,"./canvas/CanvasPrepare":378,"./limiters/CountLimiter":380,"./limiters/TimeLimiter":381,"./webgl/WebGLPrepare":382}],380:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -56128,7 +55962,7 @@ var CountLimiter = function () {
 
 exports.default = CountLimiter;
 
-},{}],382:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -56186,7 +56020,7 @@ var TimeLimiter = function () {
 
 exports.default = TimeLimiter;
 
-},{}],383:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -56308,7 +56142,7 @@ function findGraphics(item, queue) {
 
 core.WebGLRenderer.registerPlugin('prepare', WebGLPrepare);
 
-},{"../../core":259,"../BasePrepare":378}],384:[function(require,module,exports){
+},{"../../core":258,"../BasePrepare":377}],383:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty
@@ -56621,909 +56455,7 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],385:[function(require,module,exports){
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],386:[function(require,module,exports){
-(function (global){
-/*! https://mths.be/punycode v1.4.1 by @mathias */
-;(function(root) {
-
-	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports &&
-		!exports.nodeType && exports;
-	var freeModule = typeof module == 'object' && module &&
-		!module.nodeType && module;
-	var freeGlobal = typeof global == 'object' && global;
-	if (
-		freeGlobal.global === freeGlobal ||
-		freeGlobal.window === freeGlobal ||
-		freeGlobal.self === freeGlobal
-	) {
-		root = freeGlobal;
-	}
-
-	/**
-	 * The `punycode` object.
-	 * @name punycode
-	 * @type Object
-	 */
-	var punycode,
-
-	/** Highest positive signed 32-bit float value */
-	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
-
-	/** Bootstring parameters */
-	base = 36,
-	tMin = 1,
-	tMax = 26,
-	skew = 38,
-	damp = 700,
-	initialBias = 72,
-	initialN = 128, // 0x80
-	delimiter = '-', // '\x2D'
-
-	/** Regular expressions */
-	regexPunycode = /^xn--/,
-	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
-
-	/** Error messages */
-	errors = {
-		'overflow': 'Overflow: input needs wider integers to process',
-		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
-		'invalid-input': 'Invalid input'
-	},
-
-	/** Convenience shortcuts */
-	baseMinusTMin = base - tMin,
-	floor = Math.floor,
-	stringFromCharCode = String.fromCharCode,
-
-	/** Temporary variable */
-	key;
-
-	/*--------------------------------------------------------------------------*/
-
-	/**
-	 * A generic error utility function.
-	 * @private
-	 * @param {String} type The error type.
-	 * @returns {Error} Throws a `RangeError` with the applicable error message.
-	 */
-	function error(type) {
-		throw new RangeError(errors[type]);
-	}
-
-	/**
-	 * A generic `Array#map` utility function.
-	 * @private
-	 * @param {Array} array The array to iterate over.
-	 * @param {Function} callback The function that gets called for every array
-	 * item.
-	 * @returns {Array} A new array of values returned by the callback function.
-	 */
-	function map(array, fn) {
-		var length = array.length;
-		var result = [];
-		while (length--) {
-			result[length] = fn(array[length]);
-		}
-		return result;
-	}
-
-	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings or email
-	 * addresses.
-	 * @private
-	 * @param {String} domain The domain name or email address.
-	 * @param {Function} callback The function that gets called for every
-	 * character.
-	 * @returns {Array} A new string of characters returned by the callback
-	 * function.
-	 */
-	function mapDomain(string, fn) {
-		var parts = string.split('@');
-		var result = '';
-		if (parts.length > 1) {
-			// In email addresses, only the domain name should be punycoded. Leave
-			// the local part (i.e. everything up to `@`) intact.
-			result = parts[0] + '@';
-			string = parts[1];
-		}
-		// Avoid `split(regex)` for IE8 compatibility. See #17.
-		string = string.replace(regexSeparators, '\x2E');
-		var labels = string.split('.');
-		var encoded = map(labels, fn).join('.');
-		return result + encoded;
-	}
-
-	/**
-	 * Creates an array containing the numeric code points of each Unicode
-	 * character in the string. While JavaScript uses UCS-2 internally,
-	 * this function will convert a pair of surrogate halves (each of which
-	 * UCS-2 exposes as separate characters) into a single code point,
-	 * matching UTF-16.
-	 * @see `punycode.ucs2.encode`
-	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-	 * @memberOf punycode.ucs2
-	 * @name decode
-	 * @param {String} string The Unicode input string (UCS-2).
-	 * @returns {Array} The new array of code points.
-	 */
-	function ucs2decode(string) {
-		var output = [],
-		    counter = 0,
-		    length = string.length,
-		    value,
-		    extra;
-		while (counter < length) {
-			value = string.charCodeAt(counter++);
-			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
-				// high surrogate, and there is a next character
-				extra = string.charCodeAt(counter++);
-				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
-					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
-				} else {
-					// unmatched surrogate; only append this code unit, in case the next
-					// code unit is the high surrogate of a surrogate pair
-					output.push(value);
-					counter--;
-				}
-			} else {
-				output.push(value);
-			}
-		}
-		return output;
-	}
-
-	/**
-	 * Creates a string based on an array of numeric code points.
-	 * @see `punycode.ucs2.decode`
-	 * @memberOf punycode.ucs2
-	 * @name encode
-	 * @param {Array} codePoints The array of numeric code points.
-	 * @returns {String} The new Unicode string (UCS-2).
-	 */
-	function ucs2encode(array) {
-		return map(array, function(value) {
-			var output = '';
-			if (value > 0xFFFF) {
-				value -= 0x10000;
-				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-				value = 0xDC00 | value & 0x3FF;
-			}
-			output += stringFromCharCode(value);
-			return output;
-		}).join('');
-	}
-
-	/**
-	 * Converts a basic code point into a digit/integer.
-	 * @see `digitToBasic()`
-	 * @private
-	 * @param {Number} codePoint The basic numeric code point value.
-	 * @returns {Number} The numeric value of a basic code point (for use in
-	 * representing integers) in the range `0` to `base - 1`, or `base` if
-	 * the code point does not represent a value.
-	 */
-	function basicToDigit(codePoint) {
-		if (codePoint - 48 < 10) {
-			return codePoint - 22;
-		}
-		if (codePoint - 65 < 26) {
-			return codePoint - 65;
-		}
-		if (codePoint - 97 < 26) {
-			return codePoint - 97;
-		}
-		return base;
-	}
-
-	/**
-	 * Converts a digit/integer into a basic code point.
-	 * @see `basicToDigit()`
-	 * @private
-	 * @param {Number} digit The numeric value of a basic code point.
-	 * @returns {Number} The basic code point whose value (when used for
-	 * representing integers) is `digit`, which needs to be in the range
-	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
-	 * used; else, the lowercase form is used. The behavior is undefined
-	 * if `flag` is non-zero and `digit` has no uppercase form.
-	 */
-	function digitToBasic(digit, flag) {
-		//  0..25 map to ASCII a..z or A..Z
-		// 26..35 map to ASCII 0..9
-		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
-	}
-
-	/**
-	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * https://tools.ietf.org/html/rfc3492#section-3.4
-	 * @private
-	 */
-	function adapt(delta, numPoints, firstTime) {
-		var k = 0;
-		delta = firstTime ? floor(delta / damp) : delta >> 1;
-		delta += floor(delta / numPoints);
-		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
-			delta = floor(delta / baseMinusTMin);
-		}
-		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
-	}
-
-	/**
-	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
-	 * symbols.
-	 * @memberOf punycode
-	 * @param {String} input The Punycode string of ASCII-only symbols.
-	 * @returns {String} The resulting string of Unicode symbols.
-	 */
-	function decode(input) {
-		// Don't use UCS-2
-		var output = [],
-		    inputLength = input.length,
-		    out,
-		    i = 0,
-		    n = initialN,
-		    bias = initialBias,
-		    basic,
-		    j,
-		    index,
-		    oldi,
-		    w,
-		    k,
-		    digit,
-		    t,
-		    /** Cached calculation results */
-		    baseMinusT;
-
-		// Handle the basic code points: let `basic` be the number of input code
-		// points before the last delimiter, or `0` if there is none, then copy
-		// the first basic code points to the output.
-
-		basic = input.lastIndexOf(delimiter);
-		if (basic < 0) {
-			basic = 0;
-		}
-
-		for (j = 0; j < basic; ++j) {
-			// if it's not a basic code point
-			if (input.charCodeAt(j) >= 0x80) {
-				error('not-basic');
-			}
-			output.push(input.charCodeAt(j));
-		}
-
-		// Main decoding loop: start just after the last delimiter if any basic code
-		// points were copied; start at the beginning otherwise.
-
-		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
-
-			// `index` is the index of the next character to be consumed.
-			// Decode a generalized variable-length integer into `delta`,
-			// which gets added to `i`. The overflow checking is easier
-			// if we increase `i` as we go, then subtract off its starting
-			// value at the end to obtain `delta`.
-			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
-
-				if (index >= inputLength) {
-					error('invalid-input');
-				}
-
-				digit = basicToDigit(input.charCodeAt(index++));
-
-				if (digit >= base || digit > floor((maxInt - i) / w)) {
-					error('overflow');
-				}
-
-				i += digit * w;
-				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-
-				if (digit < t) {
-					break;
-				}
-
-				baseMinusT = base - t;
-				if (w > floor(maxInt / baseMinusT)) {
-					error('overflow');
-				}
-
-				w *= baseMinusT;
-
-			}
-
-			out = output.length + 1;
-			bias = adapt(i - oldi, out, oldi == 0);
-
-			// `i` was supposed to wrap around from `out` to `0`,
-			// incrementing `n` each time, so we'll fix that now:
-			if (floor(i / out) > maxInt - n) {
-				error('overflow');
-			}
-
-			n += floor(i / out);
-			i %= out;
-
-			// Insert `n` at position `i` of the output
-			output.splice(i++, 0, n);
-
-		}
-
-		return ucs2encode(output);
-	}
-
-	/**
-	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
-	 * Punycode string of ASCII-only symbols.
-	 * @memberOf punycode
-	 * @param {String} input The string of Unicode symbols.
-	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
-	 */
-	function encode(input) {
-		var n,
-		    delta,
-		    handledCPCount,
-		    basicLength,
-		    bias,
-		    j,
-		    m,
-		    q,
-		    k,
-		    t,
-		    currentValue,
-		    output = [],
-		    /** `inputLength` will hold the number of code points in `input`. */
-		    inputLength,
-		    /** Cached calculation results */
-		    handledCPCountPlusOne,
-		    baseMinusT,
-		    qMinusT;
-
-		// Convert the input in UCS-2 to Unicode
-		input = ucs2decode(input);
-
-		// Cache the length
-		inputLength = input.length;
-
-		// Initialize the state
-		n = initialN;
-		delta = 0;
-		bias = initialBias;
-
-		// Handle the basic code points
-		for (j = 0; j < inputLength; ++j) {
-			currentValue = input[j];
-			if (currentValue < 0x80) {
-				output.push(stringFromCharCode(currentValue));
-			}
-		}
-
-		handledCPCount = basicLength = output.length;
-
-		// `handledCPCount` is the number of code points that have been handled;
-		// `basicLength` is the number of basic code points.
-
-		// Finish the basic string - if it is not empty - with a delimiter
-		if (basicLength) {
-			output.push(delimiter);
-		}
-
-		// Main encoding loop:
-		while (handledCPCount < inputLength) {
-
-			// All non-basic code points < n have been handled already. Find the next
-			// larger one:
-			for (m = maxInt, j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-				if (currentValue >= n && currentValue < m) {
-					m = currentValue;
-				}
-			}
-
-			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
-			// but guard against overflow
-			handledCPCountPlusOne = handledCPCount + 1;
-			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
-				error('overflow');
-			}
-
-			delta += (m - n) * handledCPCountPlusOne;
-			n = m;
-
-			for (j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-
-				if (currentValue < n && ++delta > maxInt) {
-					error('overflow');
-				}
-
-				if (currentValue == n) {
-					// Represent delta as a generalized variable-length integer
-					for (q = delta, k = base; /* no condition */; k += base) {
-						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-						if (q < t) {
-							break;
-						}
-						qMinusT = q - t;
-						baseMinusT = base - t;
-						output.push(
-							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
-						);
-						q = floor(qMinusT / baseMinusT);
-					}
-
-					output.push(stringFromCharCode(digitToBasic(q, 0)));
-					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
-					delta = 0;
-					++handledCPCount;
-				}
-			}
-
-			++delta;
-			++n;
-
-		}
-		return output.join('');
-	}
-
-	/**
-	 * Converts a Punycode string representing a domain name or an email address
-	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-	 * it doesn't matter if you call it on a string that has already been
-	 * converted to Unicode.
-	 * @memberOf punycode
-	 * @param {String} input The Punycoded domain name or email address to
-	 * convert to Unicode.
-	 * @returns {String} The Unicode representation of the given Punycode
-	 * string.
-	 */
-	function toUnicode(input) {
-		return mapDomain(input, function(string) {
-			return regexPunycode.test(string)
-				? decode(string.slice(4).toLowerCase())
-				: string;
-		});
-	}
-
-	/**
-	 * Converts a Unicode string representing a domain name or an email address to
-	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
-	 * i.e. it doesn't matter if you call it with a domain that's already in
-	 * ASCII.
-	 * @memberOf punycode
-	 * @param {String} input The domain name or email address to convert, as a
-	 * Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name or
-	 * email address.
-	 */
-	function toASCII(input) {
-		return mapDomain(input, function(string) {
-			return regexNonASCII.test(string)
-				? 'xn--' + encode(string)
-				: string;
-		});
-	}
-
-	/*--------------------------------------------------------------------------*/
-
-	/** Define the public API */
-	punycode = {
-		/**
-		 * A string representing the current Punycode.js version number.
-		 * @memberOf punycode
-		 * @type String
-		 */
-		'version': '1.4.1',
-		/**
-		 * An object of methods to convert from JavaScript's internal character
-		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-		 * @memberOf punycode
-		 * @type Object
-		 */
-		'ucs2': {
-			'decode': ucs2decode,
-			'encode': ucs2encode
-		},
-		'decode': decode,
-		'encode': encode,
-		'toASCII': toASCII,
-		'toUnicode': toUnicode
-	};
-
-	/** Expose `punycode` */
-	// Some AMD build optimizers, like r.js, check for specific condition patterns
-	// like the following:
-	if (
-		typeof define == 'function' &&
-		typeof define.amd == 'object' &&
-		define.amd
-	) {
-		define('punycode', function() {
-			return punycode;
-		});
-	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) {
-			// in Node.js, io.js, or RingoJS v0.8.0+
-			freeModule.exports = punycode;
-		} else {
-			// in Narwhal or RingoJS v0.7.0-
-			for (key in punycode) {
-				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
-			}
-		}
-	} else {
-		// in Rhino or a web browser
-		root.punycode = punycode;
-	}
-
-}(this));
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],387:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-// If obj.hasOwnProperty has been overridden, then calling
-// obj.hasOwnProperty(prop) will break.
-// See: https://github.com/joyent/node/issues/1707
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-module.exports = function(qs, sep, eq, options) {
-  sep = sep || '&';
-  eq = eq || '=';
-  var obj = {};
-
-  if (typeof qs !== 'string' || qs.length === 0) {
-    return obj;
-  }
-
-  var regexp = /\+/g;
-  qs = qs.split(sep);
-
-  var maxKeys = 1000;
-  if (options && typeof options.maxKeys === 'number') {
-    maxKeys = options.maxKeys;
-  }
-
-  var len = qs.length;
-  // maxKeys <= 0 means that we should not limit keys count
-  if (maxKeys > 0 && len > maxKeys) {
-    len = maxKeys;
-  }
-
-  for (var i = 0; i < len; ++i) {
-    var x = qs[i].replace(regexp, '%20'),
-        idx = x.indexOf(eq),
-        kstr, vstr, k, v;
-
-    if (idx >= 0) {
-      kstr = x.substr(0, idx);
-      vstr = x.substr(idx + 1);
-    } else {
-      kstr = x;
-      vstr = '';
-    }
-
-    k = decodeURIComponent(kstr);
-    v = decodeURIComponent(vstr);
-
-    if (!hasOwnProperty(obj, k)) {
-      obj[k] = v;
-    } else if (isArray(obj[k])) {
-      obj[k].push(v);
-    } else {
-      obj[k] = [obj[k], v];
-    }
-  }
-
-  return obj;
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-},{}],388:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var stringifyPrimitive = function(v) {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-};
-
-module.exports = function(obj, sep, eq, name) {
-  sep = sep || '&';
-  eq = eq || '=';
-  if (obj === null) {
-    obj = undefined;
-  }
-
-  if (typeof obj === 'object') {
-    return map(objectKeys(obj), function(k) {
-      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-      if (isArray(obj[k])) {
-        return map(obj[k], function(v) {
-          return ks + encodeURIComponent(stringifyPrimitive(v));
-        }).join(sep);
-      } else {
-        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-      }
-    }).join(sep);
-
-  }
-
-  if (!name) return '';
-  return encodeURIComponent(stringifyPrimitive(name)) + eq +
-         encodeURIComponent(stringifyPrimitive(obj));
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-function map (xs, f) {
-  if (xs.map) return xs.map(f);
-  var res = [];
-  for (var i = 0; i < xs.length; i++) {
-    res.push(f(xs[i], i));
-  }
-  return res;
-}
-
-var objectKeys = Object.keys || function (obj) {
-  var res = [];
-  for (var key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
-  }
-  return res;
-};
-
-},{}],389:[function(require,module,exports){
-'use strict';
-
-exports.decode = exports.parse = require('./decode');
-exports.encode = exports.stringify = require('./encode');
-
-},{"./decode":387,"./encode":388}],390:[function(require,module,exports){
+},{}],384:[function(require,module,exports){
 'use strict'
 
 /**
@@ -57553,7 +56485,7 @@ module.exports = function removeItems(arr, startIdx, removeCount)
   arr.length = len
 }
 
-},{}],391:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -58206,7 +57138,7 @@ var Loader = function () {
 
 exports.default = Loader;
 
-},{"./Resource":392,"./async":393,"mini-signals":201,"parse-uri":203}],392:[function(require,module,exports){
+},{"./Resource":386,"./async":387,"mini-signals":201,"parse-uri":203}],386:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -59362,7 +58294,7 @@ function reqType(xhr) {
     return xhr.toString().replace('object ', '');
 }
 
-},{"mini-signals":201,"parse-uri":203}],393:[function(require,module,exports){
+},{"mini-signals":201,"parse-uri":203}],387:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -59571,7 +58503,7 @@ function queue(worker, concurrency) {
     return q;
 }
 
-},{}],394:[function(require,module,exports){
+},{}],388:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -59639,7 +58571,7 @@ function encodeBinary(input) {
     return output;
 }
 
-},{}],395:[function(require,module,exports){
+},{}],389:[function(require,module,exports){
 'use strict';
 
 // import Loader from './Loader';
@@ -59663,7 +58595,7 @@ module.exports = Loader;
 // export default Loader;
 module.exports.default = Loader;
 
-},{"./Loader":391,"./Resource":392,"./async":393,"./b64":394}],396:[function(require,module,exports){
+},{"./Loader":385,"./Resource":386,"./async":387,"./b64":388}],390:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -59751,7 +58683,7 @@ function blobMiddlewareFactory() {
     };
 }
 
-},{"../../Resource":392,"../../b64":394}],397:[function(require,module,exports){
+},{"../../Resource":386,"../../b64":388}],391:[function(require,module,exports){
 // A library of seedable RNGs implemented in Javascript.
 //
 // Usage:
@@ -59813,7 +58745,7 @@ sr.tychei = tychei;
 
 module.exports = sr;
 
-},{"./lib/alea":398,"./lib/tychei":399,"./lib/xor128":400,"./lib/xor4096":401,"./lib/xorshift7":402,"./lib/xorwow":403,"./seedrandom":404}],398:[function(require,module,exports){
+},{"./lib/alea":392,"./lib/tychei":393,"./lib/xor128":394,"./lib/xor4096":395,"./lib/xorshift7":396,"./lib/xorwow":397,"./seedrandom":398}],392:[function(require,module,exports){
 // A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
 // http://baagoe.com/en/RandomMusings/javascript/
 // https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
@@ -59929,7 +58861,7 @@ if (module && module.exports) {
 
 
 
-},{}],399:[function(require,module,exports){
+},{}],393:[function(require,module,exports){
 // A Javascript implementaion of the "Tyche-i" prng algorithm by
 // Samuel Neves and Filipe Araujo.
 // See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
@@ -60034,7 +58966,7 @@ if (module && module.exports) {
 
 
 
-},{}],400:[function(require,module,exports){
+},{}],394:[function(require,module,exports){
 // A Javascript implementaion of the "xor128" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -60117,7 +59049,7 @@ if (module && module.exports) {
 
 
 
-},{}],401:[function(require,module,exports){
+},{}],395:[function(require,module,exports){
 // A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
 //
 // This fast non-cryptographic random number generator is designed for
@@ -60265,7 +59197,7 @@ if (module && module.exports) {
   (typeof define) == 'function' && define   // present with an AMD loader
 );
 
-},{}],402:[function(require,module,exports){
+},{}],396:[function(require,module,exports){
 // A Javascript implementaion of the "xorshift7" algorithm by
 // François Panneton and Pierre L'ecuyer:
 // "On the Xorgshift Random Number Generators"
@@ -60364,7 +59296,7 @@ if (module && module.exports) {
 );
 
 
-},{}],403:[function(require,module,exports){
+},{}],397:[function(require,module,exports){
 // A Javascript implementaion of the "xorwow" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -60452,7 +59384,7 @@ if (module && module.exports) {
 
 
 
-},{}],404:[function(require,module,exports){
+},{}],398:[function(require,module,exports){
 /*
 Copyright 2014 David Bau.
 
@@ -60701,7 +59633,7 @@ if ((typeof module) == 'object' && module.exports) {
   Math    // math: package containing random, pow, and seedrandom
 );
 
-},{"crypto":18}],405:[function(require,module,exports){
+},{"crypto":418}],399:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -61898,7 +60830,3442 @@ else {
 
 })(Math);
 
-},{}],406:[function(require,module,exports){
+},{}],400:[function(require,module,exports){
+// angle.js <https://github.com/davidfig/anglejs>
+// Released under MIT license <https://github.com/davidfig/angle/blob/master/LICENSE>
+// Author: David Figatner
+// Copyright (c) 2016-17 YOPEY YOPEY LLC
+
+const _toDegreeConversion = 180 / Math.PI
+const _toRadianConversion = Math.PI / 180
+
+
+/** @constant {number} */
+const UP = Math.PI / 2
+const DOWN = 3 * Math.PI / 2
+const LEFT = Math.PI
+const RIGHT = 0
+
+const NORTH = UP
+const SOUTH = DOWN
+const WEST = LEFT
+const EAST = RIGHT
+
+const PI_2 = Math.PI * 2
+const PI_QUARTER = Math.PI / 4
+const PI_HALF = Math.PI / 2
+
+/**
+ * converts from radians to degrees (all other functions expect radians)
+ * @param {number} radians
+ * @return {number} degrees
+ */
+function toDegrees(radians)
+{
+    return radians * _toDegreeConversion
+}
+
+/**
+ * converts from degrees to radians (all other functions expect radians)
+ * @param {number} degrees
+ * @return {number} radians
+ */
+function toRadians(degrees)
+{
+    return degrees * _toRadianConversion
+}
+
+/**
+ * returns whether the target angle is between angle1 and angle2 (in radians)
+ * (based on: http://stackoverflow.com/questions/11406189/determine-if-angle-lies-between-2-other-angles)
+ * @param {number} target angle
+ * @param {number} angle1
+ * @param {number} angle2
+ * @return {boolean}
+ */
+function isAngleBetween(target, angle1, angle2)
+{
+    const rAngle = ((angle2 - angle1) % PI_2 + PI_2) % PI_2
+    if (rAngle >= Math.PI)
+    {
+        const swap = angle1
+        angle1 = angle2
+        angle2 = swap
+    }
+
+    if (angle1 <= angle2)
+    {
+        return target >= angle1 && target <= angle2
+    }
+    else
+    {
+        return target >= angle1 || target <= angle2
+    }
+}
+
+/**
+ * returns +1 or -1 based on whether the difference between two angles is positive or negative (in radians)
+ * @param {number} target angle
+ * @param {number} source angle
+ * @return {number} 1 or -1
+ */
+function differenceAnglesSign(target, source)
+{
+    function mod(a, n)
+    {
+        return (a % n + n) % n
+    }
+
+    const a = target - source
+    return mod((a + Math.PI), PI_2) - Math.PI > 0 ? 1 : -1
+}
+
+/**
+ * returns the normalized difference between two angles (in radians)
+ * @param {number} a - first angle
+ * @param {number} b - second angle
+ * @return {number} normalized difference between a and b
+ */
+function differenceAngles(a, b)
+{
+    const c = Math.abs(a - b) % PI_2
+    return c > Math.PI ? (PI_2 - c) : c
+}
+
+/**
+ * returns a target angle that is the shortest way to rotate an object between start and to--may choose a negative angle
+ * @param {number} start
+ * @param {number} to
+ * @return {number} shortest target angle
+ */
+function shortestAngle(start, to)
+{
+    const difference = differenceAngles(to, start)
+    const sign = differenceAnglesSign(to, start)
+    const delta = difference * sign
+    return delta + start
+}
+
+/**
+ * returns the normalized angle (0 - PI x 2)
+ * @param {number} radians
+ * @return {number} normalized angle in radians
+ */
+function normalize(radians)
+{
+    return radians - PI_2 * Math.floor(radians / PI_2)
+}
+
+/**
+ * returns angle between two points (in radians)
+ * @param {Point} [point1] {x: x, y: y}
+ * @param {Point} [point2] {x: x, y: y}
+ * @param {number} [x1]
+ * @param {number} [y1]
+ * @param {number} [x2]
+ * @param {number} [y2]
+ * @return {number} angle
+ */
+function angleTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
+{
+    if (arguments.length === 4)
+    {
+        return Math.atan2(arguments[3] - arguments[1], arguments[2] - arguments[0])
+    }
+    else
+    {
+        return Math.atan2(arguments[1].y - arguments[0].y, arguments[1].x - arguments[0].x)
+    }
+}
+
+/**
+ * returns distance between two points
+ * @param {Point} [point1] {x: x, y: y}
+ * @param {Point} [point2] {x: x, y: y}
+ * @param {number} [x1]
+ * @param {number} [y1]
+ * @param {number} [x2]
+ * @param {number} [y2]
+ * @return {number} distance
+ */
+function distanceTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
+{
+    if (arguments.length === 2)
+    {
+        return Math.sqrt(Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2))
+    }
+    else
+    {
+        return Math.sqrt(Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2))
+    }
+}
+
+/**
+ * returns the squared distance between two points
+ * @param {Point} [point1] {x: x, y: y}
+ * @param {Point} [point2] {x: x, y: y}
+ * @param {number} [x1]
+ * @param {number} [y1]
+ * @param {number} [x2]
+ * @param {number} [y2]
+ * @return {number} squared distance
+ */
+function distanceTwoPointsSquared(/* (point1, point2) OR (x1, y1, x2, y2) */)
+{
+    if (arguments.length === 2)
+    {
+        return Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2)
+    }
+    else
+    {
+        return Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2)
+    }
+}
+
+/**
+ * returns the closest cardinal (N, S, E, W) to the given angle (in radians)
+ * @param {number} angle
+ * @return {number} closest cardinal in radians
+ */
+function closestAngle(angle)
+{
+    const left = differenceAngles(angle, LEFT)
+    const right = differenceAngles(angle, RIGHT)
+    const up = differenceAngles(angle, UP)
+    const down = differenceAngles(angle, DOWN)
+    if (left <= right && left <= up && left <= down)
+    {
+        return LEFT
+    }
+    else if (right <= up && right <= down)
+    {
+        return RIGHT
+    }
+    else if (up <= down)
+    {
+        return UP
+    }
+    else
+    {
+        return DOWN
+    }
+}
+
+/**
+ * checks whether angles a1 and a2 are equal (after normalizing)
+ * @param {number} a1
+ * @param {number} a2
+ * @param {number} [wiggle] return true if the difference between the angles is <= wiggle
+ * @return {boolean} a1 === a2
+ */
+function equals(a1, a2, wiggle)
+{
+    if (wiggle)
+    {
+        return differenceAngles(a1, a2) < wiggle
+    }
+    else
+    {
+        return normalize(a1) === normalize(a2)
+    }
+}
+
+/**
+ * return a text representation of the cardinal direction
+ * @param {number} angle
+ * @returns {string} UP, DOWN, LEFT, RIGHT, or NOT CARDINAL
+ */
+function explain(angle)
+{
+    switch (angle)
+    {
+        case UP: return 'UP'
+        case DOWN: return 'DOWN'
+        case LEFT: return 'LEFT'
+        case RIGHT: return 'RIGHT'
+        default: return 'NOT CARDINAL'
+    }
+}
+
+module.exports = {
+    UP, DOWN, LEFT, RIGHT,
+    NORTH, SOUTH, WEST, EAST,
+    PI_2, PI_QUARTER, PI_HALF,
+
+    toDegrees,
+    toRadians,
+    isAngleBetween,
+    differenceAnglesSign,
+    differenceAngles,
+    shortestAngle,
+    normalize,
+    angleTwoPoints,
+    distanceTwoPoints,
+    distanceTwoPointsSquared,
+    closestAngle,
+    equals,
+    explain
+}
+},{}],401:[function(require,module,exports){
+/**
+ * @file color.js
+ * @author David Figatner
+ * @license MIT
+ * @copyright YOPEY YOPEY LLC 2016
+ * {@link https://github.com/davidfig/color}
+ */
+
+const Random = require('yy-random');
+
+/** @class */
+class Color
+{
+    /**
+     * converts a #FFFFFF to 0x123456
+     * @param  {string} color
+     * @return {string}
+     */
+    poundToHex(color)
+    {
+        return '0x' + parseInt(color.substr(1)).toString(16);
+    }
+
+    /**
+     * converts a 0x123456 to #FFFFFF
+     * @param  {string} color
+     * @return {string}
+     */
+    hexToPound(color)
+    {
+        return '#' + color.substr(2);
+    }
+
+    /**
+     * converts a number to #FFFFFF
+     * @param  {number} color
+     * @return {string}
+     */
+    valueToPound(color)
+    {
+        return '#' + color.toString(16);
+    }
+
+    /**
+     * based on tinycolor
+     * https://github.com/bgrins/TinyColor
+     * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+     * @param {string} color
+     * @returns {object}
+     */
+    hexToHsl (color)
+    {
+        var rgb = this.hexToRgb(color),
+            r = rgb.r,
+            g = rgb.g,
+            b = rgb.b;
+        var max = Math.max(r, g, b),
+            min = Math.min(r, g, b);
+        var h, s, l = (max + min) / 2;
+
+        if (max === min)
+        {
+            h = s = 0; // achromatic
+        }
+        else
+        {
+            var d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+            }
+
+            h /= 6;
+        }
+
+        return { h: h, s: s, l: l };
+    }
+
+    /** based on tinycolor
+    * https://github.com/bgrins/TinyColor
+    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+    * @param {object|number} color {h, s, b} or h
+    * @param {number} [s]
+    * @param {number} [l]
+    * @returns number
+    */
+    hslToHex(color)
+    {
+        var r, g, b, h, s, l;
+        if (arguments.length === 1)
+        {
+            h = color.h,
+            s = color.s,
+            l = color.l;
+        }
+        else
+        {
+            h = arguments[0];
+            s = arguments[1];
+            l = arguments[2];
+        }
+
+        function hue2rgb(p, q, t) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        }
+
+        if (s === 0)
+        {
+            r = g = b = l; // achromatic
+        }
+        else
+        {
+            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            var p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+
+        return this.rgbToHex(r * 255, g * 255, b * 255);
+    }
+
+    /* darkens a color by the percentage
+    * @param {object} color in hex (0xabcdef)
+    * @param {number} amount
+    * @return {number}
+    */
+    darken(color, amount)
+    {
+        return this.blend(amount, color, 0);
+    }
+
+    /** based on tinycolor
+    * https://github.com/bgrins/TinyColor
+    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+    * @param {object} color
+    * @param {number} amount
+    */
+    saturate(color, amount)
+    {
+        amount = (amount === 0) ? 0 : (amount || 10);
+        var hsl = this.hexToHsl(color);
+        hsl.s += amount / 100;
+        hsl.s = Math.min(1, Math.max(0, hsl.s));
+        return this.hslToHex(hsl);
+    }
+
+    /** based on tinycolor
+    * https://github.com/bgrins/TinyColor
+    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
+    * @param {object} color
+    * @param {number} amount
+    */
+    desaturate(color, amount) {
+        amount = (amount === 0) ? 0 : (amount || 10);
+        var hsl = this.hexToHsl(color);
+        hsl.s -= amount / 100;
+        hsl.s = Math.min(1, Math.max(0, hsl.s));
+        return this.hslToHex(hsl);
+    }
+
+    /**
+     * blends two colors together
+     * @param  {number} percent [0.0 - 1.0]
+     * @param  {string} color1 first color in 0x123456 format
+     * @param  {string} color2 second color in 0x123456 format
+     * @return {number}
+     */
+    blend(percent, color1, color2)
+    {
+        if (percent === 0)
+        {
+            return color1;
+        }
+        if (percent === 1)
+        {
+            return color2;
+        }
+        var r1 = color1 >> 16;
+        var g1 = color1 >> 8 & 0x0000ff;
+        var b1 = color1 & 0x0000ff;
+        var r2 = color2 >> 16;
+        var g2 = color2 >> 8 & 0x0000ff;
+        var b2 = color2 & 0x0000ff;
+        var percent1 = 1 - percent;
+        var r = percent1 * r1 + percent * r2;
+        var g = percent1 * g1 + percent * g2;
+        var b = percent1 * b1 + percent * b2;
+        return r << 16 | g << 8 | b;
+    }
+
+    /**
+     * returns a hex color into an rgb value
+     * @param  {number} hex
+     * @return {string}
+     */
+    hexToRgb(hex)
+    {
+        if (hex === 0)
+        {
+            hex = '0x000000';
+        }
+        else if (typeof hex !== 'string')
+        {
+            var s = '000000' + hex.toString(16);
+            hex = '0x' + s.substr(s.length - 6);
+        }
+        var result = /^0x?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    /**
+     * rgb color to hex in the form of 0x123456
+     * @param  {number|string} r first number or 'rgb(...)' string
+     * @param  {number|null} g
+     * @param  {number|null} b
+     * @return {string}
+     */
+    rgbToHex(r, g, b)
+    {
+        if (arguments.length === 1) {
+            if (Array.isArray(arguments[0])) {
+                var number = arguments[0];
+                r = number[0];
+                g = number[1];
+                b = number[2];
+            } else {
+                var parse = r.replace(/( *rgb *\( *)|( )|(\) *;?)/,'');
+                var numbers = parse.split(',');
+                r = numbers[0];
+                g = numbers[1];
+                b = numbers[2];
+            }
+        }
+        return '0x' + ((1 << 24) + (parseInt(r) << 16) + (parseInt(g) << 8) + parseInt(b)).toString(16).slice(1);
+    }
+
+    /**
+     * returns a random color with balanced r, g, b values (i.e., r, g, b either have the same value or are 0)
+     * @param {number} min value for random number
+     * @param {number} max value for random number
+     * @return {number} color
+     */
+    random(min, max)
+    {
+        function random()
+        {
+            return Random.range(min, max);
+        }
+
+        var colors = [{r:1, g:1, b:1}, {r:1, g:1, b:0}, {r:1,g:0,b:1}, {r:0,g:1,b:1}, {r:1,g:0,b:0}, {r:0,g:1,b:0}, {r:0,g:0,b:1}];
+        var color = Random.pick(colors);
+        min = min || 0;
+        max = max || 255;
+        return this.rgbToHex(color.r ? random() : 0, color.g ? random() : 0, color.b ? random() : 0);
+    }
+
+    // h: 0-360, s: 0-1, l: 0-1
+    /**
+     * returns a random color based on hsl
+     * @param {number} hMin [0, 360]
+     * @param {number} hMax [hMin, 360]
+     * @param {number} sMin [0, 1]
+     * @param {number} sMax [sMin, 1]
+     * @param {number} lMin [0, 1]
+     * @param {number} lMax [lMin, 1]
+     */
+    randomHSL(hMin, hMax, sMin, sMax, lMin, lMax)
+    {
+        var color = {
+            h: Random.range(hMin, hMax),
+            s: Random.range(sMin, sMax, true),
+            l: Random.range(lMin, lMax, true)
+        };
+        return this.hslToHex(color);
+    }
+
+    /**
+     * returns random colors based on HSL with different hues
+     * based on http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+     * @returns {number[]} colors in hex format (0x123456)
+     */
+    randomGoldenRatioHSL(count, saturation, luminosity)
+    {
+        const goldenRatio = 0.618033988749895;
+        let h = Random.get(1, true);
+        const colors = [];
+        for (let i = 0; i < count; i++)
+        {
+            colors.push(this.hslToHex(h, saturation, luminosity));
+            h = (h + goldenRatio) % 1;
+        }
+        return colors;
+    }
+};
+
+module.exports = new Color();
+},{"yy-random":407}],402:[function(require,module,exports){
+// yy-counter
+// In-browser counter to watch changeable values like counters or FPS
+// David Figatner
+// (c) YOPEY YOPEY LLC 2017
+// MIT License
+// https://github.com/davidfig/counter
+
+module.exports = class Counter
+{
+    /**
+     * @param {object} [options]
+     * @param {string} [options.side=rightbottom] side to place the panel (combination of right/left and bottom/top)
+     * @param {number} [options.padding=7px]
+     * @param {string} [options.color=white]
+     * @param {string} [options.background=rgba(0,0,0,0.5)]
+     * @param {*} {options.xxx} where xxx is a CSS style for the div
+     */
+    constructor(options)
+    {
+        options = options || {}
+        options.side = options.side || 'rightbottom'
+        options.side.toLowerCase()
+        options.padding = options.padding || '7px'
+        options.color = options.color || 'white'
+        options.background = options.background || 'rgba(0,0,0,0.5)'
+        this.div = document.createElement('div')
+        Counter.findParent(options.side).appendChild(this.div)
+        for (let style in options)
+        {
+            if (style !== 'parent' && style !== 'side')
+            {
+                this.div.style[style] = options[style]
+            }
+        }
+    }
+
+    /**
+     * find the parent div for one of the corners
+     * @param {string} [options.side] side to place the panel (combination of right/left and bottom/top)
+     * @return {HTMLElement}
+     */
+    static findParent(side)
+    {
+        const styles = []
+        let name = 'yy-counter-'
+        if (side.indexOf('left') !== -1)
+        {
+            name += 'left-'
+            styles['left'] = 0
+        }
+        else
+        {
+            name += 'right-'
+            styles['right'] = 0
+        }
+        if (side.indexOf('top') !== -1)
+        {
+            name += 'top'
+            styles['top'] = 0
+        }
+        else
+        {
+            name += 'bottom'
+            styles['bottom'] = 0
+        }
+        const test = document.getElementById(name)
+        if (test)
+        {
+            return test
+        }
+        const container = document.createElement('div')
+        container.id = name
+        container.style.overflow = 'hidden'
+        container.style.position = 'fixed'
+        container.style.zIndex = 10000
+        container.style.pointerEvents = 'none'
+        container.style.userSelect = 'none'
+        for (let style in styles)
+        {
+            container.style[style] = styles[style]
+        }
+        document.body.appendChild(container)
+        return container
+    }
+
+    /**
+     * replaces the innerHTML of the console
+     * @param {string|number} text1
+     * @param {string|number} [text2]
+     * @param {string|number} [...textn] any number of arguments
+     */
+    log()
+    {
+        let s = ''
+        for (let arg of arguments)
+        {
+            s += '<div>' + arg + '</div>'
+        }
+        this.div.innerHTML =  s
+    }
+
+    /**
+     * appends to the innerHTML of the console
+     * @param {string|number} text1
+     * @param {string|number} [text2]
+     * @param {string|number} [...textn] any number of arguments
+     */
+    append()
+    {
+        let s = this.div.innerHTML
+        for (let arg of arguments)
+        {
+            s += '<div>' + arg + '</div>'
+        }
+        this.div.innerHTML = s
+    }
+}
+},{}],403:[function(require,module,exports){
+const Color = require('tinycolor2')
+const Counter = require('yy-counter')
+
+const STYLES = {
+    'background': 'rgba(0, 0, 0, 0.5)',
+    'color': 'white',
+}
+
+const STYLES_FPS = {
+    'padding': '0.1em 0.5em'
+}
+
+const STYLES_METER = {
+}
+
+module.exports = class FPS
+{
+    /**
+     * @param {object} [options]
+     * @param {boolean} [options.meter=true] include a meter with the FPS
+     * @param {string} [options.side=bottom-right] include any combination of left/right and top/bottom
+     * @param {number} [options.FPS=60] desired FPS
+     * @param {number} [options.tolerance=1] minimum tolerance for fluctuations in FPS number
+     * @param {number} [options.meterWidth=100] width of meter div
+     * @param {number} [options.meterHeight=25] height of meter div
+     * @param {number} [options.meterLineHeight=4] height of meter line
+     * @param {styles[]} [options.styles] CSS styles to apply to the div (in javascript format)
+     * @param {styles[]} [options.stylesFPS] CSS styles to apply to the FPS text (in javascript format)
+     * @param {styles[]} [options.stylesMeter] CSS styles to apply to the FPS meter (in javascript format)
+     * @param {string} [options.text=" FPS"] change the text to the right of the FPS
+     */
+    constructor(options)
+    {
+        this.options = options || {}
+        this.tolerance = this.options.tolerance || 1
+        this.FPS = this.options.FPS || 60
+        this.meterWidth = this.options.meterWidth || 100
+        this.meterHeight = this.options.meterHeight || 25
+        this.meterLineHeight = this.options.meterLineHeight || 4
+        this.div = document.createElement('div')
+        Counter.findParent(this.options.side || 'bottom-right').appendChild(this.div)
+        this.style(this.div, STYLES, this.options.styles)
+        this.divFPS()
+        this.meter = typeof this.options.meter === 'undefined' || this.options.meter
+        this.lastTime = 0
+        this.frameNumber = 0
+        this.lastUpdate = 0
+        this.lastFPS = '--'
+    }
+
+    /**
+     * change desired FPS
+     * @type {number}
+     */
+    get fps()
+    {
+        return this.FPS
+    }
+    set fps(value)
+    {
+        this.FPS = value
+    }
+
+    /**
+     * remove meter from DOM
+     */
+    remove()
+    {
+        this.div.remove()
+    }
+
+    /**
+     * @type {boolean} meter (the FPS graph) is on or off
+     */
+    get meter()
+    {
+        return this._meter
+    }
+    set meter(value)
+    {
+        if (value)
+        {
+            this.divMeter()
+        }
+        else if (this.meterCanvas)
+        {
+            this.meterCanvas.style.display = 'none'
+        }
+    }
+
+    style(div, style1, style2)
+    {
+        for (let style in style1)
+        {
+            div.style[style] = style1[style]
+        }
+        if (style2)
+        {
+            for (let style in style2)
+            {
+                div.style[style] = style2[style]
+            }
+        }
+    }
+
+    /**
+     * create div for text FPS
+     * @private
+     * @param {HTMLElement} div
+     * @param {object} options (see contructor)
+     */
+    divFPS()
+    {
+        const div = this.div
+        const options = this.options
+        const divFPS = document.createElement('div')
+        div.appendChild(divFPS)
+        this.fpsSpan = document.createElement('span')
+        divFPS.appendChild(this.fpsSpan)
+        const span = document.createElement('span')
+        divFPS.appendChild(span)
+        span.innerText = typeof options.text !== 'undefined' ? options.text : ' FPS'
+        this.style(div, STYLES_FPS, options.stylesFPS)
+    }
+
+    /**
+     * create div for FPS meter
+     * @private
+     * @param {HTMLElement} div
+     * @param {object} options (see contructor)
+     */
+    divMeter()
+    {
+        const div = this.div
+        const options = this.options
+        if (!this.meterCanvas)
+        {
+            this.meterCanvas = document.createElement('canvas')
+            div.appendChild(this.meterCanvas)
+            this.meterCanvas.width = this.meterWidth
+            this.meterCanvas.height = this.meterHeight
+            this.meterCanvas.style.width = div.width + 'px'
+            this.meterCanvas.style.height = div.height + 'px'
+            this.style(this.meterCanvas, STYLES_METER, options.stylesMeter)
+        }
+        else
+        {
+            this.meterCanvas.style.display = 'block'
+        }
+    }
+
+    /**
+     * call this at the start of the frame to calculate FPS
+     */
+    frame()
+    {
+        this.frameNumber++
+        const currentTime = performance.now() - this.lastTime
+
+        // skip large differences to remove garbage
+        if (currentTime > 500)
+        {
+            if (this.lastTime !== 0)
+            {
+                this.lastFPS = Math.floor(this.frameNumber / (currentTime / 1000))
+                if (this.lastFPS >= this.FPS - this.tolerance && this.lastFPS <= this.FPS + this.tolerance)
+                {
+                    this.lastFPS = this.FPS
+                }
+            }
+            this.lastTime = performance.now()
+            this.frameNumber = 0
+        }
+        this.fpsSpan.innerText = this.lastFPS
+        if (this.meterCanvas && this.lastFPS !== '--')
+        {
+            this.meterUpdate(this.lastFPS / this.FPS)
+        }
+    }
+
+    meterUpdate(percent)
+    {
+        const c = this.meterCanvas.getContext('2d')
+        const data = c.getImageData(0, 0, this.meterCanvas.width, this.meterCanvas.height)
+        c.putImageData(data, -1, 0)
+        c.clearRect(this.meterCanvas.width - 1, 0, 1, this.meterCanvas.height)
+        if (percent < 0.5)
+        {
+            c.fillStyle = Color.mix('#ff0000', '0xffa500', percent * 200).toHexString()
+        }
+        else
+        {
+            c.fillStyle = Color.mix('#ffa500', '#00ff00', (percent - 0.5) * 200).toHexString()
+        }
+        const height = (this.meterCanvas.height - this.meterLineHeight) * (1 - percent)
+        c.fillRect(this.meterCanvas.width - 1, height, 1, this.meterLineHeight)
+    }
+
+    side(options)
+    {
+        if (options.side)
+        {
+            options.side = options.side.toLowerCase()
+            if (options.side.indexOf('left') !== -1)
+            {
+                STYLES['left'] = 0
+                delete STYLES['right']
+            }
+            else
+            {
+                STYLES['right'] = 0
+                delete STYLES['left']
+            }
+            if (options.side.indexOf('top') !== -1)
+            {
+                STYLES['top'] = 0
+                delete STYLES['bottom']
+            }
+            else
+            {
+                STYLES['bottom'] = 0
+                delete STYLES['top']
+            }
+        }
+        else
+        {
+            STYLES['right'] = 0
+            STYLES['bottom'] = 0
+        }
+    }
+}
+},{"tinycolor2":399,"yy-counter":402}],404:[function(require,module,exports){
+const Loop = require('./src/loop')
+Loop.entry = require('./src/entry')
+
+module.exports = Loop
+},{"./src/entry":405,"./src/loop":406}],405:[function(require,module,exports){
+const Events = require('eventemitter3')
+
+/** Entry class for Loop */
+class Entry extends Events
+{
+    /**
+     * create an entry in the update loop
+     * used by Loop
+     * @param {function} callback
+     * @param {number} [time=0] in milliseconds to call this update
+     * @param {number} [count] number of times to run this update (undefined=infinite)
+     */
+    constructor(callback, time, count)
+    {
+        super()
+        this.callback = callback
+        this.time = time
+        this.current = 0
+        this.count = count
+    }
+
+    /**
+     * run the callback if available
+     * @private
+     * @param {number} elapsed
+     */
+    _update(elapsed)
+    {
+        let result
+        if (this.callback)
+        {
+            result = this.callback(elapsed, this)
+        }
+        this.emit('each', elapsed, this)
+        if (result || (!isNaN(this.count) && !--this.count))
+        {
+            this.emit('done', this)
+            return true
+        }
+    }
+
+    /**
+     * update checks time and runs the callback
+     * @param {number} elapsed
+     * @return {boolean} whether entry is complete and may be removed from list
+     */
+    update(elapsed)
+    {
+        if (!this._pause)
+        {
+            if (this.time)
+            {
+                this.current += elapsed
+                if (this.current >= this.time)
+                {
+                    this.current -= this.time
+                    return this._update(elapsed)
+                }
+            }
+            else
+            {
+                return this._update(elapsed)
+            }
+        }
+    }
+
+    /**
+     * @type {boolean} pause this entry
+     */
+    set pause(value)
+    {
+        this._pause = value
+    }
+    get pause()
+    {
+        return this._pause
+    }
+}
+
+module.exports = Entry
+},{"eventemitter3":20}],406:[function(require,module,exports){
+/* Copyright (c) 2017 YOPEY YOPEY LLC */
+
+const Events = require('eventemitter3')
+
+class Loop extends Events
+{
+    /**
+     * basic loop support
+     * @param {object} [options]
+     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
+     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
+     *
+     * @event each(elapsed, Loop)
+     * @event start(Loop)
+     * @event stop(Loop)
+     */
+    constructor(options)
+    {
+        super()
+        options = options || {}
+        this.maxFrameTime = options.maxFrameTime || 1000 / 60
+        if (options.pauseOnBlur)
+        {
+            window.addEventListener('blur', () => this.stopBlur())
+            window.addEventListener('focus', () => this.startBlur())
+        }
+        this.list = []
+    }
+
+    /**
+     * start requestAnimationFrame() loop
+     * @return {Loop} this
+     */
+    start()
+    {
+        if (!this.running)
+        {
+            this.running = true
+            this.loop(0)
+            this.emit('start', this)
+        }
+        return this
+    }
+
+    /**
+     * handler for focus event
+     * @private
+     */
+    startBlur()
+    {
+        if (this.blurred)
+        {
+            this.start()
+            this.blurred = false
+        }
+    }
+
+    /**
+     * handler for blur event
+     * @private
+     */
+    stopBlur()
+    {
+        if (this.running)
+        {
+            this.stop()
+            this.blurred = true
+        }
+    }
+
+    /**
+     * stop loop
+     * @return {Loop} this
+     */
+    stop()
+    {
+        if (this.handle)
+        {
+            window.cancelAnimationFrame(this.handle)
+            this.handle = null
+        }
+        this.running = false
+        this.blurred = false
+        this.emit('stop', this)
+        return this
+    }
+
+    /**
+     * loop through updates; can be called manually each frame, or called automatically as part of start()
+     * @param {number} elapsed time since last call (will be clamped to this.maxFrameTime)
+     */
+    update(elapsed)
+    {
+        const maxFrameTime = this.maxFrameTime
+        elapsed = elapsed > maxFrameTime ? maxFrameTime : elapsed
+        for (let i = 0, _i = this.list.length; i < _i; i++)
+        {
+            if (this.list[i].update(elapsed))
+            {
+                this.list.splice(i, 1)
+                i--
+                _i--
+            }
+        }
+        this.emit('each', elapsed, this)
+    }
+
+    /**
+     * internal loop through animations
+     * @private
+     */
+    loop(elapsed)
+    {
+        if (this.running)
+        {
+            this.update(elapsed)
+            this.handle = requestAnimationFrame((elapsed) => this.loop(elapsed))
+        }
+    }
+
+    /**
+     * adds a callback to the loop
+     * @deprecated use add() instead
+     * @param {function} callback
+     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
+     * @param {number} [count=0] number of times to run this update (0=infinite)
+     * @return {object} entry - used to remove or change the parameters of the update
+     */
+    interval(callback, time, count)
+    {
+        console.warn('yy-loop: interval() deprecated. Use add() instead.')
+        this.add(callback, time, count)
+    }
+
+    /**
+     * adds a callback to the loop
+     * @param {function} callback
+     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
+     * @param {number} [count=0] number of times to run this update (0=infinite)
+     * @return {object} entry - used to remove or change the parameters of the update
+     */
+    add(callback, time, count)
+    {
+        const entry = new Entry(callback, time, count)
+        this.list.push(entry)
+        return entry
+    }
+
+    /**
+     * adds a one-time callback to the loop
+     * @param {function} callback
+     * @param {number} time in milliseconds to call this update
+     * @return {object} entry - used to remove or change the parameters of the update
+     */
+    timeout(callback, time)
+    {
+        return this.add(callback, time, 1)
+    }
+
+    /**
+     * remove a callback from the loop
+     * @param {object} entry - returned by add()
+     */
+    remove(entry)
+    {
+        const index = this.list.indexOf(entry)
+        if (index !== -1)
+        {
+            this.list.splice(index, 1)
+        }
+    }
+
+    /**
+     * removes all callbacks from the loop
+     */
+    removeAll()
+    {
+        this.list = []
+    }
+
+    /**
+     * @type {number} count of all animations
+     */
+    get count()
+    {
+        return this.list.length
+    }
+
+    /**
+     * @type {number} count of running animations
+     */
+    get countRunning()
+    {
+        let count = 0
+        for (let entry of this.list)
+        {
+            if (!entry.pause)
+            {
+                count++
+            }
+        }
+        return count
+    }
+}
+
+const Entry = require('./entry')
+
+Loop.entry = Entry
+module.exports = Loop
+},{"./entry":405,"eventemitter3":20}],407:[function(require,module,exports){
+// yy-random
+// by David Figatner
+// MIT license
+// copyright YOPEY YOPEY LLC 2016-17
+// https://github.com/davidfig/random
+
+const seedrandom = require('seedrandom')
+
+class Random
+{
+    constructor()
+    {
+        this.generator = Math.random
+    }
+
+    /**
+     * generates a seeded number
+     * @param {number} seed
+     * @param {object} [options]
+     * @param {string} [PRNG="alea"] - name of algorithm, see https://github.com/davidbau/seedrandom
+     * @param {boolean} [save=true]
+     */
+    seed(seed, options)
+    {
+        options = options || {}
+        this.generator = seedrandom[options.PRNG || 'alea'](seed, { state: options.state })
+        this.options = options
+    }
+
+    /**
+     * saves the state of the random generator
+     * can only be used after Random.seed() is called
+     * @returns {number} state
+     */
+    save()
+    {
+        if (this.generator !== Math.random)
+        {
+            return this.generator.state()
+        }
+    }
+
+    /**
+     * restores the state of the random generator
+     * @param {number} state
+     */
+    restore(state)
+    {
+        this.generator = seedrandom[this.options.PRNG || 'alea']('', { state })
+    }
+
+    /**
+     * changes the generator to use the old Math.sin-based random function
+     * based on : http://stackoverflow.com/questions/521295/javascript-random-seeds
+     * (deprecated) Use only for compatibility purposes
+     * @param {number} seed
+     */
+    seedOld(seed)
+    {
+        this.generator = function()
+        {
+            const x = Math.sin(seed++) * 10000
+            return x - Math.floor(x)
+        }
+    }
+
+    /**
+     * create a separate random generator using the seed
+     * @param {number} seed
+     * @return {object}
+     */
+    separateSeed(seed)
+    {
+        const random = new Random()
+        random.seed(seed)
+        return random
+    }
+
+    /**
+     * resets the random number this.generator to Math.random()
+     */
+    reset()
+    {
+        this.generator = Math.random
+    }
+
+    /**
+     * returns a random number using the this.generator between [0, ceiling - 1]
+     * @param {number} ceiling
+     * @param {boolean} [useFloat=false]
+     * @return {number}
+     */
+    get(ceiling, useFloat)
+    {
+        const negative = ceiling < 0 ? -1 : 1
+        ceiling *= negative
+        let result
+        if (useFloat)
+        {
+            result = this.generator() * ceiling
+        }
+        else
+        {
+            result = Math.floor(this.generator() * ceiling)
+        }
+        return result * negative
+    }
+
+    /**
+     * returns a random integer between 0 - Number.MAX_SAFE_INTEGER
+     * @return {number}
+     */
+    getHuge()
+    {
+        return this.get(Number.MAX_SAFE_INTEGER)
+    }
+
+    /**
+     * random number [middle - range, middle + range]
+     * @param {number} middle
+     * @param {number} delta
+     * @param {boolean} [useFloat=false]
+     * @return {number}
+     */
+    middle(middle, delta, useFloat)
+    {
+        const half = delta / 2
+        return this.range(middle - half, middle + half, useFloat)
+    }
+
+    /**
+     * random number [start, end]
+     * @param {number} start
+     * @param {number} end
+     * @param {boolean} [useFloat=false] if true, then range is (start, end)--i.e., not inclusive to start and end
+     * @return {number}
+     */
+    range(start, end, useFloat)
+    {
+        // case where there is no range
+        if (end === start)
+        {
+            return end
+        }
+
+        if (useFloat)
+        {
+            return this.get(end - start, true) + start
+        }
+        else
+        {
+            let range
+            if (start < 0 && end > 0)
+            {
+                range = -start + end + 1
+            }
+            else if (start === 0 && end > 0)
+            {
+                range = end + 1
+            }
+            else if (start < 0 && end === 0)
+            {
+                range = start - 1
+                start = 1
+            }
+            else if (start < 0 && end < 0)
+            {
+                range = end - start - 1
+            }
+            else
+            {
+                range = end - start + 1
+            }
+            return Math.floor(this.generator() * range) + start
+        }
+    }
+
+    /**
+     * an array of random numbers between [start, end]
+     * @param {number} start
+     * @param {number} end
+     * @param {number} count
+     * @param {boolean} [useFloat=false]
+     * @return {number[]}
+     */
+    rangeMultiple(start, end, count, useFloat)
+    {
+        var array = []
+        for (let i = 0; i < count; i++)
+        {
+            array.push(this.range(start, end, useFloat))
+        }
+        return array
+    }
+
+    /**
+     * an array of random numbers between [middle - range, middle + range]
+     * @param {number} middle
+     * @param {number} range
+     * @param {number} count
+     * @param {boolean} [useFloat=false]
+     * @return {number[]}
+     */
+    middleMultiple(middle, range, count, useFloat)
+    {
+        const array = []
+        for (let i = 0; i < count; i++)
+        {
+            array.push(middle(middle, range, useFloat))
+        }
+        return array
+    }
+
+    /**
+     * @param {number} [chance=0.5]
+     * returns random sign (either +1 or -1)
+     * @return {number}
+     */
+    sign(chance)
+    {
+        chance = chance || 0.5
+        return this.generator() < chance ? 1 : -1
+    }
+
+    /**
+     * tells you whether a random chance was achieved
+     * @param {number} [percent=0.5]
+     * @return {boolean}
+     */
+    chance(percent)
+    {
+        return this.generator() < (percent || 0.5)
+    }
+
+    /**
+     * returns a random angle in radians [0 - 2 * Math.PI)
+     */
+    angle()
+    {
+        return this.get(Math.PI * 2, true)
+    }
+
+    /**
+     * Shuffle array (either in place or copied)
+     * from http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+     * @param {Array} array
+     * @param {boolean} [copy=false] whether to shuffle in place (default) or return a new shuffled array
+     * @return {Array} a shuffled array
+     */
+    shuffle(array, copy)
+    {
+        if (copy)
+        {
+            array = array.slice()
+        }
+        if (array.length === 0)
+        {
+            return array
+        }
+
+        let currentIndex = array.length, temporaryValue, randomIndex
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex)
+        {
+            // Pick a remaining element...
+            randomIndex = this.get(currentIndex)
+            currentIndex -= 1
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex]
+            array[currentIndex] = array[randomIndex]
+            array[randomIndex] = temporaryValue
+        }
+        return array
+    }
+
+    /**
+     * picks a random element from an array
+     * @param {Array} array
+     * @return {*}
+     */
+    pick(array, remove)
+    {
+        if (!remove)
+        {
+            return array[this.get(array.length)]
+        }
+        else
+        {
+            const pick = this.get(array.length)
+            const temp = array[pick]
+            array.splice(pick, 1)
+            return temp
+        }
+    }
+
+    /**
+     * returns a random property from an object
+     * from http://stackoverflow.com/questions/2532218/pick-random-property-from-a-javascript-object
+     * @param {object} obj
+     * @return {*}
+     */
+    property(obj)
+    {
+        var result
+        var count = 0
+        for (var prop in obj)
+        {
+            if (this.chance(1 / ++count))
+            {
+                result = prop
+            }
+        }
+        return result
+    }
+
+    /**
+     * creates a random set where each entry is a value between [min, max]
+     * @param {number} min
+     * @param {number} max
+     * @param {number} amount of numbers in set
+     * @param {number[]}
+     */
+    set(min, max, amount)
+    {
+        var set = [], all = [], i
+        for (i = min; i < max; i++)
+        {
+            all.push(i)
+        }
+
+        for (i = 0; i < amount; i++)
+        {
+            var found = this.get(all.length)
+            set.push(all[found])
+            all.splice(found, 1)
+        }
+        return set
+    }
+
+
+    /**
+     * returns a set of numbers with a randomly even distribution (i.e., no overlapping and filling the space)
+     * @param {number} start position
+     * @param {number} end position
+     * @param {number} count of non-start/end points
+     * @param {boolean} [includeStart=false] includes start point (count++)
+     * @param {boolean} [includeEnd=false] includes end point (count++)
+     * @param {boolean} [useFloat=false]
+     * @param {number[]}
+     */
+    distribution(start, end, count, includeStart, includeEnd, useFloat)
+    {
+        var interval = Math.floor((end - start) / count)
+        var halfInterval = interval / 2
+        var quarterInterval = interval / 4
+        var set = []
+        if (includeStart)
+        {
+            set.push(start)
+        }
+        for (var i = 0; i < count; i++)
+        {
+            set.push(start + i * interval + halfInterval + this.range(-quarterInterval, quarterInterval, useFloat))
+        }
+        if (includeEnd)
+        {
+            set.push(end)
+        }
+        return set
+    }
+
+    /**
+     * returns a random number based on weighted probability between [min, max]
+     * from http://stackoverflow.com/questions/22656126/javascript-random-number-with-weighted-probability
+     * @param {number} min value
+     * @param {number} max value
+     * @param {number} target for average value
+     * @param {number} stddev - standard deviation
+     */
+    weightedProbabilityInt(min, max, target, stddev)
+    {
+        function normRand()
+        {
+            let x1, x2, rad
+            do
+            {
+                x1 = 2 * this.get(1, true) - 1
+                x2 = 2 * this.get(1, true) - 1
+                rad = x1 * x1 + x2 * x2
+            } while (rad >= 1 || rad === 0)
+            const c = Math.sqrt(-2 * Math.log(rad) / rad)
+            return x1 * c
+        }
+
+        stddev = stddev || 1
+        if (Math.random() < 0.81546)
+        {
+            while (true)
+            {
+                const sample = ((normRand() * stddev) + target)
+                if (sample >= min && sample <= max)
+                {
+                    return sample
+                }
+            }
+        }
+        else
+        {
+            return this.range(min, max)
+        }
+    }
+
+    /*
+     * returns a random hex color (0 - 0xffffff)
+     * @return {number}
+     */
+    color()
+    {
+        return this.get(0xffffff)
+    }
+}
+
+module.exports = new Random()
+},{"seedrandom":391}],408:[function(require,module,exports){
+// yy-renderer
+// by David Figatner
+// (c) YOPEY YOPEY LLC 2017
+// MIT License
+// https://github.com/davidfig/update
+
+const PIXI = require('pixi.js')
+const FPS = require('yy-fps')
+const Loop = require('yy-loop')
+const exists = require('exists')
+
+class Renderer
+{
+    /**
+     * Wrapper for a pixi.js Renderer
+     * @param {object} [options]
+     * @param {boolean} [options.alwaysRender=false] update renderer every update tick
+     * @param {number} [options.FPS=60] desired FPS for rendering (otherwise render on every tick)
+     *
+     * @param {HTMLCanvasElement} [options.canvas] place renderer in this canvas
+     * @param {HTMLElement} [options.parent=document.body] if no canvas is provided, use parent to provide parent for generated canvas otherwise uses document.body
+     * @param {object} [options.styles] apply these CSS styles to the div
+     *
+     * @param {number} [options.aspectRatio] resizing will maintain aspect ratio by ensuring that the smaller dimension fits
+     * @param {boolean} [options.autoresize=false] automatically calls resize during resize events
+     * @param {number} [options.color=0xffffff] background color in hex
+     *
+     * @param {boolean} [options.turnOffTicker] turn off PIXI.shared.ticker
+     * @param {boolean} [options.turnOffInteraction] turn off PIXI.Interaction manager (saves cycles)
+     *
+     * @param {boolean} [options.noWebGL=false] use the PIXI.CanvasRenderer instead of PIXI.WebGLRenderer
+     * @param {boolean} [options.antialias=true] turn on antialias if native antialias is not used, uses FXAA
+     * @param {boolean} [options.forceFXAA=false] forces FXAA antialiasing to be used over native. FXAA is faster, but may not always look as great
+     * @param {number} [options.resolution=window.devicePixelRatio] / device pixel ratio of the renderer (e.g., original retina is 2)
+     * @param {boolean} [options.clearBeforeRender=true] sets if the CanvasRenderer will clear the canvas or before the render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
+     * @param {boolean} [options.preserveDrawingBuffer=false] enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context.
+     * @param {boolean} [options.roundPixels=false] if true PIXI will Math.floor() x/y values when rendering, stopping pixel interpolation
+     *
+     * @param {boolean|string} [options.debug] false, true, or some combination of 'fps', 'dirty', and 'count' (e.g., 'count-dirty' or 'dirty')
+     * @param {object} [options.fpsOptions] options from yy-fps (https://github.com/davidfig/fps)
+     *
+     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
+     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
+     *
+     * @event each(elapsed, Loop, elapsedInLoop)
+     * @event start(Loop)
+     * @event stop(Loop)
+     */
+    constructor(options)
+    {
+        options = options || {}
+        this.options = options
+        this.loop = new Loop({ pauseOnBlur: options.pauseOnBlur, maxFrameTime: options.maxFrameTime })
+        this.canvas = options.canvas
+        this.autoResize = options.autoresize
+        this.aspectRatio = options.aspectRatio
+        this.FPS = exists(options.FPS) ? 1000 / options.FPS : 0
+        options.resolution = this.resolution = options.resolution || window.devicePixelRatio || 1
+        options.antialias = exists(options.antialias) ? options.antialias : true
+        options.transparent = true
+        if (!this.canvas) this.createCanvas(options)
+        options.view = this.canvas
+
+        if (options.turnoffTicker)
+        {
+            const ticker = PIXI.ticker.shared
+            ticker.autoStart = false
+            ticker.stop()
+        }
+
+        const noWebGL = options.noWebGL || false
+        options.noWebGL = null
+        options.autoresize = null
+        const Renderer = noWebGL ? PIXI.CanvasRenderer : PIXI.WebGLRenderer
+
+        this.renderer = new Renderer(options)
+        if (options.turnOffInteraction)
+        {
+            this.renderer.plugins.interaction.destroy()
+        }
+        if (options.color)
+        {
+            this.canvas.style.backgroundColor = options.color
+        }
+        if (options.styles)
+        {
+            for (let style in options.styles)
+            {
+                this.canvas.style[style] = options.styles[style]
+            }
+        }
+
+        if (options.debug) this.createDebug(options)
+        if (this.autoResize) window.addEventListener('resize', () => this.resize())
+        this.time = 0
+        this.stage = new PIXI.Container()
+        this.dirty = this.alwaysRender = options.alwaysRender || false
+        this.resize(true)
+    }
+
+    /**
+     * create canvas if one is not provided
+     * @private
+     */
+    createCanvas(options)
+    {
+        this.canvas = document.createElement('canvas')
+        this.canvas.style.width = '100vw'
+        this.canvas.style.height = '100vh'
+        if (options.parent)
+        {
+            options.parent.appendChild(this.canvas)
+            options.parent = null
+        }
+        else
+        {
+            document.body.appendChild(this.canvas)
+        }
+        var width = this.canvas.offsetWidth
+        var height = this.canvas.offsetHeight
+        this.canvas.style.position = 'absolute'
+        this.canvas.width = width * this.resolution
+        this.canvas.height = height * this.resolution
+        this.canvas.style.left = this.canvas.style.top = '0px'
+        this.canvas.style.overflow = 'auto'
+    }
+
+    /**
+     * create FPS meter and render indicator
+     * @param {object} options
+     */
+    createDebug(options)
+    {
+        this.debug = options.debug
+        const fpsOptions = options.fpsOptions || {}
+        fpsOptions.FPS = options.FPS
+        this.fpsMeter = new FPS(fpsOptions)
+        const indicator = document.createElement('div')
+        indicator.style.display = 'flex'
+        indicator.style.justifyContent = 'space-between'
+        this.fpsMeter.div.prepend(indicator)
+        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('dirty') !== -1)
+        {
+            this.dirtyIndicator = document.createElement('div')
+            indicator.appendChild(this.dirtyIndicator)
+            this.dirtyIndicator.innerHTML = '&#9624; '
+        }
+        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('count') !== -1)
+        {
+            this.countIndicator = document.createElement('div')
+            indicator.appendChild(this.countIndicator)
+        }
+    }
+
+    debugUpdate()
+    {
+        this.dirtyIndicator.color = this.dirty
+    }
+
+    /**
+     * immediately render without checking dirty flag
+     */
+    render()
+    {
+        this.renderer.render(this.stage)
+        this.dirty = this.alwaysRender
+    }
+
+    /**
+     * @private
+     */
+    update()
+    {
+        if (this.fpsMeter)
+        {
+            this.fpsMeter.frame()
+            if (this.dirtyIndicator && this.lastDirty !== this.dirty)
+            {
+                this.dirtyIndicator.style.color = this.dirty ? 'white' : 'black'
+                this.lastDirty = this.dirty
+            }
+            if (this.countIndicator)
+            {
+                const count = this.countObjects()
+                if (this.lastCount !== count)
+                {
+                    this.countIndicator.innerText = count
+                    this.lastCount = count
+                }
+            }
+        }
+        if (this.dirty)
+        {
+            this.render()
+            this.dirty = this.alwaysRender
+        }
+    }
+
+    /**
+     * counts visible objects
+     */
+    countObjects()
+    {
+        function count(object)
+        {
+            if (!object.visible)
+            {
+                return
+            }
+            total++
+            for (let i = 0, _i = object.children.length; i < _i; i++)
+            {
+                count(object.children[i])
+            }
+        }
+
+        var total = 0
+        count(this.stage)
+        return total
+    }
+
+    /**
+     * sets the background color
+     * @param {string} color in CSS format
+     */
+    background(color)
+    {
+        this.canvas.style.backgroundColor = color
+    }
+
+    /**
+     * adds object to stage
+     * @param {PIXI.DisplayObject} object
+     * @param {number} [to] index to add
+     */
+    add(object, to)
+    {
+        if (typeof to === 'undefined')
+        {
+            to = this.stage.children.length
+        }
+        this.stage.addChildAt(object, to)
+        return object
+    }
+
+    /**
+     * alias for add
+     * @param {PIXI.DisplayObject} object
+     */
+    addChild(object)
+    {
+        return this.add(object)
+    }
+
+    /**
+     * alias for add
+     * @param {PIXI.DisplayObject} object
+     * @param {number} to - index to add
+     */
+    addChildTo(object, to)
+    {
+        return this.add(object, to)
+    }
+
+    /**
+     * remove child from stage
+     * @param {PIXI.DisplayObject} object
+     */
+    removeChild(object)
+    {
+        this.stage.removeChild(object)
+    }
+
+    /**
+     * clears the stage
+     */
+    clear()
+    {
+        this.stage.removeChildren()
+    }
+
+    /**
+     * resize
+     * @param {boolean} [force] resize, even if cached width/height remain unchanged
+     */
+    resize(force)
+    {
+        var width = this.canvas.offsetWidth
+        var height = this.canvas.offsetHeight
+        if (this.aspectRatio)
+        {
+            if (width > height)
+            {
+                width = height * this.aspectRatio
+            }
+            else
+            {
+                height = width / this.aspectRatio
+            }
+        }
+        if (force || width !== this.width || height !== this.height)
+        {
+            this.width = width
+            this.height = height
+            this.canvas.width = width * this.resolution
+            this.canvas.height = height * this.resolution
+            this.renderer.resize(this.width, this.height)
+            this.landscape = this.width > this.height
+            this.dirty = true
+        }
+    }
+
+    /**
+     * returns the smaller of the width/height based
+     * @return {number}
+     */
+    dimensionSmall()
+    {
+        return (this.landscape ? this.height : this.width)
+    }
+
+    /**
+     * returns the larger of the width/height based
+     * @return {number}
+     */
+    dimensionBig()
+    {
+        return (this.landscape ? this.width : this.height)
+    }
+
+    /**
+     * getter/setter to change desired FPS of renderer
+     */
+    get fps()
+    {
+        return this.FPS
+    }
+    set fps(value)
+    {
+        this.FPS = 1000 / value
+        if (this.loop)
+        {
+            this.loop.remove(this.loopSave)
+            this.loopSave = this.loop.add(() => this.update(), this.FPS)
+        }
+        if (this.fpsMeter)
+        {
+            this.fpsMeter.fps = value
+        }
+    }
+
+    /**
+     * Add a listener for a given event to yy-loop
+     * @param {(String|Symbol)} event The event name.
+     * @param {Function} fn The listener function.
+     * @param {*} [context=this] The context to invoke the listener with.
+     * @returns {EventEmitter} `this`.
+     */
+    on()
+    {
+        this.loop.on(...arguments)
+    }
+
+    /**
+     * Add a one-time listener for a given event to yy-loop
+     * @param {(String|Symbol)} event The event name.
+     * @param {Function} fn The listener function.
+     * @param {*} [context=this] The context to invoke the listener with.
+     * @returns {EventEmitter} `this`.
+     * @public
+     */
+    once()
+    {
+        this.loop.once(...arguments)
+    }
+
+    /**
+     * start the internal loop
+     * @returns {Renderer} this
+     */
+    start()
+    {
+        this.loopSave = this.loop.add(() => this.update(), this.FPS)
+        this.loop.start()
+        return this
+    }
+
+    /**
+     * stop the internal loop
+     * @inherited from yy-loop
+     * @returns {Renderer} this
+     */
+    stop()
+    {
+        this.loop.stop()
+    }
+}
+
+module.exports = Renderer
+},{"exists":21,"pixi.js":348,"yy-fps":403,"yy-loop":404}],409:[function(require,module,exports){
+'use strict'
+
+var boxPoint = require('./box-point')
+
+/**
+ * point-box collision
+ * @param {number} x1 point
+ * @param {number} y1 point
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
+ * @return {boolean}
+ */
+module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
+{
+    return boxPoint(xb, yb, wb, hb, x1, y1)
+}
+
+},{"./box-point":4}],410:[function(require,module,exports){
+'use strict'
+
+var circlePoint = require('./circle-point')
+
+module.exports = function pointCircle(x1, y1, xc, yc, rc)
+{
+    return circlePoint(xc, yc, rc, x1, y1)
+}
+
+},{"./circle-point":9}],411:[function(require,module,exports){
+'use strict'
+
+var linePoint = require('./line-point')
+
+/**
+ * point-line collision
+ * @param {number} xp point
+ * @param {number} yp point
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
+module.exports = function pointLine(xp, yp, x1, y1, x2, y2)
+{
+    return linePoint(x1, y1, x2, y2, xp, yp)
+}
+
+},{"./line-point":16}],412:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+
+/**
+ * point-polygon collision
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number[]} points
+ * @return {boolean}
+ */
+module.exports = function pointPolygon(x1, y1, points)
+{
+    return polygonPoint(points, x1, y1)
+}
+
+},{"./polygon-point":416}],413:[function(require,module,exports){
+'use strict'
+
+var polygonPolygon = require('./polygon-polygon')
+
+/**
+ * polygon-box collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x of box
+ * @param {number} y of box
+ * @param {number} w of box
+ * @param {number} h of box
+ */
+module.exports = function polygonBox(points, x, y, w, h)
+{
+    var points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
+    return polygonPolygon(points, points2)
+}
+
+},{"./polygon-polygon":417}],414:[function(require,module,exports){
+'use strict'
+
+var polygonPoint = require('./polygon-point')
+var lineCircle = require('./line-circle')
+
+
+/**
+ * polygon-circle collision
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
+ */
+module.exports = function polygonCircle(points, xc, yc, rc)
+{
+    if (polygonPoint(points, xc, yc))
+    {
+        return true
+    }
+    var count = points.length
+    for (var i = 0; i < count - 2; i += 2)
+    {
+        if (lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
+        {
+            return true
+        }
+    }
+    return lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
+}
+
+},{"./line-circle":14,"./polygon-point":416}],415:[function(require,module,exports){
+'use strict'
+
+var linePolygon = require('./line-polygon')
+
+/**
+ * polygon-line collisions
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @return {boolean}
+ */
+module.exports = function polygonLine(points, x1, y1, x2, y2)
+{
+    return linePolygon(x1, y1, x2, y2, points)
+}
+
+},{"./line-polygon":17}],416:[function(require,module,exports){
+'use strict'
+
+const linePoint = require('./line-point')
+
+/**
+ * polygon-point collision
+ * based on http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x of point
+ * @param {number} y of point
+ */
+module.exports = function polygonPoint(points, x, y)
+{
+    var length = points.length
+    var c = false
+    var i, j
+    for (i = 0, j = length - 2; i < length; i += 2)
+    {
+        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
+        {
+            c = !c
+        }
+        j = i
+    }
+    if (c)
+    {
+        return true
+    }
+    for (i = 0; i < length; i += 2)
+    {
+        var p1x = points[i]
+        var p1y = points[i + 1]
+        var p2x, p2y
+        if (i === length - 2)
+        {
+            p2x = points[0]
+            p2y = points[1]
+        }
+        else
+        {
+            p2x = points[i + 2]
+            p2y = points[i + 3]
+        }
+        if (linePoint(p1x, p1y, p2x, p2y, x, y))
+        {
+            return true
+        }
+    }
+    return false
+}
+
+},{"./line-point":16}],417:[function(require,module,exports){
+'use strict'
+
+/**
+ * polygon-polygon collision
+ * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
+ * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
+ * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
+ * @return {boolean}
+ */
+module.exports = function polygonPolygon(points1, points2)
+{
+    var a = points1
+    var b = points2
+    var polygons = [a, b]
+    var minA, maxA, projected, minB, maxB, j
+    for (var i = 0; i < polygons.length; i++)
+    {
+        var polygon = polygons[i]
+        for (var i1 = 0; i1 < polygon.length; i1 += 2)
+        {
+            var i2 = (i1 + 2) % polygon.length
+            var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
+            minA = maxA = null
+            for (j = 0; j < a.length; j += 2)
+            {
+                projected = normal.x * a[j] + normal.y * a[j + 1]
+                if (minA === null || projected < minA)
+                {
+                    minA = projected
+                }
+                if (maxA === null || projected > maxA)
+                {
+                    maxA = projected
+                }
+            }
+            minB = maxB = null
+            for (j = 0; j < b.length; j += 2)
+            {
+                projected = normal.x * b[j] + normal.y * b[j + 1]
+                if (minB === null || projected < minB)
+                {
+                    minB = projected
+                }
+                if (maxB === null || projected > maxB)
+                {
+                    maxB = projected
+                }
+            }
+            if (maxA < minB || maxB < minA)
+            {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+},{}],418:[function(require,module,exports){
+
+},{}],419:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require('_process'))
+},{"_process":420}],420:[function(require,module,exports){
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],421:[function(require,module,exports){
+(function (global){
+/*! https://mths.be/punycode v1.4.1 by @mathias */
+;(function(root) {
+
+	/** Detect free variables */
+	var freeExports = typeof exports == 'object' && exports &&
+		!exports.nodeType && exports;
+	var freeModule = typeof module == 'object' && module &&
+		!module.nodeType && module;
+	var freeGlobal = typeof global == 'object' && global;
+	if (
+		freeGlobal.global === freeGlobal ||
+		freeGlobal.window === freeGlobal ||
+		freeGlobal.self === freeGlobal
+	) {
+		root = freeGlobal;
+	}
+
+	/**
+	 * The `punycode` object.
+	 * @name punycode
+	 * @type Object
+	 */
+	var punycode,
+
+	/** Highest positive signed 32-bit float value */
+	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
+
+	/** Bootstring parameters */
+	base = 36,
+	tMin = 1,
+	tMax = 26,
+	skew = 38,
+	damp = 700,
+	initialBias = 72,
+	initialN = 128, // 0x80
+	delimiter = '-', // '\x2D'
+
+	/** Regular expressions */
+	regexPunycode = /^xn--/,
+	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
+
+	/** Error messages */
+	errors = {
+		'overflow': 'Overflow: input needs wider integers to process',
+		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+		'invalid-input': 'Invalid input'
+	},
+
+	/** Convenience shortcuts */
+	baseMinusTMin = base - tMin,
+	floor = Math.floor,
+	stringFromCharCode = String.fromCharCode,
+
+	/** Temporary variable */
+	key;
+
+	/*--------------------------------------------------------------------------*/
+
+	/**
+	 * A generic error utility function.
+	 * @private
+	 * @param {String} type The error type.
+	 * @returns {Error} Throws a `RangeError` with the applicable error message.
+	 */
+	function error(type) {
+		throw new RangeError(errors[type]);
+	}
+
+	/**
+	 * A generic `Array#map` utility function.
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} callback The function that gets called for every array
+	 * item.
+	 * @returns {Array} A new array of values returned by the callback function.
+	 */
+	function map(array, fn) {
+		var length = array.length;
+		var result = [];
+		while (length--) {
+			result[length] = fn(array[length]);
+		}
+		return result;
+	}
+
+	/**
+	 * A simple `Array#map`-like wrapper to work with domain name strings or email
+	 * addresses.
+	 * @private
+	 * @param {String} domain The domain name or email address.
+	 * @param {Function} callback The function that gets called for every
+	 * character.
+	 * @returns {Array} A new string of characters returned by the callback
+	 * function.
+	 */
+	function mapDomain(string, fn) {
+		var parts = string.split('@');
+		var result = '';
+		if (parts.length > 1) {
+			// In email addresses, only the domain name should be punycoded. Leave
+			// the local part (i.e. everything up to `@`) intact.
+			result = parts[0] + '@';
+			string = parts[1];
+		}
+		// Avoid `split(regex)` for IE8 compatibility. See #17.
+		string = string.replace(regexSeparators, '\x2E');
+		var labels = string.split('.');
+		var encoded = map(labels, fn).join('.');
+		return result + encoded;
+	}
+
+	/**
+	 * Creates an array containing the numeric code points of each Unicode
+	 * character in the string. While JavaScript uses UCS-2 internally,
+	 * this function will convert a pair of surrogate halves (each of which
+	 * UCS-2 exposes as separate characters) into a single code point,
+	 * matching UTF-16.
+	 * @see `punycode.ucs2.encode`
+	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+	 * @memberOf punycode.ucs2
+	 * @name decode
+	 * @param {String} string The Unicode input string (UCS-2).
+	 * @returns {Array} The new array of code points.
+	 */
+	function ucs2decode(string) {
+		var output = [],
+		    counter = 0,
+		    length = string.length,
+		    value,
+		    extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * Creates a string based on an array of numeric code points.
+	 * @see `punycode.ucs2.decode`
+	 * @memberOf punycode.ucs2
+	 * @name encode
+	 * @param {Array} codePoints The array of numeric code points.
+	 * @returns {String} The new Unicode string (UCS-2).
+	 */
+	function ucs2encode(array) {
+		return map(array, function(value) {
+			var output = '';
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+			return output;
+		}).join('');
+	}
+
+	/**
+	 * Converts a basic code point into a digit/integer.
+	 * @see `digitToBasic()`
+	 * @private
+	 * @param {Number} codePoint The basic numeric code point value.
+	 * @returns {Number} The numeric value of a basic code point (for use in
+	 * representing integers) in the range `0` to `base - 1`, or `base` if
+	 * the code point does not represent a value.
+	 */
+	function basicToDigit(codePoint) {
+		if (codePoint - 48 < 10) {
+			return codePoint - 22;
+		}
+		if (codePoint - 65 < 26) {
+			return codePoint - 65;
+		}
+		if (codePoint - 97 < 26) {
+			return codePoint - 97;
+		}
+		return base;
+	}
+
+	/**
+	 * Converts a digit/integer into a basic code point.
+	 * @see `basicToDigit()`
+	 * @private
+	 * @param {Number} digit The numeric value of a basic code point.
+	 * @returns {Number} The basic code point whose value (when used for
+	 * representing integers) is `digit`, which needs to be in the range
+	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	 * used; else, the lowercase form is used. The behavior is undefined
+	 * if `flag` is non-zero and `digit` has no uppercase form.
+	 */
+	function digitToBasic(digit, flag) {
+		//  0..25 map to ASCII a..z or A..Z
+		// 26..35 map to ASCII 0..9
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	}
+
+	/**
+	 * Bias adaptation function as per section 3.4 of RFC 3492.
+	 * https://tools.ietf.org/html/rfc3492#section-3.4
+	 * @private
+	 */
+	function adapt(delta, numPoints, firstTime) {
+		var k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+			delta = floor(delta / baseMinusTMin);
+		}
+		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	}
+
+	/**
+	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
+	 * symbols.
+	 * @memberOf punycode
+	 * @param {String} input The Punycode string of ASCII-only symbols.
+	 * @returns {String} The resulting string of Unicode symbols.
+	 */
+	function decode(input) {
+		// Don't use UCS-2
+		var output = [],
+		    inputLength = input.length,
+		    out,
+		    i = 0,
+		    n = initialN,
+		    bias = initialBias,
+		    basic,
+		    j,
+		    index,
+		    oldi,
+		    w,
+		    k,
+		    digit,
+		    t,
+		    /** Cached calculation results */
+		    baseMinusT;
+
+		// Handle the basic code points: let `basic` be the number of input code
+		// points before the last delimiter, or `0` if there is none, then copy
+		// the first basic code points to the output.
+
+		basic = input.lastIndexOf(delimiter);
+		if (basic < 0) {
+			basic = 0;
+		}
+
+		for (j = 0; j < basic; ++j) {
+			// if it's not a basic code point
+			if (input.charCodeAt(j) >= 0x80) {
+				error('not-basic');
+			}
+			output.push(input.charCodeAt(j));
+		}
+
+		// Main decoding loop: start just after the last delimiter if any basic code
+		// points were copied; start at the beginning otherwise.
+
+		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+			// `index` is the index of the next character to be consumed.
+			// Decode a generalized variable-length integer into `delta`,
+			// which gets added to `i`. The overflow checking is easier
+			// if we increase `i` as we go, then subtract off its starting
+			// value at the end to obtain `delta`.
+			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
+
+				if (index >= inputLength) {
+					error('invalid-input');
+				}
+
+				digit = basicToDigit(input.charCodeAt(index++));
+
+				if (digit >= base || digit > floor((maxInt - i) / w)) {
+					error('overflow');
+				}
+
+				i += digit * w;
+				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+
+				if (digit < t) {
+					break;
+				}
+
+				baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) {
+					error('overflow');
+				}
+
+				w *= baseMinusT;
+
+			}
+
+			out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+
+			// `i` was supposed to wrap around from `out` to `0`,
+			// incrementing `n` each time, so we'll fix that now:
+			if (floor(i / out) > maxInt - n) {
+				error('overflow');
+			}
+
+			n += floor(i / out);
+			i %= out;
+
+			// Insert `n` at position `i` of the output
+			output.splice(i++, 0, n);
+
+		}
+
+		return ucs2encode(output);
+	}
+
+	/**
+	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
+	 * Punycode string of ASCII-only symbols.
+	 * @memberOf punycode
+	 * @param {String} input The string of Unicode symbols.
+	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
+	 */
+	function encode(input) {
+		var n,
+		    delta,
+		    handledCPCount,
+		    basicLength,
+		    bias,
+		    j,
+		    m,
+		    q,
+		    k,
+		    t,
+		    currentValue,
+		    output = [],
+		    /** `inputLength` will hold the number of code points in `input`. */
+		    inputLength,
+		    /** Cached calculation results */
+		    handledCPCountPlusOne,
+		    baseMinusT,
+		    qMinusT;
+
+		// Convert the input in UCS-2 to Unicode
+		input = ucs2decode(input);
+
+		// Cache the length
+		inputLength = input.length;
+
+		// Initialize the state
+		n = initialN;
+		delta = 0;
+		bias = initialBias;
+
+		// Handle the basic code points
+		for (j = 0; j < inputLength; ++j) {
+			currentValue = input[j];
+			if (currentValue < 0x80) {
+				output.push(stringFromCharCode(currentValue));
+			}
+		}
+
+		handledCPCount = basicLength = output.length;
+
+		// `handledCPCount` is the number of code points that have been handled;
+		// `basicLength` is the number of basic code points.
+
+		// Finish the basic string - if it is not empty - with a delimiter
+		if (basicLength) {
+			output.push(delimiter);
+		}
+
+		// Main encoding loop:
+		while (handledCPCount < inputLength) {
+
+			// All non-basic code points < n have been handled already. Find the next
+			// larger one:
+			for (m = maxInt, j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+				if (currentValue >= n && currentValue < m) {
+					m = currentValue;
+				}
+			}
+
+			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// but guard against overflow
+			handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+				error('overflow');
+			}
+
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+
+			for (j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+
+				if (currentValue < n && ++delta > maxInt) {
+					error('overflow');
+				}
+
+				if (currentValue == n) {
+					// Represent delta as a generalized variable-length integer
+					for (q = delta, k = base; /* no condition */; k += base) {
+						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+						if (q < t) {
+							break;
+						}
+						qMinusT = q - t;
+						baseMinusT = base - t;
+						output.push(
+							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+						);
+						q = floor(qMinusT / baseMinusT);
+					}
+
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+
+			++delta;
+			++n;
+
+		}
+		return output.join('');
+	}
+
+	/**
+	 * Converts a Punycode string representing a domain name or an email address
+	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
+	 * it doesn't matter if you call it on a string that has already been
+	 * converted to Unicode.
+	 * @memberOf punycode
+	 * @param {String} input The Punycoded domain name or email address to
+	 * convert to Unicode.
+	 * @returns {String} The Unicode representation of the given Punycode
+	 * string.
+	 */
+	function toUnicode(input) {
+		return mapDomain(input, function(string) {
+			return regexPunycode.test(string)
+				? decode(string.slice(4).toLowerCase())
+				: string;
+		});
+	}
+
+	/**
+	 * Converts a Unicode string representing a domain name or an email address to
+	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
+	 * i.e. it doesn't matter if you call it with a domain that's already in
+	 * ASCII.
+	 * @memberOf punycode
+	 * @param {String} input The domain name or email address to convert, as a
+	 * Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name or
+	 * email address.
+	 */
+	function toASCII(input) {
+		return mapDomain(input, function(string) {
+			return regexNonASCII.test(string)
+				? 'xn--' + encode(string)
+				: string;
+		});
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	/** Define the public API */
+	punycode = {
+		/**
+		 * A string representing the current Punycode.js version number.
+		 * @memberOf punycode
+		 * @type String
+		 */
+		'version': '1.4.1',
+		/**
+		 * An object of methods to convert from JavaScript's internal character
+		 * representation (UCS-2) to Unicode code points, and back.
+		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
+		 * @memberOf punycode
+		 * @type Object
+		 */
+		'ucs2': {
+			'decode': ucs2decode,
+			'encode': ucs2encode
+		},
+		'decode': decode,
+		'encode': encode,
+		'toASCII': toASCII,
+		'toUnicode': toUnicode
+	};
+
+	/** Expose `punycode` */
+	// Some AMD build optimizers, like r.js, check for specific condition patterns
+	// like the following:
+	if (
+		typeof define == 'function' &&
+		typeof define.amd == 'object' &&
+		define.amd
+	) {
+		define('punycode', function() {
+			return punycode;
+		});
+	} else if (freeExports && freeModule) {
+		if (module.exports == freeExports) {
+			// in Node.js, io.js, or RingoJS v0.8.0+
+			freeModule.exports = punycode;
+		} else {
+			// in Narwhal or RingoJS v0.7.0-
+			for (key in punycode) {
+				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+			}
+		}
+	} else {
+		// in Rhino or a web browser
+		root.punycode = punycode;
+	}
+
+}(this));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],422:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
+
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
+  }
+
+  var regexp = /\+/g;
+  qs = qs.split(sep);
+
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
+  }
+
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
+  }
+
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
+
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+},{}],423:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+      }
+    }).join(sep);
+
+  }
+
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+},{}],424:[function(require,module,exports){
+'use strict';
+
+exports.decode = exports.parse = require('./decode');
+exports.encode = exports.stringify = require('./encode');
+
+},{"./decode":422,"./encode":423}],425:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -62632,7 +64999,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":407,"punycode":386,"querystring":389}],407:[function(require,module,exports){
+},{"./util":426,"punycode":421,"querystring":424}],426:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -62649,2260 +65016,5 @@ module.exports = {
     return arg == null;
   }
 };
-
-},{}],408:[function(require,module,exports){
-// angle.js <https://github.com/davidfig/anglejs>
-// Released under MIT license <https://github.com/davidfig/angle/blob/master/LICENSE>
-// Author: David Figatner
-// Copyright (c) 2016-17 YOPEY YOPEY LLC
-
-const _toDegreeConversion = 180 / Math.PI
-const _toRadianConversion = Math.PI / 180
-
-
-/** @constant {number} */
-const UP = Math.PI / 2
-const DOWN = 3 * Math.PI / 2
-const LEFT = Math.PI
-const RIGHT = 0
-
-const NORTH = UP
-const SOUTH = DOWN
-const WEST = LEFT
-const EAST = RIGHT
-
-const PI_2 = Math.PI * 2
-const PI_QUARTER = Math.PI / 4
-const PI_HALF = Math.PI / 2
-
-/**
- * converts from radians to degrees (all other functions expect radians)
- * @param {number} radians
- * @return {number} degrees
- */
-function toDegrees(radians)
-{
-    return radians * _toDegreeConversion
-}
-
-/**
- * converts from degrees to radians (all other functions expect radians)
- * @param {number} degrees
- * @return {number} radians
- */
-function toRadians(degrees)
-{
-    return degrees * _toRadianConversion
-}
-
-/**
- * returns whether the target angle is between angle1 and angle2 (in radians)
- * (based on: http://stackoverflow.com/questions/11406189/determine-if-angle-lies-between-2-other-angles)
- * @param {number} target angle
- * @param {number} angle1
- * @param {number} angle2
- * @return {boolean}
- */
-function isAngleBetween(target, angle1, angle2)
-{
-    const rAngle = ((angle2 - angle1) % PI_2 + PI_2) % PI_2
-    if (rAngle >= Math.PI)
-    {
-        const swap = angle1
-        angle1 = angle2
-        angle2 = swap
-    }
-
-    if (angle1 <= angle2)
-    {
-        return target >= angle1 && target <= angle2
-    }
-    else
-    {
-        return target >= angle1 || target <= angle2
-    }
-}
-
-/**
- * returns +1 or -1 based on whether the difference between two angles is positive or negative (in radians)
- * @param {number} target angle
- * @param {number} source angle
- * @return {number} 1 or -1
- */
-function differenceAnglesSign(target, source)
-{
-    function mod(a, n)
-    {
-        return (a % n + n) % n
-    }
-
-    const a = target - source
-    return mod((a + Math.PI), PI_2) - Math.PI > 0 ? 1 : -1
-}
-
-/**
- * returns the normalized difference between two angles (in radians)
- * @param {number} a - first angle
- * @param {number} b - second angle
- * @return {number} normalized difference between a and b
- */
-function differenceAngles(a, b)
-{
-    const c = Math.abs(a - b) % PI_2
-    return c > Math.PI ? (PI_2 - c) : c
-}
-
-/**
- * returns a target angle that is the shortest way to rotate an object between start and to--may choose a negative angle
- * @param {number} start
- * @param {number} to
- * @return {number} shortest target angle
- */
-function shortestAngle(start, to)
-{
-    const difference = differenceAngles(to, start)
-    const sign = differenceAnglesSign(to, start)
-    const delta = difference * sign
-    return delta + start
-}
-
-/**
- * returns the normalized angle (0 - PI x 2)
- * @param {number} radians
- * @return {number} normalized angle in radians
- */
-function normalize(radians)
-{
-    return radians - PI_2 * Math.floor(radians / PI_2)
-}
-
-/**
- * returns angle between two points (in radians)
- * @param {Point} [point1] {x: x, y: y}
- * @param {Point} [point2] {x: x, y: y}
- * @param {number} [x1]
- * @param {number} [y1]
- * @param {number} [x2]
- * @param {number} [y2]
- * @return {number} angle
- */
-function angleTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
-{
-    if (arguments.length === 4)
-    {
-        return Math.atan2(arguments[3] - arguments[1], arguments[2] - arguments[0])
-    }
-    else
-    {
-        return Math.atan2(arguments[1].y - arguments[0].y, arguments[1].x - arguments[0].x)
-    }
-}
-
-/**
- * returns distance between two points
- * @param {Point} [point1] {x: x, y: y}
- * @param {Point} [point2] {x: x, y: y}
- * @param {number} [x1]
- * @param {number} [y1]
- * @param {number} [x2]
- * @param {number} [y2]
- * @return {number} distance
- */
-function distanceTwoPoints(/* (point1, point2) OR (x1, y1, x2, y2) */)
-{
-    if (arguments.length === 2)
-    {
-        return Math.sqrt(Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2))
-    }
-    else
-    {
-        return Math.sqrt(Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2))
-    }
-}
-
-/**
- * returns the squared distance between two points
- * @param {Point} [point1] {x: x, y: y}
- * @param {Point} [point2] {x: x, y: y}
- * @param {number} [x1]
- * @param {number} [y1]
- * @param {number} [x2]
- * @param {number} [y2]
- * @return {number} squared distance
- */
-function distanceTwoPointsSquared(/* (point1, point2) OR (x1, y1, x2, y2) */)
-{
-    if (arguments.length === 2)
-    {
-        return Math.pow(arguments[1].x - arguments[0].x, 2) + Math.pow(arguments[1].y - arguments[0].y, 2)
-    }
-    else
-    {
-        return Math.pow(arguments[2] - arguments[0], 2) + Math.pow(arguments[3] - arguments[1], 2)
-    }
-}
-
-/**
- * returns the closest cardinal (N, S, E, W) to the given angle (in radians)
- * @param {number} angle
- * @return {number} closest cardinal in radians
- */
-function closestAngle(angle)
-{
-    const left = differenceAngles(angle, LEFT)
-    const right = differenceAngles(angle, RIGHT)
-    const up = differenceAngles(angle, UP)
-    const down = differenceAngles(angle, DOWN)
-    if (left <= right && left <= up && left <= down)
-    {
-        return LEFT
-    }
-    else if (right <= up && right <= down)
-    {
-        return RIGHT
-    }
-    else if (up <= down)
-    {
-        return UP
-    }
-    else
-    {
-        return DOWN
-    }
-}
-
-/**
- * checks whether angles a1 and a2 are equal (after normalizing)
- * @param {number} a1
- * @param {number} a2
- * @param {number} [wiggle] return true if the difference between the angles is <= wiggle
- * @return {boolean} a1 === a2
- */
-function equals(a1, a2, wiggle)
-{
-    if (wiggle)
-    {
-        return differenceAngles(a1, a2) < wiggle
-    }
-    else
-    {
-        return normalize(a1) === normalize(a2)
-    }
-}
-
-/**
- * return a text representation of the cardinal direction
- * @param {number} angle
- * @returns {string} UP, DOWN, LEFT, RIGHT, or NOT CARDINAL
- */
-function explain(angle)
-{
-    switch (angle)
-    {
-        case UP: return 'UP'
-        case DOWN: return 'DOWN'
-        case LEFT: return 'LEFT'
-        case RIGHT: return 'RIGHT'
-        default: return 'NOT CARDINAL'
-    }
-}
-
-module.exports = {
-    UP, DOWN, LEFT, RIGHT,
-    NORTH, SOUTH, WEST, EAST,
-    PI_2, PI_QUARTER, PI_HALF,
-
-    toDegrees,
-    toRadians,
-    isAngleBetween,
-    differenceAnglesSign,
-    differenceAngles,
-    shortestAngle,
-    normalize,
-    angleTwoPoints,
-    distanceTwoPoints,
-    distanceTwoPointsSquared,
-    closestAngle,
-    equals,
-    explain
-}
-},{}],409:[function(require,module,exports){
-/**
- * @file color.js
- * @author David Figatner
- * @license MIT
- * @copyright YOPEY YOPEY LLC 2016
- * {@link https://github.com/davidfig/color}
- */
-
-const Random = require('yy-random');
-
-/** @class */
-class Color
-{
-    /**
-     * converts a #FFFFFF to 0x123456
-     * @param  {string} color
-     * @return {string}
-     */
-    poundToHex(color)
-    {
-        return '0x' + parseInt(color.substr(1)).toString(16);
-    }
-
-    /**
-     * converts a 0x123456 to #FFFFFF
-     * @param  {string} color
-     * @return {string}
-     */
-    hexToPound(color)
-    {
-        return '#' + color.substr(2);
-    }
-
-    /**
-     * converts a number to #FFFFFF
-     * @param  {number} color
-     * @return {string}
-     */
-    valueToPound(color)
-    {
-        return '#' + color.toString(16);
-    }
-
-    /**
-     * based on tinycolor
-     * https://github.com/bgrins/TinyColor
-     * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-     * @param {string} color
-     * @returns {object}
-     */
-    hexToHsl (color)
-    {
-        var rgb = this.hexToRgb(color),
-            r = rgb.r,
-            g = rgb.g,
-            b = rgb.b;
-        var max = Math.max(r, g, b),
-            min = Math.min(r, g, b);
-        var h, s, l = (max + min) / 2;
-
-        if (max === min)
-        {
-            h = s = 0; // achromatic
-        }
-        else
-        {
-            var d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-            }
-
-            h /= 6;
-        }
-
-        return { h: h, s: s, l: l };
-    }
-
-    /** based on tinycolor
-    * https://github.com/bgrins/TinyColor
-    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-    * @param {object|number} color {h, s, b} or h
-    * @param {number} [s]
-    * @param {number} [l]
-    * @returns number
-    */
-    hslToHex(color)
-    {
-        var r, g, b, h, s, l;
-        if (arguments.length === 1)
-        {
-            h = color.h,
-            s = color.s,
-            l = color.l;
-        }
-        else
-        {
-            h = arguments[0];
-            s = arguments[1];
-            l = arguments[2];
-        }
-
-        function hue2rgb(p, q, t) {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1/6) return p + (q - p) * 6 * t;
-            if (t < 1/2) return q;
-            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-        }
-
-        if (s === 0)
-        {
-            r = g = b = l; // achromatic
-        }
-        else
-        {
-            var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-            var p = 2 * l - q;
-            r = hue2rgb(p, q, h + 1/3);
-            g = hue2rgb(p, q, h);
-            b = hue2rgb(p, q, h - 1/3);
-        }
-
-        return this.rgbToHex(r * 255, g * 255, b * 255);
-    }
-
-    /* darkens a color by the percentage
-    * @param {object} color in hex (0xabcdef)
-    * @param {number} amount
-    * @return {number}
-    */
-    darken(color, amount)
-    {
-        return this.blend(amount, color, 0);
-    }
-
-    /** based on tinycolor
-    * https://github.com/bgrins/TinyColor
-    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-    * @param {object} color
-    * @param {number} amount
-    */
-    saturate(color, amount)
-    {
-        amount = (amount === 0) ? 0 : (amount || 10);
-        var hsl = this.hexToHsl(color);
-        hsl.s += amount / 100;
-        hsl.s = Math.min(1, Math.max(0, hsl.s));
-        return this.hslToHex(hsl);
-    }
-
-    /** based on tinycolor
-    * https://github.com/bgrins/TinyColor
-    * BSD license: https://github.com/bgrins/TinyColor/blob/master/LICENSE
-    * @param {object} color
-    * @param {number} amount
-    */
-    desaturate(color, amount) {
-        amount = (amount === 0) ? 0 : (amount || 10);
-        var hsl = this.hexToHsl(color);
-        hsl.s -= amount / 100;
-        hsl.s = Math.min(1, Math.max(0, hsl.s));
-        return this.hslToHex(hsl);
-    }
-
-    /**
-     * blends two colors together
-     * @param  {number} percent [0.0 - 1.0]
-     * @param  {string} color1 first color in 0x123456 format
-     * @param  {string} color2 second color in 0x123456 format
-     * @return {number}
-     */
-    blend(percent, color1, color2)
-    {
-        if (percent === 0)
-        {
-            return color1;
-        }
-        if (percent === 1)
-        {
-            return color2;
-        }
-        var r1 = color1 >> 16;
-        var g1 = color1 >> 8 & 0x0000ff;
-        var b1 = color1 & 0x0000ff;
-        var r2 = color2 >> 16;
-        var g2 = color2 >> 8 & 0x0000ff;
-        var b2 = color2 & 0x0000ff;
-        var percent1 = 1 - percent;
-        var r = percent1 * r1 + percent * r2;
-        var g = percent1 * g1 + percent * g2;
-        var b = percent1 * b1 + percent * b2;
-        return r << 16 | g << 8 | b;
-    }
-
-    /**
-     * returns a hex color into an rgb value
-     * @param  {number} hex
-     * @return {string}
-     */
-    hexToRgb(hex)
-    {
-        if (hex === 0)
-        {
-            hex = '0x000000';
-        }
-        else if (typeof hex !== 'string')
-        {
-            var s = '000000' + hex.toString(16);
-            hex = '0x' + s.substr(s.length - 6);
-        }
-        var result = /^0x?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    /**
-     * rgb color to hex in the form of 0x123456
-     * @param  {number|string} r first number or 'rgb(...)' string
-     * @param  {number|null} g
-     * @param  {number|null} b
-     * @return {string}
-     */
-    rgbToHex(r, g, b)
-    {
-        if (arguments.length === 1) {
-            if (Array.isArray(arguments[0])) {
-                var number = arguments[0];
-                r = number[0];
-                g = number[1];
-                b = number[2];
-            } else {
-                var parse = r.replace(/( *rgb *\( *)|( )|(\) *;?)/,'');
-                var numbers = parse.split(',');
-                r = numbers[0];
-                g = numbers[1];
-                b = numbers[2];
-            }
-        }
-        return '0x' + ((1 << 24) + (parseInt(r) << 16) + (parseInt(g) << 8) + parseInt(b)).toString(16).slice(1);
-    }
-
-    /**
-     * returns a random color with balanced r, g, b values (i.e., r, g, b either have the same value or are 0)
-     * @param {number} min value for random number
-     * @param {number} max value for random number
-     * @return {number} color
-     */
-    random(min, max)
-    {
-        function random()
-        {
-            return Random.range(min, max);
-        }
-
-        var colors = [{r:1, g:1, b:1}, {r:1, g:1, b:0}, {r:1,g:0,b:1}, {r:0,g:1,b:1}, {r:1,g:0,b:0}, {r:0,g:1,b:0}, {r:0,g:0,b:1}];
-        var color = Random.pick(colors);
-        min = min || 0;
-        max = max || 255;
-        return this.rgbToHex(color.r ? random() : 0, color.g ? random() : 0, color.b ? random() : 0);
-    }
-
-    // h: 0-360, s: 0-1, l: 0-1
-    /**
-     * returns a random color based on hsl
-     * @param {number} hMin [0, 360]
-     * @param {number} hMax [hMin, 360]
-     * @param {number} sMin [0, 1]
-     * @param {number} sMax [sMin, 1]
-     * @param {number} lMin [0, 1]
-     * @param {number} lMax [lMin, 1]
-     */
-    randomHSL(hMin, hMax, sMin, sMax, lMin, lMax)
-    {
-        var color = {
-            h: Random.range(hMin, hMax),
-            s: Random.range(sMin, sMax, true),
-            l: Random.range(lMin, lMax, true)
-        };
-        return this.hslToHex(color);
-    }
-
-    /**
-     * returns random colors based on HSL with different hues
-     * based on http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
-     * @returns {number[]} colors in hex format (0x123456)
-     */
-    randomGoldenRatioHSL(count, saturation, luminosity)
-    {
-        const goldenRatio = 0.618033988749895;
-        let h = Random.get(1, true);
-        const colors = [];
-        for (let i = 0; i < count; i++)
-        {
-            colors.push(this.hslToHex(h, saturation, luminosity));
-            h = (h + goldenRatio) % 1;
-        }
-        return colors;
-    }
-};
-
-module.exports = new Color();
-},{"yy-random":415}],410:[function(require,module,exports){
-// yy-counter
-// In-browser counter to watch changeable values like counters or FPS
-// David Figatner
-// (c) YOPEY YOPEY LLC 2017
-// MIT License
-// https://github.com/davidfig/counter
-
-module.exports = class Counter
-{
-    /**
-     * @param {object} [options]
-     * @param {string} [options.side=rightbottom] side to place the panel (combination of right/left and bottom/top)
-     * @param {number} [options.padding=7px]
-     * @param {string} [options.color=white]
-     * @param {string} [options.background=rgba(0,0,0,0.5)]
-     * @param {*} {options.xxx} where xxx is a CSS style for the div
-     */
-    constructor(options)
-    {
-        options = options || {}
-        options.side = options.side || 'rightbottom'
-        options.side.toLowerCase()
-        options.padding = options.padding || '7px'
-        options.color = options.color || 'white'
-        options.background = options.background || 'rgba(0,0,0,0.5)'
-        this.div = document.createElement('div')
-        Counter.findParent(options.side).appendChild(this.div)
-        for (let style in options)
-        {
-            if (style !== 'parent' && style !== 'side')
-            {
-                this.div.style[style] = options[style]
-            }
-        }
-    }
-
-    /**
-     * find the parent div for one of the corners
-     * @param {string} [options.side] side to place the panel (combination of right/left and bottom/top)
-     * @return {HTMLElement}
-     */
-    static findParent(side)
-    {
-        const styles = []
-        let name = 'yy-counter-'
-        if (side.indexOf('left') !== -1)
-        {
-            name += 'left-'
-            styles['left'] = 0
-        }
-        else
-        {
-            name += 'right-'
-            styles['right'] = 0
-        }
-        if (side.indexOf('top') !== -1)
-        {
-            name += 'top'
-            styles['top'] = 0
-        }
-        else
-        {
-            name += 'bottom'
-            styles['bottom'] = 0
-        }
-        const test = document.getElementById(name)
-        if (test)
-        {
-            return test
-        }
-        const container = document.createElement('div')
-        container.id = name
-        container.style.overflow = 'hidden'
-        container.style.position = 'fixed'
-        container.style.zIndex = 10000
-        container.style.pointerEvents = 'none'
-        container.style.userSelect = 'none'
-        for (let style in styles)
-        {
-            container.style[style] = styles[style]
-        }
-        document.body.appendChild(container)
-        return container
-    }
-
-    /**
-     * replaces the innerHTML of the console
-     * @param {string|number} text1
-     * @param {string|number} [text2]
-     * @param {string|number} [...textn] any number of arguments
-     */
-    log()
-    {
-        let s = ''
-        for (let arg of arguments)
-        {
-            s += '<div>' + arg + '</div>'
-        }
-        this.div.innerHTML =  s
-    }
-
-    /**
-     * appends to the innerHTML of the console
-     * @param {string|number} text1
-     * @param {string|number} [text2]
-     * @param {string|number} [...textn] any number of arguments
-     */
-    append()
-    {
-        let s = this.div.innerHTML
-        for (let arg of arguments)
-        {
-            s += '<div>' + arg + '</div>'
-        }
-        this.div.innerHTML = s
-    }
-}
-},{}],411:[function(require,module,exports){
-const Color = require('tinycolor2')
-const Counter = require('yy-counter')
-
-const STYLES = {
-    'background': 'rgba(0, 0, 0, 0.5)',
-    'color': 'white',
-}
-
-const STYLES_FPS = {
-    'padding': '0.1em 0.5em'
-}
-
-const STYLES_METER = {
-}
-
-module.exports = class FPS
-{
-    /**
-     * @param {object} [options]
-     * @param {boolean} [options.meter=true] include a meter with the FPS
-     * @param {string} [options.side=bottom-right] include any combination of left/right and top/bottom
-     * @param {number} [options.FPS=60] desired FPS
-     * @param {number} [options.tolerance=1] minimum tolerance for fluctuations in FPS number
-     * @param {number} [options.meterWidth=100] width of meter div
-     * @param {number} [options.meterHeight=25] height of meter div
-     * @param {number} [options.meterLineHeight=4] height of meter line
-     * @param {styles[]} [options.styles] CSS styles to apply to the div (in javascript format)
-     * @param {styles[]} [options.stylesFPS] CSS styles to apply to the FPS text (in javascript format)
-     * @param {styles[]} [options.stylesMeter] CSS styles to apply to the FPS meter (in javascript format)
-     * @param {string} [options.text=" FPS"] change the text to the right of the FPS
-     */
-    constructor(options)
-    {
-        this.options = options || {}
-        this.tolerance = this.options.tolerance || 1
-        this.FPS = this.options.FPS || 60
-        this.meterWidth = this.options.meterWidth || 100
-        this.meterHeight = this.options.meterHeight || 25
-        this.meterLineHeight = this.options.meterLineHeight || 4
-        this.div = document.createElement('div')
-        Counter.findParent(this.options.side || 'bottom-right').appendChild(this.div)
-        this.style(this.div, STYLES, this.options.styles)
-        this.divFPS()
-        this.meter = typeof this.options.meter === 'undefined' || this.options.meter
-        this.lastTime = 0
-        this.frameNumber = 0
-        this.lastUpdate = 0
-        this.lastFPS = '--'
-    }
-
-    /**
-     * change desired FPS
-     * @type {number}
-     */
-    get fps()
-    {
-        return this.FPS
-    }
-    set fps(value)
-    {
-        this.FPS = value
-    }
-
-    /**
-     * remove meter from DOM
-     */
-    remove()
-    {
-        this.div.remove()
-    }
-
-    /**
-     * @type {boolean} meter (the FPS graph) is on or off
-     */
-    get meter()
-    {
-        return this._meter
-    }
-    set meter(value)
-    {
-        if (value)
-        {
-            this.divMeter()
-        }
-        else if (this.meterCanvas)
-        {
-            this.meterCanvas.style.display = 'none'
-        }
-    }
-
-    style(div, style1, style2)
-    {
-        for (let style in style1)
-        {
-            div.style[style] = style1[style]
-        }
-        if (style2)
-        {
-            for (let style in style2)
-            {
-                div.style[style] = style2[style]
-            }
-        }
-    }
-
-    /**
-     * create div for text FPS
-     * @private
-     * @param {HTMLElement} div
-     * @param {object} options (see contructor)
-     */
-    divFPS()
-    {
-        const div = this.div
-        const options = this.options
-        const divFPS = document.createElement('div')
-        div.appendChild(divFPS)
-        this.fpsSpan = document.createElement('span')
-        divFPS.appendChild(this.fpsSpan)
-        const span = document.createElement('span')
-        divFPS.appendChild(span)
-        span.innerText = typeof options.text !== 'undefined' ? options.text : ' FPS'
-        this.style(div, STYLES_FPS, options.stylesFPS)
-    }
-
-    /**
-     * create div for FPS meter
-     * @private
-     * @param {HTMLElement} div
-     * @param {object} options (see contructor)
-     */
-    divMeter()
-    {
-        const div = this.div
-        const options = this.options
-        if (!this.meterCanvas)
-        {
-            this.meterCanvas = document.createElement('canvas')
-            div.appendChild(this.meterCanvas)
-            this.meterCanvas.width = this.meterWidth
-            this.meterCanvas.height = this.meterHeight
-            this.meterCanvas.style.width = div.width + 'px'
-            this.meterCanvas.style.height = div.height + 'px'
-            this.style(this.meterCanvas, STYLES_METER, options.stylesMeter)
-        }
-        else
-        {
-            this.meterCanvas.style.display = 'block'
-        }
-    }
-
-    /**
-     * call this at the start of the frame to calculate FPS
-     */
-    frame()
-    {
-        this.frameNumber++
-        const currentTime = performance.now() - this.lastTime
-
-        // skip large differences to remove garbage
-        if (currentTime > 500)
-        {
-            if (this.lastTime !== 0)
-            {
-                this.lastFPS = Math.floor(this.frameNumber / (currentTime / 1000))
-                if (this.lastFPS >= this.FPS - this.tolerance && this.lastFPS <= this.FPS + this.tolerance)
-                {
-                    this.lastFPS = this.FPS
-                }
-            }
-            this.lastTime = performance.now()
-            this.frameNumber = 0
-        }
-        this.fpsSpan.innerText = this.lastFPS
-        if (this.meterCanvas && this.lastFPS !== '--')
-        {
-            this.meterUpdate(this.lastFPS / this.FPS)
-        }
-    }
-
-    meterUpdate(percent)
-    {
-        const c = this.meterCanvas.getContext('2d')
-        const data = c.getImageData(0, 0, this.meterCanvas.width, this.meterCanvas.height)
-        c.putImageData(data, -1, 0)
-        c.clearRect(this.meterCanvas.width - 1, 0, 1, this.meterCanvas.height)
-        if (percent < 0.5)
-        {
-            c.fillStyle = Color.mix('#ff0000', '0xffa500', percent * 200).toHexString()
-        }
-        else
-        {
-            c.fillStyle = Color.mix('#ffa500', '#00ff00', (percent - 0.5) * 200).toHexString()
-        }
-        const height = (this.meterCanvas.height - this.meterLineHeight) * (1 - percent)
-        c.fillRect(this.meterCanvas.width - 1, height, 1, this.meterLineHeight)
-    }
-
-    side(options)
-    {
-        if (options.side)
-        {
-            options.side = options.side.toLowerCase()
-            if (options.side.indexOf('left') !== -1)
-            {
-                STYLES['left'] = 0
-                delete STYLES['right']
-            }
-            else
-            {
-                STYLES['right'] = 0
-                delete STYLES['left']
-            }
-            if (options.side.indexOf('top') !== -1)
-            {
-                STYLES['top'] = 0
-                delete STYLES['bottom']
-            }
-            else
-            {
-                STYLES['bottom'] = 0
-                delete STYLES['top']
-            }
-        }
-        else
-        {
-            STYLES['right'] = 0
-            STYLES['bottom'] = 0
-        }
-    }
-}
-},{"tinycolor2":405,"yy-counter":410}],412:[function(require,module,exports){
-const Loop = require('./src/loop')
-Loop.entry = require('./src/entry')
-
-module.exports = Loop
-},{"./src/entry":413,"./src/loop":414}],413:[function(require,module,exports){
-const Events = require('eventemitter3')
-
-/** Entry class for Loop */
-class Entry extends Events
-{
-    /**
-     * create an entry in the update loop
-     * used by Loop
-     * @param {function} callback
-     * @param {number} [time=0] in milliseconds to call this update
-     * @param {number} [count] number of times to run this update (undefined=infinite)
-     */
-    constructor(callback, time, count)
-    {
-        super()
-        this.callback = callback
-        this.time = time
-        this.current = 0
-        this.count = count
-    }
-
-    /**
-     * run the callback if available
-     * @private
-     * @param {number} elapsed
-     */
-    _update(elapsed)
-    {
-        let result
-        if (this.callback)
-        {
-            result = this.callback(elapsed, this)
-        }
-        this.emit('each', elapsed, this)
-        if (result || (!isNaN(this.count) && !--this.count))
-        {
-            this.emit('done', this)
-            return true
-        }
-    }
-
-    /**
-     * update checks time and runs the callback
-     * @param {number} elapsed
-     * @return {boolean} whether entry is complete and may be removed from list
-     */
-    update(elapsed)
-    {
-        if (!this._pause)
-        {
-            if (this.time)
-            {
-                this.current += elapsed
-                if (this.current >= this.time)
-                {
-                    this.current -= this.time
-                    return this._update(elapsed)
-                }
-            }
-            else
-            {
-                return this._update(elapsed)
-            }
-        }
-    }
-
-    /**
-     * @type {boolean} pause this entry
-     */
-    set pause(value)
-    {
-        this._pause = value
-    }
-    get pause()
-    {
-        return this._pause
-    }
-}
-
-module.exports = Entry
-},{"eventemitter3":20}],414:[function(require,module,exports){
-/* Copyright (c) 2017 YOPEY YOPEY LLC */
-
-const Events = require('eventemitter3')
-
-class Loop extends Events
-{
-    /**
-     * basic loop support
-     * @param {object} [options]
-     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
-     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
-     *
-     * @event each(elapsed, Loop)
-     * @event start(Loop)
-     * @event stop(Loop)
-     */
-    constructor(options)
-    {
-        super()
-        options = options || {}
-        this.maxFrameTime = options.maxFrameTime || 1000 / 60
-        if (options.pauseOnBlur)
-        {
-            window.addEventListener('blur', () => this.stopBlur())
-            window.addEventListener('focus', () => this.startBlur())
-        }
-        this.list = []
-    }
-
-    /**
-     * start requestAnimationFrame() loop
-     * @return {Loop} this
-     */
-    start()
-    {
-        if (!this.running)
-        {
-            this.running = true
-            this.loop(0)
-            this.emit('start', this)
-        }
-        return this
-    }
-
-    /**
-     * handler for focus event
-     * @private
-     */
-    startBlur()
-    {
-        if (this.blurred)
-        {
-            this.start()
-            this.blurred = false
-        }
-    }
-
-    /**
-     * handler for blur event
-     * @private
-     */
-    stopBlur()
-    {
-        if (this.running)
-        {
-            this.stop()
-            this.blurred = true
-        }
-    }
-
-    /**
-     * stop loop
-     * @return {Loop} this
-     */
-    stop()
-    {
-        if (this.handle)
-        {
-            window.cancelAnimationFrame(this.handle)
-            this.handle = null
-        }
-        this.running = false
-        this.blurred = false
-        this.emit('stop', this)
-        return this
-    }
-
-    /**
-     * loop through updates; can be called manually each frame, or called automatically as part of start()
-     * @param {number} elapsed time since last call (will be clamped to this.maxFrameTime)
-     */
-    update(elapsed)
-    {
-        const maxFrameTime = this.maxFrameTime
-        elapsed = elapsed > maxFrameTime ? maxFrameTime : elapsed
-        for (let i = 0, _i = this.list.length; i < _i; i++)
-        {
-            if (this.list[i].update(elapsed))
-            {
-                this.list.splice(i, 1)
-                i--
-                _i--
-            }
-        }
-        this.emit('each', elapsed, this)
-    }
-
-    /**
-     * internal loop through animations
-     * @private
-     */
-    loop(elapsed)
-    {
-        if (this.running)
-        {
-            this.update(elapsed)
-            this.handle = requestAnimationFrame((elapsed) => this.loop(elapsed))
-        }
-    }
-
-    /**
-     * adds a callback to the loop
-     * @deprecated use add() instead
-     * @param {function} callback
-     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
-     * @param {number} [count=0] number of times to run this update (0=infinite)
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    interval(callback, time, count)
-    {
-        console.warn('yy-loop: interval() deprecated. Use add() instead.')
-        this.add(callback, time, count)
-    }
-
-    /**
-     * adds a callback to the loop
-     * @param {function} callback
-     * @param {number} [time=0] in milliseconds to call this update (0=every frame)
-     * @param {number} [count=0] number of times to run this update (0=infinite)
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    add(callback, time, count)
-    {
-        const entry = new Entry(callback, time, count)
-        this.list.push(entry)
-        return entry
-    }
-
-    /**
-     * adds a one-time callback to the loop
-     * @param {function} callback
-     * @param {number} time in milliseconds to call this update
-     * @return {object} entry - used to remove or change the parameters of the update
-     */
-    timeout(callback, time)
-    {
-        return this.add(callback, time, 1)
-    }
-
-    /**
-     * remove a callback from the loop
-     * @param {object} entry - returned by add()
-     */
-    remove(entry)
-    {
-        const index = this.list.indexOf(entry)
-        if (index !== -1)
-        {
-            this.list.splice(index, 1)
-        }
-    }
-
-    /**
-     * removes all callbacks from the loop
-     */
-    removeAll()
-    {
-        this.list = []
-    }
-
-    /**
-     * @type {number} count of all animations
-     */
-    get count()
-    {
-        return this.list.length
-    }
-
-    /**
-     * @type {number} count of running animations
-     */
-    get countRunning()
-    {
-        let count = 0
-        for (let entry of this.list)
-        {
-            if (!entry.pause)
-            {
-                count++
-            }
-        }
-        return count
-    }
-}
-
-const Entry = require('./entry')
-
-Loop.entry = Entry
-module.exports = Loop
-},{"./entry":413,"eventemitter3":20}],415:[function(require,module,exports){
-// yy-random
-// by David Figatner
-// MIT license
-// copyright YOPEY YOPEY LLC 2016-17
-// https://github.com/davidfig/random
-
-const seedrandom = require('seedrandom')
-
-class Random
-{
-    constructor()
-    {
-        this.generator = Math.random
-    }
-
-    /**
-     * generates a seeded number
-     * @param {number} seed
-     * @param {object} [options]
-     * @param {string} [PRNG="alea"] - name of algorithm, see https://github.com/davidbau/seedrandom
-     * @param {boolean} [save=true]
-     */
-    seed(seed, options)
-    {
-        options = options || {}
-        this.generator = seedrandom[options.PRNG || 'alea'](seed, { state: options.state })
-        this.options = options
-    }
-
-    /**
-     * saves the state of the random generator
-     * can only be used after Random.seed() is called
-     * @returns {number} state
-     */
-    save()
-    {
-        if (this.generator !== Math.random)
-        {
-            return this.generator.state()
-        }
-    }
-
-    /**
-     * restores the state of the random generator
-     * @param {number} state
-     */
-    restore(state)
-    {
-        this.generator = seedrandom[this.options.PRNG || 'alea']('', { state })
-    }
-
-    /**
-     * changes the generator to use the old Math.sin-based random function
-     * based on : http://stackoverflow.com/questions/521295/javascript-random-seeds
-     * (deprecated) Use only for compatibility purposes
-     * @param {number} seed
-     */
-    seedOld(seed)
-    {
-        this.generator = function()
-        {
-            const x = Math.sin(seed++) * 10000
-            return x - Math.floor(x)
-        }
-    }
-
-    /**
-     * create a separate random generator using the seed
-     * @param {number} seed
-     * @return {object}
-     */
-    separateSeed(seed)
-    {
-        const random = new Random()
-        random.seed(seed)
-        return random
-    }
-
-    /**
-     * resets the random number this.generator to Math.random()
-     */
-    reset()
-    {
-        this.generator = Math.random
-    }
-
-    /**
-     * returns a random number using the this.generator between [0, ceiling - 1]
-     * @param {number} ceiling
-     * @param {boolean} [useFloat=false]
-     * @return {number}
-     */
-    get(ceiling, useFloat)
-    {
-        const negative = ceiling < 0 ? -1 : 1
-        ceiling *= negative
-        let result
-        if (useFloat)
-        {
-            result = this.generator() * ceiling
-        }
-        else
-        {
-            result = Math.floor(this.generator() * ceiling)
-        }
-        return result * negative
-    }
-
-    /**
-     * returns a random integer between 0 - Number.MAX_SAFE_INTEGER
-     * @return {number}
-     */
-    getHuge()
-    {
-        return this.get(Number.MAX_SAFE_INTEGER)
-    }
-
-    /**
-     * random number [middle - range, middle + range]
-     * @param {number} middle
-     * @param {number} delta
-     * @param {boolean} [useFloat=false]
-     * @return {number}
-     */
-    middle(middle, delta, useFloat)
-    {
-        const half = delta / 2
-        return this.range(middle - half, middle + half, useFloat)
-    }
-
-    /**
-     * random number [start, end]
-     * @param {number} start
-     * @param {number} end
-     * @param {boolean} [useFloat=false] if true, then range is (start, end)--i.e., not inclusive to start and end
-     * @return {number}
-     */
-    range(start, end, useFloat)
-    {
-        // case where there is no range
-        if (end === start)
-        {
-            return end
-        }
-
-        if (useFloat)
-        {
-            return this.get(end - start, true) + start
-        }
-        else
-        {
-            let range
-            if (start < 0 && end > 0)
-            {
-                range = -start + end + 1
-            }
-            else if (start === 0 && end > 0)
-            {
-                range = end + 1
-            }
-            else if (start < 0 && end === 0)
-            {
-                range = start - 1
-                start = 1
-            }
-            else if (start < 0 && end < 0)
-            {
-                range = end - start - 1
-            }
-            else
-            {
-                range = end - start + 1
-            }
-            return Math.floor(this.generator() * range) + start
-        }
-    }
-
-    /**
-     * an array of random numbers between [start, end]
-     * @param {number} start
-     * @param {number} end
-     * @param {number} count
-     * @param {boolean} [useFloat=false]
-     * @return {number[]}
-     */
-    rangeMultiple(start, end, count, useFloat)
-    {
-        var array = []
-        for (let i = 0; i < count; i++)
-        {
-            array.push(this.range(start, end, useFloat))
-        }
-        return array
-    }
-
-    /**
-     * an array of random numbers between [middle - range, middle + range]
-     * @param {number} middle
-     * @param {number} range
-     * @param {number} count
-     * @param {boolean} [useFloat=false]
-     * @return {number[]}
-     */
-    middleMultiple(middle, range, count, useFloat)
-    {
-        const array = []
-        for (let i = 0; i < count; i++)
-        {
-            array.push(middle(middle, range, useFloat))
-        }
-        return array
-    }
-
-    /**
-     * @param {number} [chance=0.5]
-     * returns random sign (either +1 or -1)
-     * @return {number}
-     */
-    sign(chance)
-    {
-        chance = chance || 0.5
-        return this.generator() < chance ? 1 : -1
-    }
-
-    /**
-     * tells you whether a random chance was achieved
-     * @param {number} [percent=0.5]
-     * @return {boolean}
-     */
-    chance(percent)
-    {
-        return this.generator() < (percent || 0.5)
-    }
-
-    /**
-     * returns a random angle in radians [0 - 2 * Math.PI)
-     */
-    angle()
-    {
-        return this.get(Math.PI * 2, true)
-    }
-
-    /**
-     * Shuffle array (either in place or copied)
-     * from http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-     * @param {Array} array
-     * @param {boolean} [copy=false] whether to shuffle in place (default) or return a new shuffled array
-     * @return {Array} a shuffled array
-     */
-    shuffle(array, copy)
-    {
-        if (copy)
-        {
-            array = array.slice()
-        }
-        if (array.length === 0)
-        {
-            return array
-        }
-
-        let currentIndex = array.length, temporaryValue, randomIndex
-
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex)
-        {
-            // Pick a remaining element...
-            randomIndex = this.get(currentIndex)
-            currentIndex -= 1
-
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex]
-            array[currentIndex] = array[randomIndex]
-            array[randomIndex] = temporaryValue
-        }
-        return array
-    }
-
-    /**
-     * picks a random element from an array
-     * @param {Array} array
-     * @return {*}
-     */
-    pick(array, remove)
-    {
-        if (!remove)
-        {
-            return array[this.get(array.length)]
-        }
-        else
-        {
-            const pick = this.get(array.length)
-            const temp = array[pick]
-            array.splice(pick, 1)
-            return temp
-        }
-    }
-
-    /**
-     * returns a random property from an object
-     * from http://stackoverflow.com/questions/2532218/pick-random-property-from-a-javascript-object
-     * @param {object} obj
-     * @return {*}
-     */
-    property(obj)
-    {
-        var result
-        var count = 0
-        for (var prop in obj)
-        {
-            if (this.chance(1 / ++count))
-            {
-                result = prop
-            }
-        }
-        return result
-    }
-
-    /**
-     * creates a random set where each entry is a value between [min, max]
-     * @param {number} min
-     * @param {number} max
-     * @param {number} amount of numbers in set
-     * @param {number[]}
-     */
-    set(min, max, amount)
-    {
-        var set = [], all = [], i
-        for (i = min; i < max; i++)
-        {
-            all.push(i)
-        }
-
-        for (i = 0; i < amount; i++)
-        {
-            var found = this.get(all.length)
-            set.push(all[found])
-            all.splice(found, 1)
-        }
-        return set
-    }
-
-
-    /**
-     * returns a set of numbers with a randomly even distribution (i.e., no overlapping and filling the space)
-     * @param {number} start position
-     * @param {number} end position
-     * @param {number} count of non-start/end points
-     * @param {boolean} [includeStart=false] includes start point (count++)
-     * @param {boolean} [includeEnd=false] includes end point (count++)
-     * @param {boolean} [useFloat=false]
-     * @param {number[]}
-     */
-    distribution(start, end, count, includeStart, includeEnd, useFloat)
-    {
-        var interval = Math.floor((end - start) / count)
-        var halfInterval = interval / 2
-        var quarterInterval = interval / 4
-        var set = []
-        if (includeStart)
-        {
-            set.push(start)
-        }
-        for (var i = 0; i < count; i++)
-        {
-            set.push(start + i * interval + halfInterval + this.range(-quarterInterval, quarterInterval, useFloat))
-        }
-        if (includeEnd)
-        {
-            set.push(end)
-        }
-        return set
-    }
-
-    /**
-     * returns a random number based on weighted probability between [min, max]
-     * from http://stackoverflow.com/questions/22656126/javascript-random-number-with-weighted-probability
-     * @param {number} min value
-     * @param {number} max value
-     * @param {number} target for average value
-     * @param {number} stddev - standard deviation
-     */
-    weightedProbabilityInt(min, max, target, stddev)
-    {
-        function normRand()
-        {
-            let x1, x2, rad
-            do
-            {
-                x1 = 2 * this.get(1, true) - 1
-                x2 = 2 * this.get(1, true) - 1
-                rad = x1 * x1 + x2 * x2
-            } while (rad >= 1 || rad === 0)
-            const c = Math.sqrt(-2 * Math.log(rad) / rad)
-            return x1 * c
-        }
-
-        stddev = stddev || 1
-        if (Math.random() < 0.81546)
-        {
-            while (true)
-            {
-                const sample = ((normRand() * stddev) + target)
-                if (sample >= min && sample <= max)
-                {
-                    return sample
-                }
-            }
-        }
-        else
-        {
-            return this.range(min, max)
-        }
-    }
-
-    /*
-     * returns a random hex color (0 - 0xffffff)
-     * @return {number}
-     */
-    color()
-    {
-        return this.get(0xffffff)
-    }
-}
-
-module.exports = new Random()
-},{"seedrandom":397}],416:[function(require,module,exports){
-// yy-renderer
-// by David Figatner
-// (c) YOPEY YOPEY LLC 2017
-// MIT License
-// https://github.com/davidfig/update
-
-const PIXI = require('pixi.js')
-const FPS = require('yy-fps')
-const Loop = require('yy-loop')
-const exists = require('exists')
-
-class Renderer
-{
-    /**
-     * Wrapper for a pixi.js Renderer
-     * @param {object} [options]
-     * @param {boolean} [options.alwaysRender=false] update renderer every update tick
-     * @param {number} [options.FPS=60] desired FPS for rendering (otherwise render on every tick)
-     *
-     * @param {HTMLCanvasElement} [options.canvas] place renderer in this canvas
-     * @param {HTMLElement} [options.parent=document.body] if no canvas is provided, use parent to provide parent for generated canvas otherwise uses document.body
-     * @param {object} [options.styles] apply these CSS styles to the div
-     *
-     * @param {number} [options.aspectRatio] resizing will maintain aspect ratio by ensuring that the smaller dimension fits
-     * @param {boolean} [options.autoresize=false] automatically calls resize during resize events
-     * @param {number} [options.color=0xffffff] background color in hex
-     *
-     * @param {boolean} [options.turnOffTicker] turn off PIXI.shared.ticker
-     * @param {boolean} [options.turnOffInteraction] turn off PIXI.Interaction manager (saves cycles)
-     *
-     * @param {boolean} [options.noWebGL=false] use the PIXI.CanvasRenderer instead of PIXI.WebGLRenderer
-     * @param {boolean} [options.antialias=true] turn on antialias if native antialias is not used, uses FXAA
-     * @param {boolean} [options.forceFXAA=false] forces FXAA antialiasing to be used over native. FXAA is faster, but may not always look as great
-     * @param {number} [options.resolution=window.devicePixelRatio] / device pixel ratio of the renderer (e.g., original retina is 2)
-     * @param {boolean} [options.clearBeforeRender=true] sets if the CanvasRenderer will clear the canvas or before the render pass. If you wish to set this to false, you *must* set preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.roundPixels=false] if true PIXI will Math.floor() x/y values when rendering, stopping pixel interpolation
-     *
-     * @param {boolean|string} [options.debug] false, true, or some combination of 'fps', 'dirty', and 'count' (e.g., 'count-dirty' or 'dirty')
-     * @param {object} [options.fpsOptions] options from yy-fps (https://github.com/davidfig/fps)
-     *
-     * @param {number} [options.maxFrameTime=1000/60] maximum time in milliseconds for a frame
-     * @param {object} [options.pauseOnBlur] pause loop when app loses focus, start it when app regains focus
-     *
-     * @event each(elapsed, Loop, elapsedInLoop)
-     * @event start(Loop)
-     * @event stop(Loop)
-     */
-    constructor(options)
-    {
-        options = options || {}
-        this.options = options
-        this.loop = new Loop({ pauseOnBlur: options.pauseOnBlur, maxFrameTime: options.maxFrameTime })
-        this.canvas = options.canvas
-        this.autoResize = options.autoresize
-        this.aspectRatio = options.aspectRatio
-        this.FPS = exists(options.FPS) ? 1000 / options.FPS : 0
-        options.resolution = this.resolution = options.resolution || window.devicePixelRatio || 1
-        options.antialias = exists(options.antialias) ? options.antialias : true
-        options.transparent = true
-        if (!this.canvas) this.createCanvas(options)
-        options.view = this.canvas
-
-        if (options.turnoffTicker)
-        {
-            const ticker = PIXI.ticker.shared
-            ticker.autoStart = false
-            ticker.stop()
-        }
-
-        const noWebGL = options.noWebGL || false
-        options.noWebGL = null
-        options.autoresize = null
-        const Renderer = noWebGL ? PIXI.CanvasRenderer : PIXI.WebGLRenderer
-
-        this.renderer = new Renderer(options)
-        if (options.turnOffInteraction)
-        {
-            this.renderer.plugins.interaction.destroy()
-        }
-        if (options.color)
-        {
-            this.canvas.style.backgroundColor = options.color
-        }
-        if (options.styles)
-        {
-            for (let style in options.styles)
-            {
-                this.canvas.style[style] = options.styles[style]
-            }
-        }
-
-        if (options.debug) this.createDebug(options)
-        if (this.autoResize) window.addEventListener('resize', () => this.resize())
-        this.time = 0
-        this.stage = new PIXI.Container()
-        this.dirty = this.alwaysRender = options.alwaysRender || false
-        this.resize(true)
-    }
-
-    /**
-     * create canvas if one is not provided
-     * @private
-     */
-    createCanvas(options)
-    {
-        this.canvas = document.createElement('canvas')
-        this.canvas.style.width = '100vw'
-        this.canvas.style.height = '100vh'
-        if (options.parent)
-        {
-            options.parent.appendChild(this.canvas)
-            options.parent = null
-        }
-        else
-        {
-            document.body.appendChild(this.canvas)
-        }
-        var width = this.canvas.offsetWidth
-        var height = this.canvas.offsetHeight
-        this.canvas.style.position = 'absolute'
-        this.canvas.width = width * this.resolution
-        this.canvas.height = height * this.resolution
-        this.canvas.style.left = this.canvas.style.top = '0px'
-        this.canvas.style.overflow = 'auto'
-    }
-
-    /**
-     * create FPS meter and render indicator
-     * @param {object} options
-     */
-    createDebug(options)
-    {
-        this.debug = options.debug
-        const fpsOptions = options.fpsOptions || {}
-        fpsOptions.FPS = options.FPS
-        this.fpsMeter = new FPS(fpsOptions)
-        const indicator = document.createElement('div')
-        indicator.style.display = 'flex'
-        indicator.style.justifyContent = 'space-between'
-        this.fpsMeter.div.prepend(indicator)
-        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('dirty') !== -1)
-        {
-            this.dirtyIndicator = document.createElement('div')
-            indicator.appendChild(this.dirtyIndicator)
-            this.dirtyIndicator.innerHTML = '&#9624; '
-        }
-        if (options.debug === true || options.debug === 1 || options.debug.toLowerCase().indexOf('count') !== -1)
-        {
-            this.countIndicator = document.createElement('div')
-            indicator.appendChild(this.countIndicator)
-        }
-    }
-
-    debugUpdate()
-    {
-        this.dirtyIndicator.color = this.dirty
-    }
-
-    /**
-     * immediately render without checking dirty flag
-     */
-    render()
-    {
-        this.renderer.render(this.stage)
-        this.dirty = this.alwaysRender
-    }
-
-    /**
-     * @private
-     */
-    update()
-    {
-        if (this.fpsMeter)
-        {
-            this.fpsMeter.frame()
-            if (this.dirtyIndicator && this.lastDirty !== this.dirty)
-            {
-                this.dirtyIndicator.style.color = this.dirty ? 'white' : 'black'
-                this.lastDirty = this.dirty
-            }
-            if (this.countIndicator)
-            {
-                const count = this.countObjects()
-                if (this.lastCount !== count)
-                {
-                    this.countIndicator.innerText = count
-                    this.lastCount = count
-                }
-            }
-        }
-        if (this.dirty)
-        {
-            this.render()
-            this.dirty = this.alwaysRender
-        }
-    }
-
-    /**
-     * counts visible objects
-     */
-    countObjects()
-    {
-        function count(object)
-        {
-            if (!object.visible)
-            {
-                return
-            }
-            total++
-            for (let i = 0, _i = object.children.length; i < _i; i++)
-            {
-                count(object.children[i])
-            }
-        }
-
-        var total = 0
-        count(this.stage)
-        return total
-    }
-
-    /**
-     * sets the background color
-     * @param {string} color in CSS format
-     */
-    background(color)
-    {
-        this.canvas.style.backgroundColor = color
-    }
-
-    /**
-     * adds object to stage
-     * @param {PIXI.DisplayObject} object
-     * @param {number} [to] index to add
-     */
-    add(object, to)
-    {
-        if (typeof to === 'undefined')
-        {
-            to = this.stage.children.length
-        }
-        this.stage.addChildAt(object, to)
-        return object
-    }
-
-    /**
-     * alias for add
-     * @param {PIXI.DisplayObject} object
-     */
-    addChild(object)
-    {
-        return this.add(object)
-    }
-
-    /**
-     * alias for add
-     * @param {PIXI.DisplayObject} object
-     * @param {number} to - index to add
-     */
-    addChildTo(object, to)
-    {
-        return this.add(object, to)
-    }
-
-    /**
-     * remove child from stage
-     * @param {PIXI.DisplayObject} object
-     */
-    removeChild(object)
-    {
-        this.stage.removeChild(object)
-    }
-
-    /**
-     * clears the stage
-     */
-    clear()
-    {
-        this.stage.removeChildren()
-    }
-
-    /**
-     * resize
-     * @param {boolean} [force] resize, even if cached width/height remain unchanged
-     */
-    resize(force)
-    {
-        var width = this.canvas.offsetWidth
-        var height = this.canvas.offsetHeight
-        if (this.aspectRatio)
-        {
-            if (width > height)
-            {
-                width = height * this.aspectRatio
-            }
-            else
-            {
-                height = width / this.aspectRatio
-            }
-        }
-        if (force || width !== this.width || height !== this.height)
-        {
-            this.width = width
-            this.height = height
-            this.canvas.width = width * this.resolution
-            this.canvas.height = height * this.resolution
-            this.renderer.resize(this.width, this.height)
-            this.landscape = this.width > this.height
-            this.dirty = true
-        }
-    }
-
-    /**
-     * returns the smaller of the width/height based
-     * @return {number}
-     */
-    dimensionSmall()
-    {
-        return (this.landscape ? this.height : this.width)
-    }
-
-    /**
-     * returns the larger of the width/height based
-     * @return {number}
-     */
-    dimensionBig()
-    {
-        return (this.landscape ? this.width : this.height)
-    }
-
-    /**
-     * getter/setter to change desired FPS of renderer
-     */
-    get fps()
-    {
-        return this.FPS
-    }
-    set fps(value)
-    {
-        this.FPS = 1000 / value
-        if (this.loop)
-        {
-            this.loop.remove(this.loopSave)
-            this.loopSave = this.loop.add(() => this.update(), this.FPS)
-        }
-        if (this.fpsMeter)
-        {
-            this.fpsMeter.fps = value
-        }
-    }
-
-    /**
-     * Add a listener for a given event to yy-loop
-     * @param {(String|Symbol)} event The event name.
-     * @param {Function} fn The listener function.
-     * @param {*} [context=this] The context to invoke the listener with.
-     * @returns {EventEmitter} `this`.
-     */
-    on()
-    {
-        this.loop.on(...arguments)
-    }
-
-    /**
-     * Add a one-time listener for a given event to yy-loop
-     * @param {(String|Symbol)} event The event name.
-     * @param {Function} fn The listener function.
-     * @param {*} [context=this] The context to invoke the listener with.
-     * @returns {EventEmitter} `this`.
-     * @public
-     */
-    once()
-    {
-        this.loop.once(...arguments)
-    }
-
-    /**
-     * start the internal loop
-     * @returns {Renderer} this
-     */
-    start()
-    {
-        this.loopSave = this.loop.add(() => this.update(), this.FPS)
-        this.loop.start()
-        return this
-    }
-
-    /**
-     * stop the internal loop
-     * @inherited from yy-loop
-     * @returns {Renderer} this
-     */
-    stop()
-    {
-        this.loop.stop()
-    }
-}
-
-module.exports = Renderer
-},{"exists":21,"pixi.js":349,"yy-fps":411,"yy-loop":412}],417:[function(require,module,exports){
-'use strict'
-
-var boxPoint = require('./box-point')
-
-/**
- * point-box collision
- * @param {number} x1 point
- * @param {number} y1 point
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @return {boolean}
- */
-module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
-{
-    return boxPoint(xb, yb, wb, hb, x1, y1)
-}
-
-},{"./box-point":4}],418:[function(require,module,exports){
-'use strict'
-
-var circlePoint = require('./circle-point')
-
-module.exports = function pointCircle(x1, y1, xc, yc, rc)
-{
-    return circlePoint(xc, yc, rc, x1, y1)
-}
-
-},{"./circle-point":9}],419:[function(require,module,exports){
-'use strict'
-
-var polygonPoint = require('./polygon-point')
-
-/**
- * point-polygon collision
- * @param {number} x1
- * @param {number} y1
- * @param {number[]} points
- * @return {boolean}
- */
-module.exports = function pointPolygon(x1, y1, points)
-{
-    return polygonPoint(points, x1, y1)
-}
-
-},{"./polygon-point":423}],420:[function(require,module,exports){
-'use strict'
-
-var polygonPolygon = require('./polygon-polygon')
-
-/**
- * polygon-box collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of box
- * @param {number} y of box
- * @param {number} w of box
- * @param {number} h of box
- */
-module.exports = function polygonBox(points, x, y, w, h)
-{
-    var points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
-    return polygonPolygon(points, points2)
-}
-
-},{"./polygon-polygon":424}],421:[function(require,module,exports){
-'use strict'
-
-var polygonPoint = require('./polygon-point')
-var lineCircle = require('./line-circle')
-
-
-/**
- * polygon-circle collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- */
-module.exports = function polygonCircle(points, xc, yc, rc)
-{
-    if (polygonPoint(points, xc, yc))
-    {
-        return true
-    }
-    var count = points.length
-    for (var i = 0; i < count - 2; i += 2)
-    {
-        if (lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
-        {
-            return true
-        }
-    }
-    return lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
-}
-
-},{"./line-circle":14,"./polygon-point":423}],422:[function(require,module,exports){
-'use strict'
-
-var linePolygon = require('./line-polygon')
-
-/**
- * polygon-line collisions
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x1 first point in line
- * @param {number} y1 first point in line
- * @param {number} x2 second point in line
- * @param {number} y2 second point in line
- * @return {boolean}
- */
-module.exports = function polygonLine(points, x1, y1, x2, y2)
-{
-    return linePolygon(x1, y1, x2, y2, points)
-}
-
-},{"./line-polygon":16}],423:[function(require,module,exports){
-'use strict'
-
-/**
- * polygon-point collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of point
- * @param {number} y of point
- */
-module.exports = function polygonPoint(points, x, y)
-{
-    var length = points.length
-    var c = false
-    for (var i = 0, j = length - 2; i < length; i += 2)
-    {
-        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
-        {
-            c = !c
-        }
-        j = i
-    }
-    return c
-}
-
-},{}],424:[function(require,module,exports){
-'use strict'
-
-/**
- * polygon-polygon collision
- * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
- * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
- * @return {boolean}
- */
-module.exports = function polygonPolygon(points1, points2)
-{
-    var a = points1
-    var b = points2
-    var polygons = [a, b]
-    var minA, maxA, projected, minB, maxB, j
-    for (var i = 0; i < polygons.length; i++)
-    {
-        var polygon = polygons[i]
-        for (var i1 = 0; i1 < polygon.length; i1 += 2)
-        {
-            var i2 = (i1 + 2) % polygon.length
-            var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
-            minA = maxA = null
-            for (j = 0; j < a.length; j += 2)
-            {
-                projected = normal.x * a[j] + normal.y * a[j + 1]
-                if (minA === null || projected < minA)
-                {
-                    minA = projected
-                }
-                if (maxA === null || projected > maxA)
-                {
-                    maxA = projected
-                }
-            }
-            minB = maxB = null
-            for (j = 0; j < b.length; j += 2)
-            {
-                projected = normal.x * b[j] + normal.y * b[j + 1]
-                if (minB === null || projected < minB)
-                {
-                    minB = projected
-                }
-                if (maxB === null || projected > maxB)
-                {
-                    maxB = projected
-                }
-            }
-            if (maxA < minB || maxB < minA)
-            {
-                return false
-            }
-        }
-    }
-    return true
-}
 
 },{}]},{},[11]);

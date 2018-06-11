@@ -11,7 +11,7 @@ const TIME = 3000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
 let x = SHAPE, y = SHAPE
 
 // set to true to test the reverse (e.g., pointCircle instead of circlePoint)
-const REVERSE = false
+const REVERSE = true
 
 circlePoint(); next()
 circleCircle(); next()
@@ -25,6 +25,9 @@ boxPoint(); next()
 boxBox(); next()
 lineLine(); next()
 lineBox(); next()
+linePoint(); next()
+
+polygonPointSpecial(); next()
 
 function circlePoint()
 {
@@ -221,6 +224,22 @@ function polygonPoint()
     text('polygonPoint')
 }
 
+// test for points on edge of polygon
+// see https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html (point on edge)
+function polygonPointSpecial()
+{
+    const xPos = x + SIZE / 2 - SHAPE / 2
+    const yPos = y + SIZE / 2 - SHAPE / 2
+    const points = [xPos + SHAPE / 2, yPos, xPos, yPos + SHAPE, xPos + SHAPE, yPos + SHAPE]
+    const polygon = drawPolygon(points)
+    const c = drawCircle(x, y, DOT)
+    c.tint = 0
+    c.x = xPos + SHAPE / 2
+    c.y = yPos
+    polygon.tint = Intersects.polygonPoint(points, c.x, c.y) ? 0xff0000 : 0x00ff00
+    text('point on polygon edge')
+}
+
 function lineLine()
 {
     const lines = renderer.addChild(new PIXI.Graphics())
@@ -259,6 +278,24 @@ function lineBox()
         to.on('each', () => box1.tint = line.tint = Intersects.lineBox(l.x1, l.y1, l.x2, l.y2, box1.x, box1.y, SHAPE, SHAPE) ? 0xff0000 : 0x00ff00)
     }
     text('lineBox')
+}
+
+function linePoint()
+{
+    const adjust = -SIZE * 0.1
+    const l = { x1: x + SIZE / 2 - adjust, y1: y, x2: x + SIZE / 2 + adjust, y2: y + SIZE }
+    const line = drawLine(l)
+    const point = drawCircle(x, y, DOT, 0)
+    const to = ease.to(point, { x: x + SIZE, y: y + SIZE }, TIME, options)
+    if (REVERSE)
+    {
+        to.on('each', () => line.tint = Intersects.pointLine(point.x, point.y, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00)
+    }
+    else
+    {
+        to.on('each', () => line.tint = Intersects.linePoint(l.x1, l.y1, l.x2, l.y2, point.x, point.y) ? 0xff0000 : 0x00ff00)
+    }
+    text('linePoint')
 }
 
 function drawCircle(x, y, r, color)
