@@ -1,12 +1,13 @@
 {
   "name": "intersects",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons",
   "main": "index.js",
   "scripts": {
     "test": "budo docs/code.js:index.js --dir docs",
     "build": "browserify docs/code.js -o docs/index.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run pkg && npm run build",
+    "pkg": "browserify index.js | uglifyjs -mc -o umd/intersects.min.js"
   },
   "repository": {
     "type": "git",
