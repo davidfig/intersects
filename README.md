@@ -1,6 +1,6 @@
 ## intersects [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges)
 
-Collection of 2d collision/intersection checkers, supporting points, circles, lines, rectangles, and polygons.
+Collection of 2d collision/intersection checkers, supporting points, circles, lines, rectangles, and polygons (covex).
 
 [**Live Example**](https://davidfig.github.io/intersects/)
 
@@ -90,7 +90,7 @@ Param | Meaning
 
 ### `boxPolygon(xb, yb, wb, hb, points)`
 
-Box-polygon collision.
+Box-polygon (convex) collision.
 
 Param | Meaning
 ---|---
@@ -165,7 +165,7 @@ Param | Meaning
 
 ### `circlePolygon(xc, yc, rc, points)`
 
-Circle-polygon collision.
+Circle-polygon (convex) collision.
 
 Param | Meaning
 ---|---
@@ -228,7 +228,7 @@ Param | Meaning
 
 ### `linePolygon(x1, y1, x2, y2, points)`
 
-Line-polygon collision.
+Line-polygon (convex) collision.
 
 Param | Meaning
 ---|---
@@ -273,7 +273,7 @@ Param | Meaning
 
 ### `pointPolygon(x1, y1, points)`
 
-Point-polygon collision.
+Point-polygon (convex) collision.
 
 Param | Meaning
 ---|---
@@ -300,7 +300,7 @@ Param | Meaning
 
 ### `polygonBox(points, x, y, w, h)`
 
-Polygon-box collision.
+Polygon (convex)-box collision.
 
 Param | Meaning
 ---|---
@@ -314,7 +314,7 @@ Param | Meaning
 
 ### `polygonCircle(points, xc, yc, rc)`
 
-Polygon-circle collision.
+Polygon (convex)-circle collision.
 
 Param | Meaning
 ---|---
@@ -327,7 +327,7 @@ Param | Meaning
 
 ### `polygonLine(points, x1, y1, x2, y2)`
 
-Polygon-line collisions.
+Polygon (convex)-line collisions.
 
 Param | Meaning
 ---|---
@@ -341,7 +341,7 @@ Param | Meaning
 
 ### `polygonPoint(points, x, y)`
 
-Polygon-point collision.
+Polygon (convex)-point collision.
 
 Param | Meaning
 ---|---
@@ -353,7 +353,7 @@ Param | Meaning
 
 ### `polygonPolygon(points1, points2)`
 
-Polygon-polygon collision.
+Polygon (convex)-polygon (convex) collision.
 
 Param | Meaning
 ---|---

@@ -1,7 +1,7 @@
 {
   "name": "intersects",
   "version": "2.2.0",
-  "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons",
+  "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons (convex)",
   "main": "index.js",
   "scripts": {
     "test": "budo docs/code.js:index.js --dir docs",
