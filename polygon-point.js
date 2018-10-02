@@ -4,12 +4,13 @@ const linePoint = require('./line-point')
 
 /**
  * polygon-point collision
- * based on http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+ * based on https://stackoverflow.com/a/17490923/1955997
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  * @param {number} x of point
  * @param {number} y of point
+ * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
-module.exports = function polygonPoint(points, x, y)
+module.exports = function polygonPoint(points, x, y, tolerance)
 {
     var length = points.length
     var c = false
@@ -41,7 +42,7 @@ module.exports = function polygonPoint(points, x, y)
             p2x = points[i + 2]
             p2y = points[i + 3]
         }
-        if (linePoint(p1x, p1y, p2x, p2y, x, y))
+        if (linePoint(p1x, p1y, p2x, p2y, x, y, tolerance))
         {
             return true
         }
