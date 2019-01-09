@@ -5,7 +5,7 @@ const calcFontSize = require('calc-fontsize')
 
 const Intersects = require('..')
 
-const TESTS = 17, TIME = 1500
+const TESTS = 20, TIME = 1500
 
 // set to true to test the reverse (e.g., pointCircle instead of circlePoint)
 const REVERSE = false
