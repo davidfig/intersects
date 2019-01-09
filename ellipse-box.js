@@ -7,10 +7,10 @@ var boxPoint = require('./box-point')
  * @param {number} ye center of ellipse
  * @param {radius} rex radius-x of ellipse
  * @param {radius} rey radius-y of ellipse
- * @param {number} xb top-left corner of rectangle
- * @param {number} yb top-left corner of rectangle
- * @param {number} wb width of rectangle
- * @param {number} hb height of rectangle
+ * @param {number} xb top-left corner of box
+ * @param {number} yb top-left corner of box
+ * @param {number} wb width of box
+ * @param {number} hb height of box
  */
 module.exports = function ellipseBox(xe, ye, rex, rey, xb, yb, wb, hb)
 {

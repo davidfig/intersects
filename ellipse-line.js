@@ -1,35 +1,40 @@
 /**
  * ellipse-line collision
- * adapted from https://social.msdn.microsoft.com/Forums/windowsapps/en-US/b599db66-a987-4dba-b5b9-7babc9badc9c/finding-the-intersection-points-of-a-line-and-an-ellipse?forum=wpdevelop
+ * adapted from http://csharphelper.com/blog/2017/08/calculate-where-a-line-segment-and-an-ellipse-intersect-in-c/
  * @param {number} xe center of ellipse
  * @param {number} ye center of ellipse
- * @param {number} rx radius-x of ellipse
- * @param {number} ry radius-y of ellipse
+ * @param {number} rex radius-x of ellipse
+ * @param {number} rey radius-y of ellipse
  * @param {number} x1 first point of line
  * @param {number} y1 first point of line
  * @param {number} x2 second point of line
  * @param {number} y2 second point of line
  */
-module.exports = function ellipseLine(xe, ye, rx, ry, x1, y1, x2, y2)
+module.exports = function ellipseLine(xe, ye, rex, rey, x1, y1, x2, y2)
 {
-    // Used for Quadratic equation
-    var aa, bb, cc
+    x1 -= xe
+    x2 -= xe
+    y1 -= ye
+    y2 -= ye
 
-    // Non Vertical line
-    if (x1 !== x2)
+    var A = Math.pow(x2 - x1, 2) / rex / rex + Math.pow(y2 - y1, 2) / rey / rey
+    var B = 2 * x1 * (x2 - x1) / rex / rex + 2 * y1 * (y2 - y1) / rey / rey
+    var C = x1 * x1 / rex / rex + y1 * y1 / rey / rey - 1
+    var D = B * B - 4 * A * C
+    if (D === 0)
     {
-        var m = (y2 - y1) / (x2 - x1)
-        var c = y1 - m * x1
-
-        aa = ry * ry + rx * rx * m * m
-        bb = 2 * rx * rx * c * m - 2 * rx * rx * ye * m - 2 * xe * ry * ry
-        cc = ry * ry * xe * xe  + rx * rx * c * c - 2 * rx * rx * ye * c + rx * rx * ye * ye - rx * rx * ry * ry
+        var t = -B / 2 / A
+        return t >= 0 && t <= 1
     }
-    else // Vertical Line
+    else if (D > 0)
     {
-        aa = rx * rx
-        bb = -2 * ye * rx * rx
-        cc = -rx * rx * ry * ry + ry * ry * (x1 - xe) * (x1 - xe)
+        var sqrt = Math.sqrt(D)
+        var t1 = (-B + sqrt) / 2 / A
+        var t2 = (-B - sqrt) / 2 / A
+        return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1)
     }
-    return bb * bb - 4 * aa * cc > 0
+    else
+    {
+        return false
+    }
 }

@@ -7,6 +7,11 @@ bit-twiddle@^1.0.2:
   resolved "https://registry.yarnpkg.com/bit-twiddle/-/bit-twiddle-1.0.2.tgz#0c6c1fabe2b23d17173d9a61b7b7093eb9e1769e"
   integrity sha1-DGwfq+KyPRcXPZpht7cJPrnhdp4=
 
+calc-fontsize@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/calc-fontsize/-/calc-fontsize-1.1.0.tgz#5daa9ffddb950bedb19e926a99815ff24d9b0097"
+  integrity sha512-K37zSd7XehL/g+xOn/dNdnhBG7FrMfu4/I6+9YZJdO/1JetjG+7aLUa2megHQjAB1bX6V2eSsZepwaT49qe0zA==
+
 earcut@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/earcut/-/earcut-2.1.4.tgz#6b161f89bfe4bb08576b9e8af165e1477d6a1c02"
@@ -111,7 +116,7 @@ yy-color@^1.1.1:
   dependencies:
     yy-random "^1.0.1"
 
-yy-random@^1.0.1:
+yy-random@^1.0.1, yy-random@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/yy-random/-/yy-random-1.7.3.tgz#02bcf4b527b11eb36258808c467ad163507cc09e"
   integrity sha512-6ehVIOde2r6wUR/ocy/5Tw6PDvx9En1x6X6ClKPCbQMnU2zBVXlmyW3KluEank7rwKS9fnWzcToj8wqLokc50Q==

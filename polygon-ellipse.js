@@ -1,5 +1,5 @@
 var polygonPoint = require('./polygon-point')
-var lineEllipse = require('./ellipse-line')
+var lineEllipse = require('./line-ellipse')
 
 /**
  * polygon-ellipse collision

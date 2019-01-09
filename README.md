@@ -1,24 +1,32 @@
-## intersects [![unstable](https://img.shields.io/badge/stability-unstable-green.svg)](http://github.com/badges/stability-badges)
+## intersects
 
 Collection of 2d collision/intersection checkers, supporting points, circles, lines, rectangles, and polygons (covex).
 
-[**Live Example**](https://davidfig.github.io/intersects/)
+## Live Example
+[https://davidfig.github.io/intersects/](https://davidfig.github.io/intersects/)
 
+## Installation
+
+npm i intersects
+
+or
+
+yarn add intersects
 
 ## Usage
 
-[![npm i intersects](https://nodei.co/npm/intersects.png?mini=true)](https://npmjs.org/package/intersects/)
-
 ```js
-var x = require('intersects');
-var intersects = x.boxBox(x1, y1, w1, h1, x2, y2, w2, h2);
+var intersects = require('intersects');
+
+var intersected = intersects.boxBox(x1, y1, w1, h1, x2, y2, w2, h2);
 ```
 
 or
 
 ```js
-var x = require('intersects/circle-box');
-var intersects = x(x, y, r, x1, y1, w1, h1);
+var circleBox = require('intersects/circle-box');
+
+var intersected = circleBox(x, y, r, x1, y1, w1, h1);
 ```
 
 ## API
@@ -53,6 +61,23 @@ Param | Meaning
 `xc` | center of circle
 `yc` | center of circle
 `rc` | radius of circle
+
+---
+
+### `boxEllipse(xb, yb, wb, hb, xe, ye, rex, rey)`
+
+Box-ellipse collision.
+
+Param | Meaning
+---|---
+`xb` | top-left corner of box
+`yb` | top-left corner of box
+`wb` | width of box
+`hb` | height of box
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
 
 ---
 
@@ -133,6 +158,22 @@ Param | Meaning
 
 ---
 
+### `circleEllipse(xc, yc, rc, xe, ye, rex, rey)`
+
+Circle-ellipse collision.
+
+Param | Meaning
+---|---
+`x1` | center of circle
+`y1` | center of circle
+`r1` | radius of circle
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+
+---
+
 ### `circleLine(xc, yc, rc, x1, y1, x2, y2)`
 
 Circle-line collision.
@@ -209,6 +250,23 @@ Param | Meaning
 
 ---
 
+### `lineEllipse(x1, y1, x2, y2, xe, ye, rex, rey)`
+
+Line-ellipse collision.
+
+Param | Meaning
+---|---
+`x1` | point 1 of line
+`y1` | point 1 of line
+`x2` | point 2 of line
+`y2` | point 2 of line
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+
+---
+
 ### `lineLine(x1, y1, x2, y2, x3, y3, x4, y4)`
 
 Line-line collision.
@@ -268,7 +326,6 @@ Param | Meaning
 `wb` | width of box
 `hb` | height of box
 
-
 ---
 
 ### `pointPolygon(x1, y1, points)`
@@ -298,6 +355,35 @@ Param | Meaning
 
 ---
 
+### `pointCircle(xp, yp, xc, yc, rc)`
+
+point-circle collision.
+
+Param | Meaning
+---|---
+`xp` | point x
+`yp` | point y 
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+
+---
+
+### `pointEllipse(xp, yp, xe, ye, rex, rey)`
+
+point-ellipse collision.
+
+Param | Meaning
+---|---
+`xp` | point x
+`yp` | point y 
+`xe` | center of circle
+`ye` | center of circle
+`rex` | x-radius of circle
+`rey` | y-radius of circle
+
+---
+
 ### `polygonBox(points, x, y, w, h)`
 
 Polygon (convex)-box collision.
@@ -322,6 +408,20 @@ Param | Meaning
 `xc` | center of circle
 `yc` | center of circle
 `rc` | radius of circle
+
+---
+
+### `polygonEllipse(points, xe, ye, rex, rey)`
+
+Polygon (convex)-ellipse collision.
+
+Param | Meaning
+---|---
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
 
 ---
 
@@ -360,10 +460,107 @@ Param | Meaning
 `points1` | `[x1, y1, x2, y2, ... xn, yn]` of first polygon
 `points2` | `[x1, y1, x2, y2, ... xn, yn]` of second polygon
 
+---
 
+### `ellipseBox(xe, ye, rex, rey, x, y, w, h)`
+
+Ellipse-box collision.
+
+Param | Meaning
+---|---
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+`x` | of box
+`y` | of box
+`w` | of box
+`h` | of box
+
+---
+
+### `ellipseCircle(xe, ye, rex, rey, xc, yc, rc)`
+
+Ellipse-circle collision.
+
+Param | Meaning
+---|---
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+
+---
+
+### `ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y)`
+
+Ellipse-ellipse collision.
+
+Param | Meaning
+---|---
+`x1` | center of ellipse 1
+`y1` | center of ellipse 1
+`r1x` | x-radius of ellipse 1
+`r1y` | y-radius of ellipse 1
+`x2` | center of ellipse 2
+`y2` | center of ellipse 2
+`r2x` | x-radius of ellipse 2
+`r2y` | y-radius of ellipse 2
+
+---
+
+### `ellipseLine(xe, ye, rex, rey, x1, y1, x2, y2)`
+
+Ellipse-line collisions.
+
+Param | Meaning
+---|---
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+`x1` | first point in line
+`y1` | first point in line
+`x2` | second point in line
+`y2` | second point in line
+
+---
+
+### `ellipsePoint(xe, ye, rex, rey, x, y)`
+
+Ellipse-point collision.
+
+Param | Meaning
+---|---
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+`x` | of point
+`y` | of point
+
+---
+
+### `ellipsePolygon(xe, ye, rex, rey, points2)`
+
+Ellipse-polygon (convex) collision.
+
+Param | Meaning
+---|---
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
 
 ## License
 
 MIT License
 
-(c) 2018 [YOPEY YOPEY LLC](https://yopeyopey.com/) by [David Figatner](https://twitter.com/yopey_yopey/)
+(c) 2019 [YOPEY YOPEY LLC](https://yopeyopey.com/) by [David Figatner](https://twitter.com/yopey_yopey/)
