@@ -1,5 +1,4 @@
 const PIXI = require('pixi.js')
-const Renderer = require('yy-renderer')
 const Ease = require('pixi-ease')
 const Intersects = require('..')
 
@@ -11,7 +10,7 @@ const TIME = 3000, SIZE = 100, DOT = 2, SHAPE = 50, RADIUS = 25, LINE = 2
 let x = SHAPE, y = SHAPE
 
 // set to true to test the reverse (e.g., pointCircle instead of circlePoint)
-const REVERSE = true
+const REVERSE = false
 
 circlePoint(); next()
 circleCircle(); next()
@@ -242,7 +241,7 @@ function polygonPointSpecial()
 
 function lineLine()
 {
-    const lines = renderer.addChild(new PIXI.Graphics())
+    const lines = renderer.stage.addChild(new PIXI.Graphics())
     const l1 = { x1: x, y1: y, x2: x + SHAPE * 0.25, y2: y + SHAPE }
     const l2 = { x1: x + SIZE - SHAPE, y1: y + SIZE - SHAPE, x2: x + SIZE - SHAPE * 0.25, y2: y + SIZE}
     ease.to(l1, { x1: x + SIZE, y1: y + SIZE - SHAPE, x2: x + SIZE - SHAPE * 0.25, y2: y + SIZE }, TIME, options)
@@ -301,7 +300,7 @@ function linePoint()
 function drawCircle(x, y, r, color)
 {
     color = typeof color === 'undefined' ? 0xffffff : color
-    const circle = renderer.add(new PIXI.Graphics())
+    const circle = renderer.stage.addChild(new PIXI.Graphics())
     circle.beginFill(color).drawCircle(0, 0, r).endFill()
     circle.position.set(x, y)
     return circle
@@ -310,7 +309,7 @@ function drawCircle(x, y, r, color)
 function drawLine(l, color)
 {
     color = typeof color === 'undefined' ? 0xffffff : color
-    const line = renderer.addChild(new PIXI.Graphics())
+    const line = renderer.stage.addChild(new PIXI.Graphics())
     line.lineStyle(LINE, color).moveTo(l.x1, l.y1).lineTo(l.x2, l.y2)
     return line
 }
@@ -318,7 +317,7 @@ function drawLine(l, color)
 function drawBox(b, color)
 {
     color = typeof color === 'undefined' ? 0xffffff : color
-    const box = renderer.addChild(new PIXI.Sprite(PIXI.Texture.WHITE))
+    const box = renderer.stage.addChild(new PIXI.Sprite(PIXI.Texture.WHITE))
     box.tint = color
     box.width = b.w
     box.height = b.h
@@ -329,16 +328,16 @@ function drawBox(b, color)
 function drawPolygon(points, color)
 {
     color = typeof color === 'undefined' ? 0xffffff : color
-    const polygon = renderer.addChild(new PIXI.Graphics())
+    const polygon = renderer.stage.addChild(new PIXI.Graphics())
     polygon.beginFill(color).drawPolygon(points).endFill()
     return polygon
 }
 
 function text(text)
 {
-    const bg = renderer.add(new PIXI.Sprite(PIXI.Texture.WHITE))
+    const bg = renderer.stage.addChild(new PIXI.Sprite(PIXI.Texture.WHITE))
     bg.tint = 0x888888
-    const t = renderer.add(new PIXI.Text(text, { fill: 'white', fontSize: '1.5em' }))
+    const t = renderer.stage.addChild(new PIXI.Text(text, { fill: 'white', fontSize: '1.5em' }))
     t.position.set(x + SIZE / 2 - t.width / 2, y + SHAPE + SIZE - t.height)
     bg.position = t.position
     bg.width = t.width
@@ -357,12 +356,12 @@ function next()
 
 function setupRenderer()
 {
-    renderer = new Renderer({ debug: true, transparent: true, autoresize: true, alwaysRender: true })
-    renderer.canvas.style.pointerEvents = 'none'
-    renderer.canvas.style.position = 'fixed'
-    renderer.canvas.style.opacity = 0.75
+    renderer = new PIXI.Application({ transparent: true, autoresize: true })
+    renderer.view.style.pointerEvents = 'none'
+    renderer.view.style.position = 'fixed'
+    renderer.view.style.opacity = 0.75
+    document.body.appendChild(renderer.view)
     ease = new Ease.list()
-    ease.on('each', renderer.update, renderer)
 }
 
 

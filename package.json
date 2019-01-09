@@ -21,7 +21,7 @@
   "homepage": "https://github.com/davidfig/intersects#readme",
   "devDependencies": {
     "highlight.js": "^9.12.0",
-    "pixi-ease": "^0.18.0",
+    "pixi-ease": "^1.1.2",
     "pixi.js": "^4.6.2"
   }
 }
