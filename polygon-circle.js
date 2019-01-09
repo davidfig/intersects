@@ -1,8 +1,5 @@
-'use strict'
-
 var polygonPoint = require('./polygon-point')
 var lineCircle = require('./line-circle')
-
 
 /**
  * polygon-circle collision

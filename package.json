@@ -22,7 +22,6 @@
   "devDependencies": {
     "highlight.js": "^9.12.0",
     "pixi-ease": "^0.18.0",
-    "pixi.js": "^4.6.2",
-    "yy-renderer": "^2.5.2"
+    "pixi.js": "^4.6.2"
   }
 }
