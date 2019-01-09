@@ -1,6 +1,6 @@
 ## intersects
 
-Collection of 2d collision/intersection checkers, supporting points, circles, lines, rectangles, and polygons (covex).
+Collection of 2d collision/intersection checkers, supporting points, circles, ellipses, lines, rectangles, and polygons (covex).
 
 ## Live Example
 [https://davidfig.github.io/intersects/](https://davidfig.github.io/intersects/)
