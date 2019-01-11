@@ -2235,21 +2235,15 @@ function circlePoint(x, y)
         const xTo = x + square / 2 + Math.cos(angle) * distance
         const yTo = y + square / 2 + Math.sin(angle) * distance
         const to = ease.target(point, { x: xTo, y: yTo }, speed)
-        if (REVERSE)
-        {
-            to.on('each', () => circle.tint = Intersects.pointCircle(point.x, point.y, circle.x, circle.y, radius) ? 0xff0000 : 0x00ff00)
-        }
-        else
-        {
-            to.on('each', () => circle.tint = Intersects.circlePoint(circle.x, circle.y, radius, point.x, point.y) ? 0xff0000 : 0x00ff00)
-        }
+        to.on('each', () =>
+            circle.tint = (REVERSE ? Intersects.pointCircle(point.x, point.y, circle.x, circle.y, radius) :
+                Intersects.circlePoint(circle.x, circle.y, radius, point.x, point.y)) ? 0xff0000 : 0x00ff00)
         to.on('done', change)
     }
-
     const circle = drawCircle(x + square / 2, y + square / 2, radius)
     const point = drawCircle(x, y, dot, 0)
     change()
-    text(REVERSE ? 'pointCircle' : 'circlePoint', x, y)
+    text(REVERSE ? 'pointCircle()' : 'circlePoint()', x, y)
 }
 
 function circleCircle(x, y)
@@ -2267,7 +2261,7 @@ function circleCircle(x, y)
     const c1 = drawCircle(x + square / 2, y + square / 2, small)
     const c2 = drawCircle(x + Random.range(small, square - small), y + Random.range(small, square - small), small)
     change()
-    text('circleCircle', x, y)
+    text('circleCircle()', x, y)
 }
 
 function circleLine(x, y)
@@ -2275,29 +2269,19 @@ function circleLine(x, y)
     function change()
     {
         const to = ease.to(line, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
-        if (REVERSE)
-        {
-            to.on('each', () =>
+        to.on('each', () =>
             {
-                circle.tint = Intersects.lineCircle(line.x1, line.y1, line.x2, line.y2, circle.x, circle.y, radius) ? 0xff0000 : 0x00ff00
+                circle.tint = (REVERSE ? Intersects.lineCircle(line.x1, line.y1, line.x2, line.y2, circle.x, circle.y, radius) :
+                    Intersects.circleLine(circle.x, circle.y, radius, line.x1, line.y1, line.x2, line.y2)) ? 0xff0000 : 0x00ff00
                 g.clear().lineStyle(dot, circle.tint).moveTo(line.x1, line.y1).lineTo(line.x2, line.y2)
             })
-        }
-        else
-        {
-            to.on('each', () =>
-            {
-                circle.tint = Intersects.circleLine(circle.x, circle.y, radius, line.x1, line.y1, line.x2, line.y2) ? 0xff0000 : 0x00ff00
-                g.clear().lineStyle(dot, circle.tint).moveTo(line.x1, line.y1).lineTo(line.x2, line.y2)
-            })
-        }
         to.on('done', change)
     }
     const circle = drawCircle(x + square / 2, y + square / 2, radius)
     const line = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
     const g = renderer.stage.addChild(new PIXI.Graphics())
     change()
-    text(REVERSE ? 'lineCircle' : 'circleLine', x, y)
+    text(REVERSE ? 'lineCircle()' : 'circleLine()', x, y)
 }
 
 function circleBox(x, y)
@@ -2305,22 +2289,15 @@ function circleBox(x, y)
     function change()
     {
         const to = ease.target(c, { x: Random.range(x + small, x + square - small), y: Random.range(y + small, y + square - small) }, speed)
-        if (REVERSE)
-        {
-            to.on('each', () => box.tint = c.tint = Intersects.boxCircle(b.x, b.y, b.w, b.h, c.x, c.y, small) ? 0xff0000 : 0x00ff00)
-        }
-        else
-        {
-            to.on('each', () => box.tint = c.tint = Intersects.circleBox(c.x, c.y, small, b.x, b.y, b.w, b.h) ? 0xff0000 : 0x00ff00)
-        }
+        to.on('each', () => box.tint = c.tint = (REVERSE ? Intersects.boxCircle(b.x, b.y, b.w, b.h, c.x, c.y, small) :
+            Intersects.circleBox(c.x, c.y, small, b.x, b.y, b.w, b.h))? 0xff0000 : 0x00ff00)
         to.on('done', change)
     }
-
     const c = drawCircle(Random.range(x + small, x + square - small), Random.range(y + small, y + square - small), small)
     const b = { x: x + square / 2 - small, y: y + square / 2 -small, w: small * 2, h: small * 2 }
     const box = drawBox(b)
     change()
-    text(REVERSE ? 'boxCircle' : 'circleBox', x, y)
+    text(REVERSE ? 'boxCircle()' : 'circleBox()', x, y)
 }
 
 function circlePolygon(x, y)
@@ -2328,21 +2305,15 @@ function circlePolygon(x, y)
     function change()
     {
         const to = ease.target(c, { x: Random.range(x + small, x + square - small), y: Random.range(y + small, y + square - small) }, speed)
-        if (REVERSE)
-        {
-            to.on('each', () => polygon.tint = c.tint = Intersects.polygonCircle(points, c.x, c.y, small) ? 0xff0000 : 0x00ff00)
-        }
-        else
-        {
-            to.on('each', () => polygon.tint = c.tint = Intersects.circlePolygon(c.x, c.y, small, points) ? 0xff0000 : 0x00ff00)
-        }
+        to.on('each', () => polygon.tint = c.tint = (REVERSE ? Intersects.polygonCircle(points, c.x, c.y, small) :
+            Intersects.circlePolygon(c.x, c.y, small, points))? 0xff0000 : 0x00ff00)
         to.on('done', change)
     }
     const c = drawCircle(x, y, small)
     const points = [x + square * 0.4, y + square * 0.3, x + square * 0.6, y + square * 0.2, x + square * 0.7, y + square * 0.7 ]
     const polygon = drawPolygon(points)
     change()
-    text(REVERSE ? 'polygonCircle' : 'circlePolygon', x, y)
+    text(REVERSE ? 'polygonCircle()' : 'circlePolygon()', x, y)
 }
 
 function boxPoint(x, y)
@@ -2350,23 +2321,16 @@ function boxPoint(x, y)
     function change()
     {
         const to = ease.target(c, { x: Random.range(x, x + square), y: Random.range(y, y + square) }, speed)
-        if (REVERSE)
-        {
-            to.on('each', () => box.tint = Intersects.pointBox(c.x, c.y, b.x, b.y, b.w, b.h) ? 0xff0000 : 0x00ff00)
-        }
-        else
-        {
-            to.on('each', () => box.tint = Intersects.boxPoint(b.x, b.y, b.w, b.h, c.x, c.y) ? 0xff0000 : 0x00ff00)
-        }
+        to.on('each', () => box.tint = (REVERSE ? Intersects.pointBox(c.x, c.y, b.x, b.y, b.w, b.h) :
+            Intersects.boxPoint(b.x, b.y, b.w, b.h, c.x, c.y)) ? 0xff0000 : 0x00ff00)
         to.on('done', change)
     }
-
     const b = { x: x + square / 2 - shape / 2, y: y + square / 2 - shape / 2, w: shape, h: shape }
     const box = drawBox(b)
     const c = drawCircle(x, y, dot)
     c.tint = 0
     change()
-    text(REVERSE ? 'pointBox' :  'boxPoint', x, y)
+    text(REVERSE ? 'pointBox()' :  'boxPoint()', x, y)
 }
 
 function boxBox(x, y)
@@ -2381,7 +2345,7 @@ function boxBox(x, y)
     const box1 = drawBox({ x: x + square / 2 - small / 2, y: y + square / 2 - small / 2, w: small, h: small })
     const box2 = drawBox({ x: x + square, y: y + square, w: small, h: small })
     change()
-    text('boxBox', x, y)
+    text('boxBox()', x, y)
 }
 
 function polygonPolygon(x, y)
@@ -2389,8 +2353,7 @@ function polygonPolygon(x, y)
     function change()
     {
         const to = ease.target(p2, { x: Random.range(x + small, x + square - small), y: Random.range(y + small, y + square - small) }, speed)
-        to.on('each',
-            function ()
+        to.on('each', () =>
             {
                 const vertices2 = [p2.toGlobal({ x: -half, y: -half }), p2.toGlobal({ x: half, y: -half }), p2.toGlobal({ x: half, y: half }), p2.toGlobal({ x: -half, y: half })]
                 const points2 = []
@@ -2420,7 +2383,7 @@ function polygonPolygon(x, y)
     p2.tint = p1.tint = 0x0000ff
     ease.to(p2, { rotation: -Math.PI / 4 }, TIME, { repeat: true })
     change()
-    text('polygonPolygon', x, y)
+    text('polygonPolygon()', x, y)
 }
 
 function polygonBox(x, y)
@@ -2428,8 +2391,7 @@ function polygonBox(x, y)
     function change()
     {
         const to = ease.target(p2, { x: Random.range(x, x + square - small), y: Random.range(y, y + square - small) }, speed)
-            to.on('each',
-            function ()
+            to.on('each', () =>
             {
                 const half = p2.texture.width / 2
                 const vertices = [p2.toGlobal({ x: -half, y: -half }), p2.toGlobal({ x: half, y: -half }), p2.toGlobal({ x: half, y: half }), p2.toGlobal({ x: -half, y: half })]
@@ -2438,14 +2400,8 @@ function polygonBox(x, y)
                 {
                     points.push(vertex.x, vertex.y)
                 }
-                if (REVERSE)
-                {
-                    p1.tint = p2.tint = Intersects.boxPolygon(p1.x, p1.y, small, small, points) ? 0xff0000 : 0x00ff00
-                }
-                else
-                {
-                    p1.tint = p2.tint = Intersects.polygonBox(points, p1.x, p1.y, small, small) ? 0xff0000 : 0x00ff00
-                }
+                p1.tint = p2.tint = (REVERSE ? Intersects.boxPolygon(p1.x, p1.y, small, small, points) :
+                    Intersects.polygonBox(points, p1.x, p1.y, small, small)) ? 0xff0000 : 0x00ff00
             })
         to.on('done', change)
     }
@@ -2456,7 +2412,7 @@ function polygonBox(x, y)
     ease.to(p2, { rotation: 2 * Math.PI }, TIME, { repeat: true })
     p2.tint = p1.tint = 0x00ff00
     change()
-    text(REVERSE ? 'boxPolygon' : 'polygonBox', x, y)
+    text(REVERSE ? 'boxPolygon()' : 'polygonBox()', x, y)
 }
 
 function polygonPoint(x, y)
@@ -2464,14 +2420,8 @@ function polygonPoint(x, y)
     function change()
     {
         const to = ease.target(c, { x: Random.range(x + small, x + square - small), y: Random.range(y + small, y + square - small) }, speed)
-        if (REVERSE)
-        {
-            to.on('each', () => polygon.tint = Intersects.pointPolygon(c.x, c.y, points) ? 0xff0000 : 0x00ff00)
-        }
-        else
-        {
-            to.on('each', () => polygon.tint = Intersects.polygonPoint(points, c.x, c.y) ? 0xff0000 : 0x00ff00)
-        }
+        to.on('each', () => polygon.tint = (REVERSE ? Intersects.pointPolygon(c.x, c.y, points) :
+            Intersects.polygonPoint(points, c.x, c.y)) ? 0xff0000 : 0x00ff00)
         to.on('done', change)
     }
     const xPos = x + square / 2 - shape / 2
@@ -2481,7 +2431,7 @@ function polygonPoint(x, y)
     const c = drawCircle(x, y, dot)
     c.tint = 0
     change()
-    text(REVERSE ? 'pointPolygon' : 'polygonPoint', x, y)
+    text(REVERSE ? 'pointPolygon()' : 'polygonPoint()', x, y)
 }
 
 function lineLine(x, y)
@@ -2490,8 +2440,7 @@ function lineLine(x, y)
     {
         ease.to(l1, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
         const to = ease.to(l2, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
-        to.on('each',
-            function ()
+        to.on('each', () =>
             {
                 const color = Intersects.lineLine(l1.x1, l1.y1, l1.x2, l1.y2, l2.x1, l2.y1, l2.x2, l2.y2) ? 0xff0000 : 0x00ff00
                 lines
@@ -2508,7 +2457,7 @@ function lineLine(x, y)
     const l1 = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
     const l2 = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
     change()
-    text('lineLine', x, y)
+    text('lineLine()', x, y)
 }
 
 function lineBox(x, y)
@@ -2516,29 +2465,19 @@ function lineBox(x, y)
     function change()
     {
         const to = ease.to(l, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
-        if (REVERSE)
-        {
-            to.on('each', () =>
+        to.on('each', () =>
             {
-                box1.tint = Intersects.boxLine(box1.x, box1.y, shape, shape, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00
+                box1.tint = (REVERSE ? Intersects.boxLine(box1.x, box1.y, shape, shape, l.x1, l.y1, l.x2, l.y2) :
+                    Intersects.boxLine(box1.x, box1.y, shape, shape, l.x1, l.y1, l.x2, l.y2)) ? 0xff0000 : 0x00ff00
                 line.clear().lineStyle(dot, box1.tint).moveTo(l.x1, l.y1).lineTo(l.x2, l.y2)
             })
-        }
-        else
-        {
-            to.on('each', () =>
-            {
-                box1.tint = Intersects.boxLine(box1.x, box1.y, shape, shape, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00
-                line.clear().lineStyle(dot, box1.tint).moveTo(l.x1, l.y1).lineTo(l.x2, l.y2)
-            })
-        }
         to.on('done', change)
     }
     const line = renderer.stage.addChild(new PIXI.Graphics())
     const l = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
     const box1 = drawBox({ x: x + square / 2 - shape / 2, y: y + square / 2 - shape / 2, w: shape, h: shape })
     change()
-    text(REVERSE ? 'boxLine' : 'lineBox', x, y)
+    text(REVERSE ? 'boxLine()' : 'lineBox()', x, y)
 }
 
 function linePoint(x, y)
@@ -2546,22 +2485,12 @@ function linePoint(x, y)
     function changeLine()
     {
         const toLine = ease.to(l, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
-        if (REVERSE)
+        toLine.on('each', () =>
         {
-            toLine.on('each', () =>
-            {
-                const tint = Intersects.pointLine(point.x, point.y, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00
-                line.clear().lineStyle(dot, tint).moveTo(l.x1, l.y1).lineTo(l.x2, l.y2)
-            })
-        }
-        else
-        {
-            toLine.on('each', () =>
-            {
-                const tint = Intersects.pointLine(point.x, point.y, l.x1, l.y1, l.x2, l.y2) ? 0xff0000 : 0x00ff00
-                line.clear().lineStyle(dot, tint).moveTo(l.x1, l.y1).lineTo(l.x2, l.y2)
-            })
-        }
+            const tint = (REVERSE ? Intersects.pointLine(point.x, point.y, l.x1, l.y1, l.x2, l.y2) :
+                Intersects.pointLine(point.x, point.y, l.x1, l.y1, l.x2, l.y2)) ? 0xff0000 : 0x00ff00
+            line.clear().lineStyle(dot, tint).moveTo(l.x1, l.y1).lineTo(l.x2, l.y2)
+        })
         toLine.on('done', changeLine)
     }
     function changePoint()
@@ -2575,7 +2504,7 @@ function linePoint(x, y)
     point.tint = 0
     changeLine()
     changePoint()
-    text(REVERSE ? 'pointLine' : 'linePoint', x, y)
+    text(REVERSE ? 'pointLine()' : 'linePoint()', x, y)
 }
 
 function ellipsePoint(x, y)
@@ -2597,15 +2526,8 @@ function ellipsePoint(x, y)
         const to = ease.target(point, { x: xTo, y: yTo }, speed)
         to.on('each', () =>
         {
-            let tint
-            if (REVERSE)
-            {
-                tint = Intersects.pointEllipse(point.x, point.y, ellipse.x, ellipse.y, ellipse.rw, ellipse.rh) ? 0xff0000 : 0x00ff00
-            }
-            else
-            {
-                tint = Intersects.ellipsePoint(ellipse.x, ellipse.y, ellipse.rw, ellipse.rh, point.x, point.y) ? 0xff0000 : 0x00ff00
-            }
+            const tint = (REVERSE ? Intersects.pointEllipse(point.x, point.y, ellipse.x, ellipse.y, ellipse.rw, ellipse.rh) :
+                Intersects.ellipsePoint(ellipse.x, ellipse.y, ellipse.rw, ellipse.rh, point.x, point.y)) ? 0xff0000 : 0x00ff00
             g.clear().beginFill(tint).drawEllipse(ellipse.x, ellipse.y, ellipse.rw, ellipse.rh)
         })
         to.on('done', change)
@@ -2615,7 +2537,7 @@ function ellipsePoint(x, y)
     const point = drawCircle(x, y, dot, 0)
     change()
     changeEllipse()
-    text(REVERSE ? 'pointEllipse' : 'ellipsePoint', x, y)
+    text(REVERSE ? 'pointEllipse()' : 'ellipsePoint()', x, y)
 }
 
 function ellipseLine(x, y)
@@ -2633,9 +2555,8 @@ function ellipseLine(x, y)
         const to = ease.to(line, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
         to.on('each', () =>
         {
-            const tint = REVERSE ?
-                Intersects.lineEllipse(line.x1, line.y1, line.x2, line.y2, ellipse.x, ellipse.y, ellipse.rw, ellipse.rh) ? 0xff0000 : 0x00ff00 :
-                Intersects.ellipseLine(ellipse.x, ellipse.y, ellipse.rw, ellipse.rh, line.x1, line.y1, line.x2, line.y2) ? 0xff0000 : 0x00ff00
+            const tint = (REVERSE ? Intersects.lineEllipse(line.x1, line.y1, line.x2, line.y2, ellipse.x, ellipse.y, ellipse.rw, ellipse.rh) :
+                Intersects.ellipseLine(ellipse.x, ellipse.y, ellipse.rw, ellipse.rh, line.x1, line.y1, line.x2, line.y2)) ? 0xff0000 : 0x00ff00
             g.clear()
                 .lineStyle(dot, tint).moveTo(line.x1, line.y1).lineTo(line.x2, line.y2)
                 .beginFill(tint).drawEllipse(ellipse.x, ellipse.y, ellipse.rw, ellipse.rh).endFill()
@@ -2648,7 +2569,7 @@ function ellipseLine(x, y)
     const line = { x1: x + Random.get(square), y1: y + Random.get(square), x2: x + Random.get(square), y2: y + Random.get(square) }
     changeLine()
     changeEllipse()
-    text(REVERSE ? 'lineEllipse' : 'ellipseline', x, y)
+    text(REVERSE ? 'lineEllipse()' : 'ellipseline()', x, y)
 }
 
 function ellipseBox(x, y)
@@ -2667,7 +2588,6 @@ function ellipseBox(x, y)
         })
         to.on('done', change)
     }
-
     const g = renderer.stage.addChild(new PIXI.Graphics())
     const b = { x: x + square / 2 - small, y: y + square / 2 - small, w: small * 2, h: small * 2 }
     const box = drawBox(b)
@@ -2675,7 +2595,7 @@ function ellipseBox(x, y)
     const rh = Random.range(shape * 0.1, shape)
     const e = { x: Random.range(x + rw, x + square - rw), y: Random.range(y + rh, y + square - rh), rw, rh }
     change()
-    text(REVERSE ? 'boxEllipse' : 'ellipseBox', x, y)
+    text(REVERSE ? 'boxEllipse()' : 'ellipseBox()', x, y)
 }
 
 function ellipseCircle(x, y)
@@ -2694,7 +2614,6 @@ function ellipseCircle(x, y)
         })
         to.on('done', change)
     }
-
     const g = renderer.stage.addChild(new PIXI.Graphics())
     const c = { x: x + square / 2 - small / 2, y: y + square / 2 - small / 2, r: small }
     const circle = drawCircle(c.x, c.y, c.r)
@@ -2702,7 +2621,7 @@ function ellipseCircle(x, y)
     const rh = Random.range(shape * 0.1, shape)
     const e = { x: Random.range(x + rw, x + square - rw), y: Random.range(y + rh, y + square - rh), rw, rh }
     change()
-    text(REVERSE ? 'circleEllipse' : 'ellipseCircle', x, y)
+    text(REVERSE ? 'circleEllipse()' : 'ellipseCircle()', x, y)
 }
 
 function ellipsePolygon(x, y)
@@ -2721,7 +2640,6 @@ function ellipsePolygon(x, y)
         })
         to.on('done', change)
     }
-
     const g = renderer.stage.addChild(new PIXI.Graphics())
     const xPos = x + square / 2 - shape / 2
     const yPos = y + square / 2 - shape / 2
@@ -2731,7 +2649,7 @@ function ellipsePolygon(x, y)
     const rh = Random.range(shape * 0.1, shape)
     const e = { x: Random.range(x + rw, x + square - rw), y: Random.range(y + rh, y + square - rh), rw, rh }
     change()
-    text(REVERSE ? 'ellipsePolygon' : 'polygonEllipse', x, y)
+    text(REVERSE ? 'ellipsePolygon()' : 'polygonEllipse()', x, y)
 }
 
 function ellipseEllipse(x, y)
@@ -2753,7 +2671,6 @@ function ellipseEllipse(x, y)
         })
         to.on('done', change)
     }
-
     const g = renderer.stage.addChild(new PIXI.Graphics())
     let rw = Random.range(shape * 0.1, shape)
     let rh = Random.range(shape * 0.1, shape)
@@ -2762,7 +2679,7 @@ function ellipseEllipse(x, y)
     rh = Random.range(shape * 0.1, shape)
     const e2 = { x: Random.range(x + rw, x + square - rw), y: Random.range(y + rh, y + square - rh), rw, rh }
     change()
-    text('ellipseEllipse', x, y)
+    text('ellipseEllipse()', x, y)
 }
 
 // test for points on edge of polygon
@@ -2778,7 +2695,7 @@ function polygonPointSpecial(x, y)
     c.x = xPos + shape / 2
     c.y = yPos
     polygon.tint = Intersects.polygonPoint(points, c.x, c.y) ? 0xff0000 : 0x00ff00
-    text('point on polygon edge', x, y)
+    text('point on polygon edge (test)', x, y)
 }
 
 function text(text, x, y)
