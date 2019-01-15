@@ -7,7 +7,7 @@
     "test": "budo docs/code.js:index.js --dir docs",
     "build": "browserify docs/code.js -o docs/index.js",
     "prepublishOnly": "npm run pkg && npm run build",
-    "pkg": "browserify index.js | uglifyjs -mc -o umd/intersects.min.js"
+    "pkg": "browserify umd.js | uglifyjs -mc -o umd/intersects.min.js && cp umd/intersects.min.js docs"
   },
   "repository": {
     "type": "git",
