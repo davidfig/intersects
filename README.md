@@ -31,6 +31,16 @@ var circleBox = require('intersects/circle-box');
 var intersected = circleBox(x, y, r, x1, y1, w1, h1);
 ```
 
+## Alternative Usage
+If you don't want to package the library using rollup, browserify, etc., you can also include the prepackaged library, which includes a global Intersects object:
+
+```html
+<script src="https://unpkg.com/intersects/umd/intersects.min.js"></script>
+<script>
+    var intersected = Intersects.polygonPoint(points, x, y);
+</script>
+```
+
 ## API
 
 * box (AABB / axis-aligned rectangle)
