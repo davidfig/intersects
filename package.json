@@ -1,6 +1,6 @@
 {
   "name": "intersects",
-  "version": "2.4.5",
+  "version": "2.5.1",
   "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons (convex)",
   "main": "index.js",
   "scripts": {
