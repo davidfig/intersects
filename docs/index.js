@@ -3335,13 +3335,14 @@ var lineLine = require('./line-line')
  number @param {number} x2 point 2 of line
  number @param {number} y2 point 2 of line
  number @param {number[]} points of polygon
+ number @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
-module.exports = function linePolygon(x1, y1, x2, y2, points)
+module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance = 1)
 {
     var length = points.length
 
     // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
-    if (polygonPoint(points, x1, y1))
+    if (polygonPoint(points, x1, y1, tolerance))
     {
         return true
     }
