@@ -1,16 +1,14 @@
-'use strict'
-
 var polygonPoint = require('./polygon-point')
 var lineLine = require('./line-line')
 
 /**
  * line-polygon collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number[]} points of polygon
- number @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
+ @param {number} x1 point 1 of line
+ @param {number} y1 point 1 of line
+ @param {number} x2 point 2 of line
+ @param {number} y2 point 2 of line
+ @param {number[]} points of polygon
+ @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
 module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance = 1)
 {

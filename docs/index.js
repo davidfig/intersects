@@ -3323,19 +3323,17 @@ module.exports = function linePoint(x1, y1, x2, y2, xp, yp, tolerance)
     return Math.abs(distanceSquared(x1, y1, x2, y2) - (distanceSquared(x1, y1, xp, yp) + distanceSquared(x2, y2, xp, yp))) <= tolerance
 }
 },{}],36:[function(require,module,exports){
-'use strict'
-
 var polygonPoint = require('./polygon-point')
 var lineLine = require('./line-line')
 
 /**
  * line-polygon collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number[]} points of polygon
- number @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
+ @param {number} x1 point 1 of line
+ @param {number} y1 point 1 of line
+ @param {number} x2 point 2 of line
+ @param {number} y2 point 2 of line
+ @param {number[]} points of polygon
+ @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
 module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance = 1)
 {
@@ -47810,8 +47808,6 @@ module.exports = function polygonEllipse(points, xe, ye, rex, rey)
     return lineEllipse(points[0], points[1], points[count - 2], points[count - 1], xe, ye, rex, rey)
 }
 },{"./line-ellipse":33,"./polygon-point":252}],251:[function(require,module,exports){
-'use strict'
-
 var linePolygon = require('./line-polygon')
 
 /**
@@ -47821,11 +47817,12 @@ var linePolygon = require('./line-polygon')
  * @param {number} y1 first point in line
  * @param {number} x2 second point in line
  * @param {number} y2 second point in line
+ * @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
  * @return {boolean}
  */
-module.exports = function polygonLine(points, x1, y1, x2, y2)
+module.exports = function polygonLine(points, x1, y1, x2, y2, tolerance = 1)
 {
-    return linePolygon(x1, y1, x2, y2, points)
+    return linePolygon(x1, y1, x2, y2, points, tolerance)
 }
 
 },{"./line-polygon":36}],252:[function(require,module,exports){

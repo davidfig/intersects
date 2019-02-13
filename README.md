@@ -62,7 +62,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [lineCircle(x1, y1, x2, y2, xc, yc, rc)](#linecirclex1-y1-x2-y2-xc-yc-rc)
     * [lineEllipse(x1, y1, x2, y2, xe, ye, rex, rey)](#lineellipsex1-y1-x2-y2-xe-ye-rex-rey)
     * [lineLine(x1, y1, x2, y2, x3, y3, x4, y4)](#linelinex1-y1-x2-y2-x3-y3-x4-y4)
-    * [linePolygon(x1, y1, x2, y2, points)](#linepolygonx1-y1-x2-y2-points)
+    * [linePolygon(x1, y1, x2, y2, points, tolerance)](#linepolygonx1-y1-x2-y2-points)
     * [linePoint(x1, y1, x2, y2, xp, yp)](#linepointx1-y1-x2-y2-xp-yp)
 * point
     * [pointBox(x1, y1, xb, yb, wb, hb)](#pointboxx1-y1-xb-yb-wb-hb)
@@ -74,7 +74,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [polygonBox(points, x, y, w, h)](#polygonboxpoints-x-y-w-h)
     * [polygonCircle(points, xc, yc, rc)](#polygoncirclepoints-xc-yc-rc)
     * [polygonEllipse(points, xe, ye, rex, rey)](#polygonellipsepoints-xe-ye-rex-rey)
-    * [polygonLine(points, x1, y1, x2, y2)](#polygonlinepoints-x1-y1-x2-y2)
+    * [polygonLine(points, x1, y1, x2, y2, tolerance)](#polygonlinepoints-x1-y1-x2-y2)
     * [polygonPoint(points, x, y)](#polygonpointpoints-x-y)
     * [polygonPolygon(points1, points2)](#polygonpolygonpoints1-points2)
 * ellipse
@@ -340,7 +340,7 @@ Param | Meaning
 
 ---
 
-### `linePolygon(x1, y1, x2, y2, points)`
+### `linePolygon(x1, y1, x2, y2, points, tolerance)`
 
 Line-polygon (convex) collision.
 
@@ -351,7 +351,7 @@ Param | Meaning
 `x2` | point 2 of line
 `y2` | point 2 of line
 `points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
-
+`tolerance` | maximum distance of point to polygon's edges that triggers collision (see pointLine)
 ---
 
 ### `linePoint(x1, y1, x2, y2, xp, yp)`
@@ -481,7 +481,7 @@ Param | Meaning
 
 ---
 
-### `polygonLine(points, x1, y1, x2, y2)`
+### `polygonLine(points, x1, y1, x2, y2, tolerance)`
 
 Polygon (convex)-line collisions.
 
@@ -492,6 +492,7 @@ Param | Meaning
 `y1` | first point in line
 `x2` | second point in line
 `y2` | second point in line
+`tolerance` | maximum distance of point to polygon's edges that triggers collision (see pointLine)
 
 ---
 
