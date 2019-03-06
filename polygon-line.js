@@ -10,7 +10,7 @@ var linePolygon = require('./line-polygon')
  * @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
  * @return {boolean}
  */
-module.exports = function polygonLine(points, x1, y1, x2, y2, tolerance = 1)
+module.exports = function polygonLine(points, x1, y1, x2, y2, tolerance)
 {
     return linePolygon(x1, y1, x2, y2, points, tolerance)
 }
