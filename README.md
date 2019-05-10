@@ -61,7 +61,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [lineBox(x1, y1, x2, y2, xb, yb, wb, hb)](#lineboxx1-y1-x2-y2-xb-yb-wb-hb)
     * [lineCircle(x1, y1, x2, y2, xc, yc, rc)](#linecirclex1-y1-x2-y2-xc-yc-rc)
     * [lineEllipse(x1, y1, x2, y2, xe, ye, rex, rey)](#lineellipsex1-y1-x2-y2-xe-ye-rex-rey)
-    * [lineLine(x1, y1, x2, y2, x3, y3, x4, y4)](#linelinex1-y1-x2-y2-x3-y3-x4-y4)
+    * [lineLine(x1, y1, x2, y2, x3, y3, x4, y4)](#linelinex1-y1-x2-y2-x3-y3-x4-y4-thickness1-thickness2)
     * [linePolygon(x1, y1, x2, y2, points, tolerance)](#linepolygonx1-y1-x2-y2-points)
     * [linePoint(x1, y1, x2, y2, xp, yp)](#linepointx1-y1-x2-y2-xp-yp)
 * point
@@ -323,7 +323,7 @@ Param | Meaning
 
 ---
 
-### `lineLine(x1, y1, x2, y2, x3, y3, x4, y4)`
+### `lineLine(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)`
 
 Line-line collision.
 
@@ -337,6 +337,8 @@ Param | Meaning
 `y3` | first point in line 2
 `x4` | second point in line 2
 `y4` | second point in line 2
+`thickness1` | of line 1 (the line is centered in its thickness--see demo)
+`thickness2` | of line 2 (the line is centered in its thickness--see demo)
 
 ---
 

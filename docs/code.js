@@ -227,12 +227,13 @@ function lineLine(x, y)
     {
         ease.to(l1, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
         const to = ease.to(l2, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
+        const thickness = dot
         to.on('each', () =>
             {
-                const color = Intersects.lineLine(l1.x1, l1.y1, l1.x2, l1.y2, l2.x1, l2.y1, l2.x2, l2.y2) ? 0xff0000 : 0x00ff00
+            const color = Intersects.lineLine(l1.x1, l1.y1, l1.x2, l1.y2, l2.x1, l2.y1, l2.x2, l2.y2) ? 0xff0000 : 0x00ff00
                 lines
                     .clear()
-                    .lineStyle(dot, color)
+                    .lineStyle(thickness, color)
                     .moveTo(l1.x1, l1.y1)
                     .lineTo(l1.x2, l1.y2)
                     .moveTo(l2.x1, l2.y1)
@@ -245,6 +246,38 @@ function lineLine(x, y)
     const l2 = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
     change()
     text('lineLine()', x, y)
+}
+
+function lineLineThickness(x, y)
+{
+    function change()
+    {
+        ease.to(l1, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
+        const to = ease.to(l2, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
+        const thickness = 30
+        to.on('each', () =>
+            {
+            const color = Intersects.lineLine(l1.x1, l1.y1, l1.x2, l1.y2, l2.x1, l2.y1, l2.x2, l2.y2, thickness, thickness) ? 0xff0000 : 0x00ff00
+                lines
+                    .clear()
+                    .lineStyle(thickness, color)
+                    .moveTo(l1.x1, l1.y1)
+                    .lineTo(l1.x2, l1.y2)
+                    .moveTo(l2.x1, l2.y1)
+                    .lineTo(l2.x2, l2.y2)
+                    .lineStyle(dot, 'black')
+                    .moveTo(l1.x1, l1.y1)
+                    .lineTo(l1.x2, l1.y2)
+                    .moveTo(l2.x1, l2.y1)
+                    .lineTo(l2.x2, l2.y2)
+            })
+        to.on('done', change)
+    }
+    const lines = renderer.stage.addChild(new PIXI.Graphics())
+    const l1 = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
+    const l2 = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
+    change()
+    text('lineLine(thickness)', x, y)
 }
 
 function lineBox(x, y)
@@ -533,6 +566,8 @@ function tests()
     next()
     lineLine(x, y)
     next()
+    lineLineThickness(x, y)
+    next()
     lineBox(x, y)
     next()
     linePoint(x, y)
@@ -639,17 +674,7 @@ window.onload = function()
     setup()
     resize()
     window.addEventListener('resize', resize)
-
-    // var client = new XMLHttpRequest()
-    // client.open('GET', 'code.js')
-    // client.onreadystatechange = function()
-    // {
-    //     var code = document.getElementById('code')
-    //     code.innerHTML = client.responseText
-    //     require('highlight.js').highlightBlock(code)
-    // }
-    // client.send()
 }
 
 // for eslint
-/* globals window, XMLHttpRequest, document */
+/* globals window, document */
