@@ -502,6 +502,80 @@ function ellipseEllipse(x, y)
     text('ellipseEllipse()', x, y)
 }
 
+function circleOutlineBox(x, y)
+{
+    function change()
+    {
+        const r = Random.range(shape * 0.1, shape)
+        const w = Random.range(shape * 0.1, shape)
+        const h = Random.range(shape * 0.1, shape)
+        ease.to(c, { x: Random.range(x + r, x + square - r), y: Random.range(y + r, y + square - r), r }, TIME)
+        const to = ease.to(rectangle, { x: Random.range(x + w, x + square - w), y: Random.range(y + h, y + square - h), w, h }, TIME)
+        to.on('each', () =>
+        {
+            const tint = (REVERSE ?
+                Intersects.circleOutlineBox(c.x, c.y, c.r, r.x, r.y, r.w, r.h) :
+                Intersects.boxCircleOutline(rectangle.x, rectangle.y, rectangle.w, rectangle.h, c.x, c.y, c.r)) ? 0xff0000 : 0x00ff00
+            g.clear()
+                .lineStyle(1, tint).drawCircle(c.x, c.y, c.r).lineStyle(0)
+                .beginFill(tint).drawRect(rectangle.x, rectangle.y, rectangle.w, rectangle.h).endFill()
+        })
+        to.on('done', change)
+    }
+    const g = renderer.stage.addChild(new PIXI.Graphics())
+    const c = { x: x + square / 2 - small / 2, y: y + square / 2 - small / 2, r: small }
+    const w = Random.range(shape * 0.1, shape)
+    const h = Random.range(shape * 0.1, shape)
+    const rectangle = { x: Random.range(x + w, x + square - w), y: Random.range(y + h, y + square - h), w, h }
+
+    change()
+    text(REVERSE ? 'circleOutlineBox()' : 'boxCircleOutline()', x, y)
+}
+
+function circleOutlineLine(x, y)
+{
+    function change()
+    {
+        const to = ease.to(line, { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }, TIME)
+        to.on('each', () =>
+        {
+            const tint = (REVERSE ? Intersects.lineCircleOutline(line.x1, line.y1, line.x2, line.y2, circle.x, circle.y, circle.radius) :
+                Intersects.circleOutlineLine(circle.x, circle.y, circle.radius, line.x1, line.y1, line.x2, line.y2)) ? 0xff0000 : 0x00ff00
+            g.clear()
+                .lineStyle(dot, tint).moveTo(line.x1, line.y1).lineTo(line.x2, line.y2)
+                .lineStyle(1, tint).drawCircle(circle.x, circle.y, circle.radius).lineStyle(0)
+
+        })
+        to.on('done', change)
+    }
+    const g = renderer.stage.addChild(new PIXI.Graphics())
+    const line = { x1: Random.range(x, x + square), y1: Random.range(y, y + square), x2: Random.range(x, x + square), y2: Random.range(y, y + square) }
+    const circle = { x: x + square / 2, y: y + square / 2, radius: radius * 1.4 }
+    change()
+    text(REVERSE ? 'lineCircleOutline()' : 'circleOutlineLine()', x, y)
+}
+
+function circlePointOutline(x, y)
+{
+    function change()
+    {
+        const angle = Random.angle()
+        const distance = Random.get(square * 0.4)
+        const xTo = x + square / 2 + Math.cos(angle) * distance
+        const yTo = y + square / 2 + Math.sin(angle) * distance
+        const to = ease.target(point, { x: xTo, y: yTo }, speed)
+        to.on('each', () =>
+            circle.tint = (REVERSE ? Intersects.pointCircleOutline(point.x, point.y, circle.x, circle.y, radius, thickness) :
+                Intersects.circleOutlinePoint(circle.x, circle.y, radius, point.x, point.y, thickness)) ? 0xff0000 : 0x00ff00)
+        to.on('done', change)
+    }
+    const thickness = 5
+    const circle = drawCircle(x + square / 2, y + square / 2, radius, 0xffffff, thickness)
+    const point = drawCircle(x, y, dot, 0)
+    change()
+    text(REVERSE ? 'pointCircleOutline()' : 'circlePointOutline()', x, y)
+}
+
 // test for points on edge of polygon
 // see https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html (point on edge)
 function polygonPointSpecial(x, y)
@@ -584,18 +658,19 @@ function tests()
     next()
     ellipseEllipse(x, y)
     next()
+    circleOutlineBox(x, y)
+    next()
+    circleOutlineLine(x, y)
+    next()
+    circlePointOutline(x, y)
+    next()
     polygonPointSpecial(x, y)
 }
 
 // sets up renderer, pixi-ease
 function setup()
 {
-    renderer = new PIXI.Application({ transparent: true, resolution: window.devicePixelRatio })
-    renderer.view.style.pointerEvents = 'none'
-    renderer.view.style.position = 'fixed'
-    renderer.view.style.width = '100vw'
-    renderer.view.style.height = '100vh'
-    renderer.view.style.left = renderer.view.style.top = 0
+    renderer = new PIXI.Application({ transparent: true, resolution: window.devicePixelRatio, view: document.querySelector('.view') })
     document.body.appendChild(renderer.view)
     ease = new Ease.list()
 }
@@ -637,14 +712,21 @@ function resize()
 
     renderer.stage.removeChildren()
     tests()
-    renderer.renderer.resize(x, y)
+    renderer.renderer.resize(x, y + square)
 }
 
-function drawCircle(x, y, r, color)
+function drawCircle(x, y, r, color, outline)
 {
     color = typeof color === 'undefined' ? 0xffffff : color
     const circle = renderer.stage.addChild(new PIXI.Graphics())
-    circle.beginFill(color).drawCircle(0, 0, r).endFill()
+    if (outline)
+    {
+        circle.lineStyle(outline === true ? 1 : outline, color).drawCircle(0, 0, r).lineStyle(0)
+    }
+    else
+    {
+        circle.beginFill(color).drawCircle(0, 0, r).endFill()
+    }
     circle.position.set(x, y)
     return circle
 }

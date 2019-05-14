@@ -4,7 +4,7 @@
   "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, lines, axis-aligned boxes, and polygons (convex)",
   "main": "index.js",
   "scripts": {
-    "test": "budo docs/code.js:index.js --dir docs",
+    "test": "budo docs/code.js:index.js --dir docs --live",
     "build": "browserify docs/code.js -o docs/index.js",
     "prepublishOnly": "yarn run pkg && yarn run build",
     "pkg-browserify": "browserify umd.js -o umd/intersects.js",
@@ -23,9 +23,9 @@
   "homepage": "https://github.com/davidfig/intersects#readme",
   "devDependencies": {
     "calc-fontsize": "^1.1.0",
-    "highlight.js": "^9.12.0",
-    "pixi-ease": "^1.1.2",
-    "pixi.js": "^4.6.2",
-    "yy-random": "^1.7.3"
+    "highlight.js": "^9.15.6",
+    "pixi-ease": "^1.3.0",
+    "pixi.js": "^5.0.2",
+    "yy-random": "^1.8.0"
   }
 }
