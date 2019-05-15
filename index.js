@@ -5,10 +5,12 @@ module.exports = {
     circleBox: require('./circle-box'),
     circlePolygon: require('./circle-polygon'),
     circleEllipse: require('./circle-ellipse'),
+    // circleCircleOutline: require('./circle-circleOutline'),
 
     circleOutlineBox: require('./circleOutline-box'),
     circleOutlineLine: require('./circleOutline-line'),
     circleOutlinePoint: require('./circleOutline-point'),
+    // circleOutlineCircle: require('./circleOutline-circle'),
 
     polygonPoint: require('./polygon-point'),
     polygonLine: require('./polygon-line'),

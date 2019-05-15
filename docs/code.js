@@ -576,6 +576,34 @@ function circlePointOutline(x, y)
     text(REVERSE ? 'pointCircleOutline()' : 'circlePointOutline()', x, y)
 }
 
+// function circleOutlineCircle(x, y)
+// {
+//     function change()
+//     {
+//         const r = Random.range(shape * 0.1, shape)
+//         ease.to(c1, { x: Random.range(x + r, x + square - r), y: Random.range(y + r, y + square - r), r }, TIME)
+//         const angle = Random.angle()
+//         const distance = Random.get(square * 0.4)
+//         const xTo = x + square / 2 + Math.cos(angle) * distance
+//         const yTo = y + square / 2 + Math.sin(angle) * distance
+//         const to = ease.target(c2, { x: xTo, y: yTo }, speed)
+//         to.on('each', () =>
+//         {
+//             const tint = (REVERSE ? Intersects.circleCircleOutline(c2.x, c2.y, small, c1.x, c1.y, c1.r) :
+//                 Intersects.circleOutlineCircle(c1.x, c1.y, c1.r, c2.x, c2.y, small)) ? 0xff0000 : 0x00ff00
+//             g.clear()
+//                 .lineStyle(1, tint).drawCircle(c1.x, c1.y, c1.r).lineStyle(0)
+//                 .beginFill(tint).drawCircle(c2.x, c2.y, small).endFill()
+//         })
+//         to.on('done', change)
+//     }
+//     const g = renderer.stage.addChild(new PIXI.Graphics())
+//     const c1 = { x: x + square / 2, y: y + square / 2 }
+//     const c2 = { x: x + Random.range(small, square - small), y: y + Random.range(small, square - small), r: Random.range(shape * 0.1, shape) }
+//     change()
+//     text(REVERSE ? 'circleOutlineCircle()' : 'outlineCircleCircle', x, y)
+// }
+
 // test for points on edge of polygon
 // see https://wrf.ecse.rpi.edu//Research/Short_Notes/pnpoly.html (point on edge)
 function polygonPointSpecial(x, y)
@@ -664,6 +692,8 @@ function tests()
     next()
     circlePointOutline(x, y)
     next()
+    // circleOutlineCircle(x, y)
+    // next()
     polygonPointSpecial(x, y)
 }
 

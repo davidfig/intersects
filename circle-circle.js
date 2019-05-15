@@ -1,6 +1,5 @@
 'use strict'
 
-
 /**
  * circle-circle collision
  * @param {number} x1 center of circle 1

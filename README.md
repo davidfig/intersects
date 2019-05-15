@@ -1,6 +1,6 @@
 ## intersects
 
-Collection of 2d collision/intersection checkers, supporting points, circles, ellipses, lines, rectangles, and polygons (covex).
+Collection of 2d collision/intersection checkers, supporting points, circles, circle circumferences (outline of circle), ellipses, lines, rectangles, and polygons (covex).
 
 ## Live Example
 [https://davidfig.github.io/intersects/](https://davidfig.github.io/intersects/)
@@ -50,6 +50,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [boxLine(xb, yb, wb, hb, x1, y1, x2, y2)](#boxlinexb-yb-wb-hb-x1-y1-x2-y2)
     * [boxPoint(x1, y1, w1, h1, x2, y2)](#boxpointx1-y1-w1-h1-x2-y2)
     * [boxPolygon(xb, yb, wb, hb, points)](#boxpolygonxb-yb-wb-hb-points)
+    * [boxCircleOutline(xb, yb, wb, hb, xc, yc, rc)](#boxCircleOutlinexb-yb-wb-hb-xc-yc-rc)
 * circle
     * [circleBox(xc, yc, rc, xb, yb, wb, hb)](#circleboxxc-yc-rc-xb-yb-wb-hb)
     * [circleCircle(x1, y1, r1, x2, y2, r2)](#circlecirclex1-y1-r1-x2-y2-r2)
@@ -57,6 +58,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [circleLine(xc, yc, rc, x1, y1, x2, y2)](#circlelinexc-yc-rc-x1-y1-x2-y2)
     * [circlePoint(x1, y1, r1, x2, y2)](#circlepointx1-y1-r1-x2-y2)
     * [circlePolygon(xc, yc, rc, points)](#circlepolygonxc-yc-rc-points)
+    * (N/A) [circleCircleOutline(xc, yc, rc, xco, yco, rco)](#circleCircleOutlinexc-yc-rc-xco-yco-rco)
 * line
     * [lineBox(x1, y1, x2, y2, xb, yb, wb, hb)](#lineboxx1-y1-x2-y2-xb-yb-wb-hb)
     * [lineCircle(x1, y1, x2, y2, xc, yc, rc)](#linecirclex1-y1-x2-y2-xc-yc-rc)
@@ -64,12 +66,14 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [lineLine(x1, y1, x2, y2, x3, y3, x4, y4)](#linelinex1-y1-x2-y2-x3-y3-x4-y4-thickness1-thickness2)
     * [linePolygon(x1, y1, x2, y2, points, tolerance)](#linepolygonx1-y1-x2-y2-points)
     * [linePoint(x1, y1, x2, y2, xp, yp)](#linepointx1-y1-x2-y2-xp-yp)
+    * [lineCircleOutline(x1, y1, x2, y2, xc, yc, rc)](#lineCircleOutlinex1-y1-x2-y2-xc-yc-rc)
 * point
     * [pointBox(x1, y1, xb, yb, wb, hb)](#pointboxx1-y1-xb-yb-wb-hb)
     * [pointPolygon(x1, y1, points)](#pointpolygonx1-y1-points)
     * [pointLine(xp, yp, x1, y1, x2, y2)](#pointlinexp-yp-x1-y1-x2-y2)
     * [pointCircle(xp, yp, xc, yc, rc)](#pointcirclexp-yp-xc-yc-rc)
     * [pointEllipse(xp, yp, xe, ye, rex, rey)](#pointellipsexp-yp-xe-ye-rex-rey)
+    * [pointCircleOutline(x2, y2, x1, y1, r1)](#pointCircleOutliner1-x2-y2-x1-y1)
 * polygon (convex)
     * [polygonBox(points, x, y, w, h)](#polygonboxpoints-x-y-w-h)
     * [polygonCircle(points, xc, yc, rc)](#polygoncirclepoints-xc-yc-rc)
@@ -84,6 +88,13 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [ellipseLine(xe, ye, rex, rey, x1, y1, x2, y2)](#ellipselinexe-ye-rex-rey-x1-y1-x2-y2)
     * [ellipsePoint(xe, ye, rex, rey, x, y)](#ellipsepoint-xe-ye-rex-rey-x-y)
     * [ellipsePolygon(xe, ye, rex, rey, points2)](#ellipsepolygonxe-ye-rex-rey-points2)
+* circleOutline (only the circumference of circle)
+    * [circleOutlineBox(xc, yc, rc, xb, yb, wb, hb)](#circleOutlineBoxxc-yc-rc-xb-yb-wb-hb)
+    * (N/A) [circleOutlineCircle(xco, yco, rco, xc, yc, rc)](#circleOutlineCirclex1-y1-r1-x2-y2-r2)
+    * (N/A) [circleOutlineEllipse(xc, yc, rc, xe, ye, rex, rey)](#circleOutlineEllipsexc-yc-rc-xe-ye-rex-rey)
+    * [circleOutlineLine(xc, yc, rc, x1, y1, x2, y2)](#circleOutlineLinexc-yc-rc-x1-y1-x2-y2)
+    * [circleOutlinePoint(x1, y1, r1, x2, y2)](#circleOutlinePointx1-y1-r1-x2-y2)
+    * (N/A) [circleOutlinePolygon(xc, yc, rc, points)](#circleOutlinePolygonxc-yc-rc-points)
 
 ---
 
@@ -183,6 +194,22 @@ Param | Meaning
 
 ---
 
+### `boxCircleOutline(xb, yb, wb, hb, xc, yc, rc)`
+
+Box (axis-oriented rectangle)-Circle outline (circumference of circle) collision.
+
+Param | Meaning
+---|---
+`xb` | top-left corner of rectangle
+`yb` | top-left corner of rectangle
+`wb` | width of rectangle
+`hb` | height of rectangle
+`xc` | center of circle outline
+`yc` | center of circle outline
+`rc` | radius of circle outline
+
+---
+
 ### `circleBox(xc, yc, rc, xb, yb, wb, hb)`
 
 Circle-box (axis-oriented rectangle) collision.
@@ -273,6 +300,20 @@ Param | Meaning
 
 ---
 
+### `circleCircleOutline(xc, yc, rc, xco, yco, rco)`
+
+(Not available yet.) Circle-Circle outline (circumference of circle) collision.
+
+Param | Meaning
+---|---
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+`xco` | center of circle outline
+`yco` | center of circle outline
+`rco` | radius of circle outline
+
+---
 ### `lineBox(x1, y1, x2, y2, xb, yb, wb, hb)`
 
 Line-box collision.
@@ -371,6 +412,22 @@ Param | Meaning
 
 ---
 
+### `lineCircleOutline(x1, y1, x2, y2, xc, yc, rc)`
+
+Line-Circle outline (circumference of circle) collision.
+
+Param | Meaning
+---|---
+`x1` | first point of line
+`y1` | first point of line
+`x2` | second point of line
+`y2` | second point of line
+`xc` | center of circle outline
+`yc` | center of circle outline
+`rc` | radius of circle outline
+
+---
+
 ### `pointBox(x1, y1, xb, yb, wb, hb)`
 
 Point-box collision.
@@ -439,6 +496,20 @@ Param | Meaning
 `ye` | center of circle
 `rex` | x-radius of circle
 `rey` | y-radius of circle
+
+---
+
+### `pointCircleOutline(x2, y2, x1, y1, r1)`
+
+Point-Circle outline (circumference of circle) collision.
+
+Param | Meaning
+---|---
+`x1` | center of circle outline
+`y1` | center of circle outline
+`r1` | radius of circle outline
+`x2` | point x
+`y2` | point y
 
 ---
 
@@ -617,6 +688,96 @@ Param | Meaning
 `ye` | center of ellipse
 `rex` | x-radius of ellipse
 `rey` | y-radius of ellipse
+
+---
+
+### `circleOutlineBox(xc, yc, rc, xb, yb, wb, hb)`
+
+Circle outline (circumference of circle)-box (axis-oriented rectangle) collision.
+
+Param | Meaning
+---|---
+`xc` | center of circle outline
+`yc` | center of circle outline
+`rc` | radius of circle outline
+`xb` | top-left corner of rectangle
+`yb` | top-left corner of rectangle
+`wb` | width of rectangle
+`hb` | height of rectangle
+
+---
+
+### `circleOutlineCircle(xco, yco, rco, xc, yc, rc)`
+
+Circle outline (circumference of circle)-circle collision.
+
+Param | Meaning
+---|---
+`xco` | center of circle outline
+`yco` | center of circle outline
+`rco` | radius of circle outline
+`xc` | center of circle
+`yc` | center of circle
+`rc` | radius of circle
+
+---
+
+### `circleOutlineEllipse(xc, yc, rc, xe, ye, rex, rey)`
+
+(Not available yet.) Circle outline (circumference of circle)-ellipse collision.
+
+Param | Meaning
+---|---
+`x1` | center of circle outline
+`y1` | center of circle outline
+`r1` | radius of circle outline
+`xe` | center of ellipse
+`ye` | center of ellipse
+`rex` | x-radius of ellipse
+`rey` | y-radius of ellipse
+
+---
+
+### `circleOutlineLine(xc, yc, rc, x1, y1, x2, y2)`
+
+Circle outline (circumference of circle)-line collision.
+
+Param | Meaning
+---|---
+`xc` | center of circle outline
+`yc` | center of circle outline
+`rc` | radius of circle outline
+`x1` | first point of line
+`y1` | first point of line
+`x2` | second point of line
+`y2` | second point of line
+
+---
+
+### `circleOutlinePoint(x1, y1, r1, x2, y2)`
+
+Circle outline (circumference of circle)-point collision.
+
+Param | Meaning
+---|---
+`x1` | center of circle outline
+`y1` | center of circle outline
+`r1` | radius of circle outline
+`x2` | point x
+`y2` | point y
+
+---
+
+### `circleOutlinePolygon(xc, yc, rc, points)`
+
+(Not available yet.) Circle outline (circumference of circle)-polygon (convex) collision.
+
+Param | Meaning
+---|---
+`xc` | center of circle outline
+`yc` | center of circle outline
+`rc` | radius of circle outline
+`points` | `[x1, y1, x2, y2, ... xn, yn]` of polygon
 
 ## License
 
