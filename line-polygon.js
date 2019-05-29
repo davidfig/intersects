@@ -1,5 +1,5 @@
 var polygonPoint = require('./polygon-point')
-var lineLine = require('./line-line')
+var lineLine = require('./lineToLine')
 
 /**
  * line-polygon collision

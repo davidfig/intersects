@@ -145,7 +145,7 @@ module.exports = function boxPolygon(xb, yb, wb, hb, points)
     return polygonBox(points, xb, yb, wb, hb)
 }
 
-},{"./polygon-box":39}],8:[function(require,module,exports){
+},{"./polygon-box":40}],8:[function(require,module,exports){
 'use strict'
 
 var boxCircle = require('./box-circle')
@@ -265,7 +265,7 @@ module.exports = function circlePolygon(xc, yc, rc, points)
     return polygonCircle(points, xc, yc, rc)
 }
 
-},{"./polygon-circle":40}],14:[function(require,module,exports){
+},{"./polygon-circle":41}],14:[function(require,module,exports){
 var circlePoint = require('./circle-point')
 var boxCircle = require('./box-circle')
 
@@ -628,7 +628,7 @@ module.exports = function ellipsePolygon(xe, ye, rex, rey, points)
 {
     return polygonEllipse(points, xe, ye, rex, rey)
 }
-},{"./polygon-ellipse":41}],24:[function(require,module,exports){
+},{"./polygon-ellipse":42}],24:[function(require,module,exports){
 module.exports = {
     circlePoint: require('./circle-point'),
     circleCircle: require('./circle-circle'),
@@ -680,7 +680,7 @@ module.exports = {
     ellipseEllipse: require('./ellipse-ellipse'),
     ellipsePolygon: require('./ellipse-polygon')
 }
-},{"./box-box":1,"./box-circle":2,"./box-circleOutline":3,"./box-ellipse":4,"./box-line":5,"./box-point":6,"./box-polygon":7,"./circle-box":8,"./circle-circle":9,"./circle-ellipse":10,"./circle-line":11,"./circle-point":12,"./circle-polygon":13,"./circleOutline-box":14,"./circleOutline-line":15,"./circleOutline-point":16,"./ellipse-box":17,"./ellipse-circle":18,"./ellipse-ellipse":19,"./ellipse-line":21,"./ellipse-point":22,"./ellipse-polygon":23,"./line-box":25,"./line-circle":26,"./line-circleOutline":27,"./line-ellipse":28,"./line-line":29,"./line-point":30,"./line-polygon":31,"./point-box":33,"./point-circle":34,"./point-circleOutline":35,"./point-ellipse":36,"./point-line":37,"./point-polygon":38,"./polygon-box":39,"./polygon-circle":40,"./polygon-ellipse":41,"./polygon-line":42,"./polygon-point":43,"./polygon-polygon":44}],25:[function(require,module,exports){
+},{"./box-box":1,"./box-circle":2,"./box-circleOutline":3,"./box-ellipse":4,"./box-line":5,"./box-point":6,"./box-polygon":7,"./circle-box":8,"./circle-circle":9,"./circle-ellipse":10,"./circle-line":11,"./circle-point":12,"./circle-polygon":13,"./circleOutline-box":14,"./circleOutline-line":15,"./circleOutline-point":16,"./ellipse-box":17,"./ellipse-circle":18,"./ellipse-ellipse":19,"./ellipse-line":21,"./ellipse-point":22,"./ellipse-polygon":23,"./line-box":25,"./line-circle":26,"./line-circleOutline":27,"./line-ellipse":28,"./line-line":29,"./line-point":30,"./line-polygon":31,"./point-box":34,"./point-circle":35,"./point-circleOutline":36,"./point-ellipse":37,"./point-line":38,"./point-polygon":39,"./polygon-box":40,"./polygon-circle":41,"./polygon-ellipse":42,"./polygon-line":43,"./polygon-point":44,"./polygon-polygon":45}],25:[function(require,module,exports){
 'use strict'
 
 var boxPoint = require('./box-point')
@@ -783,6 +783,7 @@ module.exports = function lineEllipse(x1, y1, x2, y2, xe, ye, rex, rey)
 const lineToPolygon = require('./lineToPolygon')
 const polygonPolygon = require('./polygon-polygon')
 const linePolygon = require('./line-polygon')
+const lineToLine = require('./lineToLine')
 
 /**
  * line-line collision
@@ -805,13 +806,10 @@ module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, t
     {
         return lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
     }
-    var s1_x = x2 - x1
-    var s1_y = y2 - y1
-    var s2_x = x4 - x3
-    var s2_y = y4 - y3
-    var s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
-    var t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
-    return s >= 0 && s <= 1 && t >= 0 && t <= 1
+    else
+    {
+        return lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
+    }
 }
 
 function lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
@@ -829,7 +827,7 @@ function lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness
         return linePolygon(x1, y1, x2, y2, lineToPolygon(x3, y3, x4, y4, thickness1))
     }
 }
-},{"./line-polygon":31,"./lineToPolygon":32,"./polygon-polygon":44}],30:[function(require,module,exports){
+},{"./line-polygon":31,"./lineToLine":32,"./lineToPolygon":33,"./polygon-polygon":45}],30:[function(require,module,exports){
 'use strict'
 
 function distanceSquared(x1, y1, x2, y2)
@@ -856,7 +854,7 @@ module.exports = function linePoint(x1, y1, x2, y2, xp, yp, tolerance)
 }
 },{}],31:[function(require,module,exports){
 var polygonPoint = require('./polygon-point')
-var lineLine = require('./line-line')
+var lineLine = require('./lineToLine')
 
 /**
  * line-polygon collision
@@ -889,7 +887,33 @@ module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance)
     return false
 }
 
-},{"./line-line":29,"./polygon-point":43}],32:[function(require,module,exports){
+},{"./lineToLine":32,"./polygon-point":44}],32:[function(require,module,exports){
+'use strict'
+
+/**
+ * lineToLine helper function (to avoid circular dependencies)
+ * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+ * @param {number} x1 first point in line 1
+ * @param {number} y1 first point in line 1
+ * @param {number} x2 second point in line 1
+ * @param {number} y2 second point in line 1
+ * @param {number} x3 first point in line 2
+ * @param {number} y3 first point in line 2
+ * @param {number} x4 second point in line 2
+ * @param {number} y4 second point in line 2
+ * @return {boolean}
+ */
+module.exports = function lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
+{
+    var s1_x = x2 - x1
+    var s1_y = y2 - y1
+    var s2_x = x4 - x3
+    var s2_y = y4 - y3
+    var s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
+    var t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
+    return s >= 0 && s <= 1 && t >= 0 && t <= 1
+}
+},{}],33:[function(require,module,exports){
 'use strict'
 
 /**
@@ -913,7 +937,7 @@ module.exports = function lineToPolygon(x1, y1, x2, y2, thickness)
         x1 + cos, y1 + sin
     ]
 }
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict'
 
 var boxPoint = require('./box-point')
@@ -933,7 +957,7 @@ module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
     return boxPoint(xb, yb, wb, hb, x1, y1)
 }
 
-},{"./box-point":6}],34:[function(require,module,exports){
+},{"./box-point":6}],35:[function(require,module,exports){
 'use strict'
 
 var circlePoint = require('./circle-point')
@@ -943,7 +967,7 @@ module.exports = function pointCircle(x1, y1, xc, yc, rc)
     return circlePoint(xc, yc, rc, x1, y1)
 }
 
-},{"./circle-point":12}],35:[function(require,module,exports){
+},{"./circle-point":12}],36:[function(require,module,exports){
 var circleOutlinePoint = require('./circleOutline-point')
 
 /**
@@ -959,7 +983,7 @@ module.exports = function pointCircleOutline(x, y, xc, yc, rc, thickness)
 {
     return circleOutlinePoint(x, y, xc, yc, rc, thickness)
 }
-},{"./circleOutline-point":16}],36:[function(require,module,exports){
+},{"./circleOutline-point":16}],37:[function(require,module,exports){
 var ellipsePoint = require('./ellipse-point')
 
 /**
@@ -976,7 +1000,7 @@ module.exports = function pointEllipse(x1, y1, xe, ye, rex, rey)
 {
     return ellipsePoint(xe, ye, rex, rey, x1, y1)
 }
-},{"./ellipse-point":22}],37:[function(require,module,exports){
+},{"./ellipse-point":22}],38:[function(require,module,exports){
 'use strict'
 
 var linePoint = require('./line-point')
@@ -996,7 +1020,7 @@ module.exports = function pointLine(xp, yp, x1, y1, x2, y2)
     return linePoint(x1, y1, x2, y2, xp, yp)
 }
 
-},{"./line-point":30}],38:[function(require,module,exports){
+},{"./line-point":30}],39:[function(require,module,exports){
 'use strict'
 
 var polygonPoint = require('./polygon-point')
@@ -1015,7 +1039,7 @@ module.exports = function pointPolygon(x1, y1, points, tolerance)
     return polygonPoint(points, x1, y1, tolerance)
 }
 
-},{"./polygon-point":43}],39:[function(require,module,exports){
+},{"./polygon-point":44}],40:[function(require,module,exports){
 'use strict'
 
 var polygonPolygon = require('./polygon-polygon')
@@ -1034,7 +1058,7 @@ module.exports = function polygonBox(points, x, y, w, h)
     return polygonPolygon(points, points2)
 }
 
-},{"./polygon-polygon":44}],40:[function(require,module,exports){
+},{"./polygon-polygon":45}],41:[function(require,module,exports){
 var polygonPoint = require('./polygon-point')
 var lineCircle = require('./line-circle')
 
@@ -1062,7 +1086,7 @@ module.exports = function polygonCircle(points, xc, yc, rc)
     return lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
 }
 
-},{"./line-circle":26,"./polygon-point":43}],41:[function(require,module,exports){
+},{"./line-circle":26,"./polygon-point":44}],42:[function(require,module,exports){
 var polygonPoint = require('./polygon-point')
 var lineEllipse = require('./line-ellipse')
 
@@ -1090,7 +1114,7 @@ module.exports = function polygonEllipse(points, xe, ye, rex, rey)
     }
     return lineEllipse(points[0], points[1], points[count - 2], points[count - 1], xe, ye, rex, rey)
 }
-},{"./line-ellipse":28,"./polygon-point":43}],42:[function(require,module,exports){
+},{"./line-ellipse":28,"./polygon-point":44}],43:[function(require,module,exports){
 var linePolygon = require('./line-polygon')
 
 /**
@@ -1108,7 +1132,7 @@ module.exports = function polygonLine(points, x1, y1, x2, y2, tolerance)
     return linePolygon(x1, y1, x2, y2, points, tolerance)
 }
 
-},{"./line-polygon":31}],43:[function(require,module,exports){
+},{"./line-polygon":31}],44:[function(require,module,exports){
 'use strict'
 
 const linePoint = require('./line-point')
@@ -1161,7 +1185,7 @@ module.exports = function polygonPoint(points, x, y, tolerance)
     return false
 }
 
-},{"./line-point":30}],44:[function(require,module,exports){
+},{"./line-point":30}],45:[function(require,module,exports){
 'use strict'
 
 /**
@@ -1219,6 +1243,6 @@ module.exports = function polygonPolygon(points1, points2)
     return true
 }
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 window.Intersects = require('./index.js')
-},{"./index.js":24}]},{},[45]);
+},{"./index.js":24}]},{},[46]);

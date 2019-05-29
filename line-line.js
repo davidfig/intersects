@@ -3,6 +3,7 @@
 const lineToPolygon = require('./lineToPolygon')
 const polygonPolygon = require('./polygon-polygon')
 const linePolygon = require('./line-polygon')
+const lineToLine = require('./lineToLine')
 
 /**
  * line-line collision
@@ -25,13 +26,10 @@ module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, t
     {
         return lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
     }
-    var s1_x = x2 - x1
-    var s1_y = y2 - y1
-    var s2_x = x4 - x3
-    var s2_y = y4 - y3
-    var s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
-    var t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
-    return s >= 0 && s <= 1 && t >= 0 && t <= 1
+    else
+    {
+        return lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
+    }
 }
 
 function lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
