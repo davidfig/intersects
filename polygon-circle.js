@@ -7,10 +7,11 @@ var lineCircle = require('./line-circle')
  * @param {number} xc center of circle
  * @param {number} yc center of circle
  * @param {number} rc radius of circle
+ * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
-module.exports = function polygonCircle(points, xc, yc, rc)
+module.exports = function polygonCircle(points, xc, yc, rc, tolerance)
 {
-    if (polygonPoint(points, xc, yc))
+    if (polygonPoint(points, xc, yc, tolerance))
     {
         return true
     }

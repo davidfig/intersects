@@ -57,7 +57,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [circleEllipse(xc, yc, rc, xe, ye, rex, rey)](#circleellipsexc-yc-rc-xe-ye-rex-rey)
     * [circleLine(xc, yc, rc, x1, y1, x2, y2)](#circlelinexc-yc-rc-x1-y1-x2-y2)
     * [circlePoint(x1, y1, r1, x2, y2)](#circlepointx1-y1-r1-x2-y2)
-    * [circlePolygon(xc, yc, rc, points)](#circlepolygonxc-yc-rc-points)
+    * [circlePolygon(xc, yc, rc, points, tolerance)](#circlepolygonxc-yc-rc-points)
     * (N/A) [circleCircleOutline(xc, yc, rc, xco, yco, rco)](#circleCircleOutlinexc-yc-rc-xco-yco-rco)
 * line
     * [lineBox(x1, y1, x2, y2, xb, yb, wb, hb)](#lineboxx1-y1-x2-y2-xb-yb-wb-hb)
@@ -76,7 +76,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
     * [pointCircleOutline(x2, y2, x1, y1, r1)](#pointCircleOutliner1-x2-y2-x1-y1)
 * polygon (convex)
     * [polygonBox(points, x, y, w, h)](#polygonboxpoints-x-y-w-h)
-    * [polygonCircle(points, xc, yc, rc)](#polygoncirclepoints-xc-yc-rc)
+    * [polygonCircle(points, xc, yc, rc, tolerance)](#polygoncirclepoints-xc-yc-rc)
     * [polygonEllipse(points, xe, ye, rex, rey)](#polygonellipsepoints-xe-ye-rex-rey)
     * [polygonLine(points, x1, y1, x2, y2, tolerance)](#polygonlinepoints-x1-y1-x2-y2)
     * [polygonPoint(points, x, y)](#polygonpointpoints-x-y)
@@ -84,7 +84,7 @@ If you don't want to package the library using rollup, browserify, etc., you can
 * ellipse
     * [ellipseBox(xe, ye, rex, rey, x, y, w, h)](#ellipseboxxe-ye-rex-rey-x-y-w-h)
     * [ellipseCircle(xe, ye, rex, rey, xc, yc, rc)](#ellipsecirclexe-ye-rex-rey-xc-yc-rc)
-    * [ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y](#ellipseEllipse-x1-y1-r1x-r1y-x2-y2-r2x-r2y)    
+    * [ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y](#ellipseEllipse-x1-y1-r1x-r1y-x2-y2-r2x-r2y)
     * [ellipseLine(xe, ye, rex, rey, x1, y1, x2, y2)](#ellipselinexe-ye-rex-rey-x1-y1-x2-y2)
     * [ellipsePoint(xe, ye, rex, rey, x, y)](#ellipsepoint-xe-ye-rex-rey-x-y)
     * [ellipsePolygon(xe, ye, rex, rey, points2)](#ellipsepolygonxe-ye-rex-rey-points2)
@@ -408,7 +408,7 @@ Param | Meaning
 `x2` | point 2 of line
 `y2` | point 2 of line
 `xp` | point x
-`yp` | point y 
+`yp` | point y
 
 ---
 
@@ -462,7 +462,7 @@ point-line collision.
 Param | Meaning
 ---|---
 `xp` | point x
-`yp` | point y 
+`yp` | point y
 `x1` | point 1 of line
 `y1` | point 1 of line
 `x2` | point 2 of line
@@ -477,7 +477,7 @@ point-circle collision.
 Param | Meaning
 ---|---
 `xp` | point x
-`yp` | point y 
+`yp` | point y
 `xc` | center of circle
 `yc` | center of circle
 `rc` | radius of circle
@@ -491,7 +491,7 @@ point-ellipse collision.
 Param | Meaning
 ---|---
 `xp` | point x
-`yp` | point y 
+`yp` | point y
 `xe` | center of circle
 `ye` | center of circle
 `rex` | x-radius of circle
