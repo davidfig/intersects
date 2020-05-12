@@ -10,7 +10,7 @@ var polygonCircle = require('./polygon-circle')
  * @param {radius} rc radius of circle
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  */
-module.exports = function circlePolygon(xc, yc, rc, points)
+module.exports = function circlePolygon(xc, yc, rc, points, tolerance)
 {
-    return polygonCircle(points, xc, yc, rc)
+    return polygonCircle(points, xc, yc, rc, tolerance)
 }
