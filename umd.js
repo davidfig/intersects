@@ -1,1 +1,1 @@
-window.Intersects = require('./index.js')
+self.Intersects = require('./index.js')
