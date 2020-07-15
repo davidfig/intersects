@@ -1,12 +1,12 @@
 /**
  * line-circle collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xc center of circle
- number @param {number} yc center of circle
- number @param {number} rc radius of circle
+ * @param {number} x1 point 1 of line
+ * @param {number} y1 point 1 of line
+ * @param {number} x2 point 2 of line
+ * @param {number} y2 point 2 of line
+ * @param {number} xc center of circle
+ * @param {number} yc center of circle
+ * @param {number} rc radius of circle
  */
 export function lineCircle(x1, y1, x2, y2, xc, yc, rc)
 {

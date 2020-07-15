@@ -7,9 +7,10 @@
     "test": "budo docs/code.js:index.js --dir docs --live",
     "build": "browserify docs/code.js -o docs/index.js",
     "prepublishOnly": "yarn run pkg && yarn run build",
-    "pkg-browserify": "browserify src/umd-index.js -o umd/intersects.js",
-    "pkg-min": "terser umd/intersects.js  -mc -o umd/intersects.min.js",
-    "pkg": "yarn run pkg-browserify && yarn run pkg-min && cp umd/intersects.min.js docs"
+    "pkg-browserify": "browserify src/umd.js -o umd/intersects.js -t [ babelify --presets [ @babel/preset-env ] ]",
+    "pkg-min": "terser umd/intersects.js -mc -o umd/intersects.min.js",
+    "pkg": "yarn run pkg-browserify && yarn run pkg-min && cp umd/intersects.min.js docs",
+    "temp": "browserify"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,9 @@
   },
   "homepage": "https://github.com/davidfig/intersects#readme",
   "devDependencies": {
+    "@babel/core": "^7.10.0",
+    "@babel/preset-env": "^7.10.0",
+    "babelify": "^10.0.0",
     "browserify": "^16.5.1",
     "budo": "^11.6.4",
     "calc-fontsize": "^1.1.0",

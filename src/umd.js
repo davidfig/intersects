@@ -1,0 +1,1 @@
+self.Intersects = require('./umd-index.js');
