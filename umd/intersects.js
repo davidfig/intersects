@@ -260,9 +260,9 @@ var polygonCircle = require('./polygon-circle')
  * @param {radius} rc radius of circle
  * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
  */
-module.exports = function circlePolygon(xc, yc, rc, points)
+module.exports = function circlePolygon(xc, yc, rc, points, tolerance)
 {
-    return polygonCircle(points, xc, yc, rc)
+    return polygonCircle(points, xc, yc, rc, tolerance)
 }
 
 },{"./polygon-circle":41}],14:[function(require,module,exports){
@@ -1068,10 +1068,11 @@ var lineCircle = require('./line-circle')
  * @param {number} xc center of circle
  * @param {number} yc center of circle
  * @param {number} rc radius of circle
+ * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
-module.exports = function polygonCircle(points, xc, yc, rc)
+module.exports = function polygonCircle(points, xc, yc, rc, tolerance)
 {
-    if (polygonPoint(points, xc, yc))
+    if (polygonPoint(points, xc, yc, tolerance))
     {
         return true
     }
@@ -1244,5 +1245,5 @@ module.exports = function polygonPolygon(points1, points2)
 }
 
 },{}],46:[function(require,module,exports){
-window.Intersects = require('./index.js')
+self.Intersects = require('./index.js')
 },{"./index.js":24}]},{},[46]);
