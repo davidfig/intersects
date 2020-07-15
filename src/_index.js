@@ -6,8 +6,6 @@ import {boxEllipse} from './box-ellipse';
 import {boxLine} from './box-line';
 import {boxPolygon} from './box-polygon';
 import {boxPoint} from './box-point';
-//box-function exports
-export {boxBox, boxCircle, boxCircleOutline, boxEllipse, boxLine, boxPolygon, boxPoint};
 
 //circle-function imports
 import {circleBox} from './box-circle';
@@ -17,16 +15,12 @@ import {circleEllipse} from './circle-ellipse';
 import {circleLine} from './circle-line';
 import {circlePolygon} from './circle-polygon';
 import {circlePoint} from './circle-point';
-//circle-function exports
-export {circleBox, circleCircle, circleCircleOutline, circleEllipse, circleLine, circlePolygon, circlePoint};
 
 //circleOutline-function imports
 import {circleOutlineBox} from './box-circleOutline';
 import {circleOutlineCircle} from './circle-circleOutline';
 import {circleOutlineLine} from './circleOutline-line';
 import {circleOutlinePoint} from './circleOutline-point';
-//circleOutline-function exports
-export {circleOutlineBox, circleOutlineCircle, circleOutlineLine, circleOutlinePoint};
 
 //ellipse-function imports
 import {ellipseBox} from './box-ellipse';
@@ -35,8 +29,6 @@ import {ellipseEllipse} from './ellipse-ellipse';
 import {ellipseLine} from './ellipse-line';
 import {ellipsePolygon} from './ellipse-polygon';
 import {ellipsePoint} from './ellipse-point';
-//ellipse-function imports
-export {ellipseBox, ellipseCircle, ellipseEllipse, ellipseLine, ellipsePolygon, ellipsePoint};
 
 //line-function imports
 import {lineBox} from './box-line';
@@ -46,8 +38,6 @@ import {lineEllipse} from './ellipse-line';
 import {lineLine} from './line-line';
 import {linePolygon} from './line-polygon';
 import {linePoint} from './line-point';
-//line-function exports
-export {lineBox, lineCircle, lineCircleOutline, lineEllipse, lineLine, linePolygon, linePoint};
 
 //polygon-function imports
 import {polygonBox} from './box-polygon';
@@ -56,8 +46,6 @@ import {polygonEllipse} from './ellipse-polygon';
 import {polygonLine} from './line-polygon';
 import {polygonPolygon} from './polygon-polygon';
 import {polygonPoint} from './polygon-point';
-//polygon-function exports
-export {polygonBox, polygonCircle, polygonEllipse, polygonLine, polygonPolygon, polygonPoint}
 
 //point-function imports
 import {pointBox} from './box-point';
@@ -66,8 +54,23 @@ import {pointCircleOutline} from './circleOutline-point';
 import {pointEllipse} from './ellipse-point';
 import {pointLine} from './line-point';
 import {pointPolygon} from './polygon-point';
-//point-function exports
-export {pointBox, pointCircle, pointCircleOutline, pointEllipse, pointLine, pointPolygon};
+
+export default self.Intersects = {
+    //box-function 'exports'
+    boxBox: boxBox, boxCircle: boxCircle, boxCircleOutline: boxCircleOutline, boxEllipse: boxEllipse, boxLine: boxLine, boxPolygon: boxPolygon, boxPoint: boxPoint,
+    //circle-function 'exports'
+    circleBox: circleBox, circleCircle: circleCircle, circleCircleOutline: circleCircleOutline, circleEllipse: circleEllipse, circleLine: circleLine, circlePolygon: circlePolygon, circlePoint: circlePoint,
+    //circleOutline-function 'exports'
+    circleOutlineBox: circleOutlineBox, circleOutlineCircle: circleOutlineCircle, circleOutlineLine: circleOutlineLine, circleOutlinePoint: circleOutlinePoint,
+    //ellipse-function 'exports'
+    ellipseBox: ellipseBox, ellipseCircle: ellipseCircle, ellipseEllipse: ellipseEllipse, ellipseLine: ellipseLine, ellipsePolygon: ellipsePolygon, ellipsePoint: ellipsePoint,
+    //line-function 'exports'
+    lineBox: lineBox, lineCircle: lineCircle, lineCircleOutline: lineCircleOutline, lineEllipse: lineEllipse, lineLine: lineLine, linePolygon: linePolygon, linePoint: linePoint,
+    //polygon-function 'exports'
+    polygonBox: polygonBox, polygonCircle: polygonCircle, polygonEllipse: polygonEllipse, polygonLine: polygonLine, polygonPolygon: polygonPolygon, polygonPoint: polygonPoint,
+    //point-function 'exports'
+    pointBox: pointBox, pointCircle: pointCircle, pointCircleOutline: pointCircleOutline, pointEllipse: pointEllipse, pointLine: pointLine, pointPolygon: pointPolygon
+}
 
 
 
