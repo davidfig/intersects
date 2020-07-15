@@ -2,14 +2,13 @@
   "name": "intersects",
   "version": "2.7.1",
   "description": "a simple collection of 2d collision/intersects functions, supporting points, circles, circle outlines (circumference), lines, axis-aligned boxes, and polygons (convex)",
-  "main": "index.js",
+  "main": "src/_index.js",
+  "common": "dist/intersects.cjs.min.js",
+  "module": "dist/intersects.esm.min.js",
   "scripts": {
-    "test": "budo docs/code.js:index.js --dir docs --live",
-    "build": "browserify docs/code.js -o docs/index.js",
-    "prepublishOnly": "yarn run pkg && yarn run build",
-    "pkg-browserify": "browserify umd.js -o umd/intersects.js",
-    "pkg-min": "uglifyjs umd/intersects.js  -mc -o umd/intersects.min.js",
-    "pkg": "yarn run pkg-browserify && yarn run pkg-min && cp umd/intersects.min.js docs"
+    "test": "npm run build && budo docs/code.js:index.js --dir docs --live",
+    "build": "rollup docs/code.js -o docs/index.js",
+    "pkg-roll": "rollup -c"
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,9 @@
   },
   "homepage": "https://github.com/davidfig/intersects#readme",
   "devDependencies": {
+    "rollup": "^2.10.0",
+    "rollup-plugin-terser": "^6.1.0",
+    "budo": "^11.6.4",
     "calc-fontsize": "^1.1.0",
     "highlight.js": "^9.15.6",
     "pixi-ease": "^1.3.0",
