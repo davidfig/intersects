@@ -1,6 +1,4 @@
-'use strict'
-
-const linePoint = require('./line-point')
+import {linePoint} from './line-point';
 
 /**
  * polygon-point collision
@@ -10,7 +8,7 @@ const linePoint = require('./line-point')
  * @param {number} y of point
  * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
-module.exports = function polygonPoint(points, x, y, tolerance)
+export function polygonPoint(points, x, y, tolerance)
 {
     var length = points.length
     var c = false
@@ -48,4 +46,18 @@ module.exports = function polygonPoint(points, x, y, tolerance)
         }
     }
     return false
+}
+
+/**
+ * polygon-point collision
+ * based on https://stackoverflow.com/a/17490923/1955997
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number[]} points
+ * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
+ * @return {boolean}
+ */
+export function pointPolygon(x1, y1, points, tolerance)
+{
+    return polygonPoint(points, x1, y1, tolerance)
 }

@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * lineToLine helper function (to avoid circular dependencies)
  * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
@@ -13,7 +11,7 @@
  * @param {number} y4 second point in line 2
  * @return {boolean}
  */
-module.exports = function lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
+export function lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
 {
     var s1_x = x2 - x1
     var s1_y = y2 - y1

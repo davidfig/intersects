@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * polygon-polygon collision
  * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
@@ -7,7 +5,7 @@
  * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
  * @return {boolean}
  */
-module.exports = function polygonPolygon(points1, points2)
+export function polygonPolygon(points1, points2)
 {
     var a = points1
     var b = points2

@@ -7,7 +7,7 @@
     "test": "budo docs/code.js:index.js --dir docs --live",
     "build": "browserify docs/code.js -o docs/index.js",
     "prepublishOnly": "yarn run pkg && yarn run build",
-    "pkg-browserify": "browserify src/umd.js -o umd/intersects.js",
+    "pkg-browserify": "browserify src/umd-index.js -o umd/intersects.js",
     "pkg-min": "terser umd/intersects.js  -mc -o umd/intersects.min.js",
     "pkg": "yarn run pkg-browserify && yarn run pkg-min && cp umd/intersects.min.js docs"
   },

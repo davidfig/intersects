@@ -1,4 +1,4 @@
-var ellipseHelper = require('./ellipse-helper')
+import * as ellipseHelper from './ellipse-helper';
 
 /**
  * ellipse-ellipse collision
@@ -12,7 +12,7 @@ var ellipseHelper = require('./ellipse-helper')
  * @param {number} r2y radius of ellipse 2
  * @return {boolean}
  */
-module.exports = function ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y)
+export function ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y)
 {
     return ellipseHelper.ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y)
 }

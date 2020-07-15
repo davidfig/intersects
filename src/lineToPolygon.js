@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * turns a line into a polygon using thickness
  * @param {number} x1 first point of line
@@ -8,7 +6,7 @@
  * @param {number} y2 second point of line
  * @param {number} thickness of line
  */
-module.exports = function lineToPolygon(x1, y1, x2, y2, thickness)
+export function lineToPolygon(x1, y1, x2, y2, thickness)
 {
     const angle = Math.atan2(y2 - y1, x2 - x1) - Math.PI / 2
     const half = thickness / 2

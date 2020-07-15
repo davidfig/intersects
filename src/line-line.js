@@ -1,9 +1,8 @@
-'use strict'
+import {lineToPolygon} from './lineToPolygon';
+import {polygonPolygon} from './polygon-polygon';
 
-const lineToPolygon = require('./lineToPolygon')
-const polygonPolygon = require('./polygon-polygon')
-const linePolygon = require('./line-polygon')
-const lineToLine = require('./lineToLine')
+import {linePolygon} from './line-polygon';
+import {lineToLine} from './lineToLine';
 
 /**
  * line-line collision
@@ -20,7 +19,7 @@ const lineToLine = require('./lineToLine')
  * @param {number} [thickness2] of line 2 (the line is centered in its thickness--see demo)
  * @return {boolean}
  */
-module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
+export function lineLine(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
 {
     if (thickness1 || thickness2)
     {

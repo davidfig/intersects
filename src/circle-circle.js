@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * circle-circle collision
  * @param {number} x1 center of circle 1
@@ -10,7 +8,7 @@
  * @param {number} r2 radius of circle 2
  * @return {boolean}
  */
-module.exports = function circleCircle(x1, y1, r1, x2, y2, r2)
+export function circleCircle(x1, y1, r1, x2, y2, r2)
 {
     var x = x1 - x2
     var y = y2 - y1

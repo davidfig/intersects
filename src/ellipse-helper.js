@@ -84,7 +84,7 @@ function iterate(x, y, c0x, c0y, c2x, c2y, rr)
 
 // Test for collision between an ellipse of horizontal radius w0 and vertical radius h0 at (x0, y0) and
 // an ellipse of horizontal radius w1 and vertical radius h1 at (x1, y1)
-function ellipseEllipse(x0, y0, w0, h0, x1, y1, w1, h1)
+export function ellipseEllipse(x0, y0, w0, h0, x1, y1, w1, h1)
 {
     if (!initialized)
     {
@@ -114,7 +114,7 @@ function ellipseEllipse(x0, y0, w0, h0, x1, y1, w1, h1)
 
 // Test for collision between an ellipse of horizontal radius w and vertical radius h at (x0, y0) and
 // a circle of radius r at (x1, y1)
-function ellipseCircle(x0, y0, w, h, x1, y1, r)
+export function ellipseCircle(x0, y0, w, h, x1, y1, r)
 {
     if (!initialized)
     {
@@ -136,9 +136,4 @@ function ellipseCircle(x0, y0, w, h, x1, y1, r)
         }
         return false
     }
-}
-
-module.exports = {
-    ellipseCircle: ellipseCircle,
-    ellipseEllipse: ellipseEllipse
 }

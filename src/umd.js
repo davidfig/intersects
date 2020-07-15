@@ -1,1 +1,0 @@
-self.Intersects = require('./index.js')

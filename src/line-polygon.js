@@ -1,5 +1,5 @@
-var polygonPoint = require('./polygon-point')
-var lineLine = require('./lineToLine')
+import {polygonPoint} from './polygon-point';
+import {lineLine} from './lineToLine';
 
 /**
  * line-polygon collision
@@ -10,7 +10,7 @@ var lineLine = require('./lineToLine')
  @param {number[]} points of polygon
  @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
  */
-module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance)
+export function linePolygon(x1, y1, x2, y2, points, tolerance)
 {
     var length = points.length
 
@@ -30,4 +30,19 @@ module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance)
         }
     }
     return false
+}
+
+/**
+ * polygon-line collisions
+ * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
+ * @param {number} x1 first point in line
+ * @param {number} y1 first point in line
+ * @param {number} x2 second point in line
+ * @param {number} y2 second point in line
+ * @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
+ * @return {boolean}
+ */
+export function polygonLine(points, x1, y1, x2, y2, tolerance)
+{
+    return linePolygon(x1, y1, x2, y2, points, tolerance)
 }
