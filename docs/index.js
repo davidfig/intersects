@@ -4,7 +4,7 @@ const Ease = require('pixi-ease')
 const Random = require('yy-random')
 const calcFontSize = require('calc-fontsize')
 
-const Intersects = require('..')
+require('./intersects.min.js')
 
 const TESTS = 20, TIME = 1500
 
@@ -792,7 +792,9 @@ window.onload = function()
 // for eslint
 /* globals window, document */
 
-},{"..":102,"calc-fontsize":37,"pixi-ease":49,"pixi.js":58,"yy-random":78}],2:[function(require,module,exports){
+},{"./intersects.min.js":2,"calc-fontsize":38,"pixi-ease":50,"pixi.js":59,"yy-random":79}],2:[function(require,module,exports){
+!function n(e,i,o){function t(l,c){if(!i[l]){if(!e[l]){var p="function"==typeof require&&require;if(!c&&p)return p(l,!0);if(r)return r(l,!0);var u=new Error("Cannot find module '"+l+"'");throw u.code="MODULE_NOT_FOUND",u}var s=i[l]={exports:{}};e[l][0].call(s.exports,(function(n){return t(e[l][1][n]||n)}),s,s.exports,n,e,i,o)}return i[l].exports}for(var r="function"==typeof require&&require,l=0;l<o.length;l++)t(o[l]);return t}({1:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t,r,l,c){return n<t+l&&n+i>t&&e<r+c&&e+o>r}},{}],2:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t,r,l){var c=i/2,p=o/2,u=Math.abs(t-(n+i/2)),s=Math.abs(r-(e+o/2));if(u>c+l||s>p+l)return!1;if(u<=c||s<=p)return!0;var f=u-c,x=s-p;return f*f+x*x<=l*l}},{}],3:[function(n,e,i){var o=n("./circleOutline-box");e.exports=function(n,e,i,t,r,l,c,p){return o(r,l,c,n,e,i,t,p)}},{"./circleOutline-box":14}],4:[function(n,e,i){var o=n("./ellipse-box");e.exports=function(n,e,i,t,r,l,c,p){return o(r,l,c,p,n,e,i,t)}},{"./ellipse-box":17}],5:[function(n,e,i){"use strict";var o=n("./line-box");e.exports=function(n,e,i,t,r,l,c,p){return o(r,l,c,p,n,e,i,t)}},{"./line-box":25}],6:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t,r){return t>=n&&t<=n+i&&r>=e&&r<=e+o}},{}],7:[function(n,e,i){"use strict";var o=n("./polygon-box");e.exports=function(n,e,i,t,r){return o(r,n,e,i,t)}},{"./polygon-box":40}],8:[function(n,e,i){"use strict";var o=n("./box-circle");e.exports=function(n,e,i,t,r,l,c){return o(t,r,l,c,n,e,i)}},{"./box-circle":2}],9:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t,r){var l=n-o,c=t-e,p=i+r;return l*l+c*c<=p*p}},{}],10:[function(n,e,i){var o=n("./ellipse-circle");e.exports=function(n,e,i,t,r,l,c){return o(t,r,l,c,n,e,i)}},{"./ellipse-circle":18}],11:[function(n,e,i){"use strict";var o=n("./line-circle");e.exports=function(n,e,i,t,r,l,c){return o(t,r,l,c,n,e,i)}},{"./line-circle":26}],12:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t){var r=o-n,l=t-e;return r*r+l*l<=i*i}},{}],13:[function(n,e,i){"use strict";var o=n("./polygon-circle");e.exports=function(n,e,i,t,r){return o(t,n,e,i,r)}},{"./polygon-circle":41}],14:[function(n,e,i){var o=n("./circle-point"),t=n("./box-circle");e.exports=function(n,e,i,r,l,c,p,u){u=u||1;var s=0;return s+=o(n,e,i,r,l)?1:0,s+=o(n,e,i,r+c,l)?1:0,s+=o(n,e,i,r,l+p)?1:0,0===(s+=o(n,e,i,r+c,l+p)?1:0)?t(r,l,c,p,n,e,i):s>=1&&s<=3||(4===s?!(o(n,e,i-u,r,l)&&o(n,e,i-u,r+c,l)&&o(n,e,i-u,r,l+p)&&o(n,e,i-u,r+c,l+p)):void 0)}},{"./box-circle":2,"./circle-point":12}],15:[function(n,e,i){var o=n("./line-circle"),t=n("./circle-point");e.exports=function(n,e,i,r,l,c,p,u){return u=u||1,o(r,l,c,p,n,e,i)&&!(t(n,e,i-u,r,l)&&t(n,e,i-u,c,p))}},{"./circle-point":12,"./line-circle":26}],16:[function(n,e,i){var o=n("./circle-point");e.exports=function(n,e,i,t,r,l){return l=l||1,o(n,e,i,t,r)&&!o(n,e,i-l,t,r)}},{"./circle-point":12}],17:[function(n,e,i){var o=n("./ellipse-line"),t=n("./box-point");e.exports=function(n,e,i,r,l,c,p,u){return t(l,c,p,u,n,e)||o(n,e,i,r,l,c,l+p,c)||o(n,e,i,r,l,c+u,l+p,c+u)||o(n,e,i,r,l,c,l,c+u)||o(n,e,i,r,l+p,c,l+p,c+u)}},{"./box-point":6,"./ellipse-line":21}],18:[function(n,e,i){var o=n("./ellipse-helper");e.exports=function(n,e,i,t,r,l,c){return o.ellipseCircle(n,e,i,t,r,l,c)}},{"./ellipse-helper":20}],19:[function(n,e,i){var o=n("./ellipse-helper");e.exports=function(n,e,i,t,r,l,c,p){return o.ellipseEllipse(n,e,i,t,r,l,c,p)}},{"./ellipse-helper":20}],20:[function(n,e,i){var o,t,r;function l(){o=[],t=[];for(var n=0;n<=10;n++){var e=4<<n;o[n]=.5/Math.cos(4*Math.acos(0)/e),t[n]=.5/(Math.cos(2*Math.acos(0)/e)*Math.cos(2*Math.acos(0)/e))}r=!0}function c(n,e,i,r,l,c,p){for(var u=1;u<=10;u++){var s=(i+l)*o[u],f=(r+c)*o[u],x=n-s,a=e-f;if(x*x+a*a<=p)return!0;var g=l-s,y=c-f;if(x*g+a*y>=0&&x*g+a*y<=g*g+y*y&&(a*g-x*y>=0||p*(g*g+y*y)>=(a*g-x*y)*(a*g-x*y)))return!0;var v=i-s,b=r-f;if(x*v+a*b>=0&&x*v+a*b<=v*v+b*b&&(a*v-x*b<=0||p*(v*v+b*b)>=(a*v-x*b)*(a*v-x*b)))return!0;var h=(i+s)*t[u],M=(r+f)*t[u];if((h-n)*(h-n)+(M-e)*(M-e)<p)l=s,c=f;else{var O=s-h+s,P=f-M+f;if(!((O-n)*(O-n)+(P-e)*(P-e)<p)){var C=h-s,L=M-f;if(a*C-x*L<=0||p*(C*C+L*L)>(a*C-x*L)*(a*C-x*L))if(x*C+a*L>0){if(Math.abs(x*C+a*L)<=C*C+L*L||(n-h)*(i-h)+(e-M)*(r-M)>=0){l=s,c=f;continue}}else if(-(x*C+a*L)<=C*C+L*L||(n-O)*(l-O)+(e-P)*(c-P)>=0){i=s,r=f;continue}return!1}i=s,r=f}}return!1}e.exports={ellipseCircle:function(n,e,i,o,t,p,u){r||l();var s=Math.abs(t-n),f=Math.abs(p-e);return s*s+(o-f)*(o-f)<=u*u||(i-s)*(i-s)+f*f<=u*u||s*o+f*i<=i*o||(s*o+f*i-i*o)*(s*o+f*i-i*o)<=u*u*(i*i+o*o)&&s*i-f*o>=-o*o&&s*i-f*o<=i*i||((s-i)*(s-i)+(f-o)*(f-o)<=u*u||s<=i&&f-u<=o||f<=o&&s-u<=i)&&c(s,f,i,0,0,o,u*u)},ellipseEllipse:function(n,e,i,o,t,p,u,s){r||l();var f=Math.abs(t-n)*s,x=Math.abs(p-e)*u;i*=s;var a=u*s;return f*f+((o*=u)-x)*(o-x)<=a*a||(i-f)*(i-f)+x*x<=a*a||f*o+x*i<=i*o||(f*o+x*i-i*o)*(f*o+x*i-i*o)<=a*a*(i*i+o*o)&&f*i-x*o>=-o*o&&f*i-x*o<=i*i||((f-i)*(f-i)+(x-o)*(x-o)<=a*a||f<=i&&x-a<=o||x<=o&&f-a<=i)&&c(f,x,i,0,0,o,a*a)}}},{}],21:[function(n,e,i){e.exports=function(n,e,i,o,t,r,l,c){t-=n,l-=n,r-=e,c-=e;var p=Math.pow(l-t,2)/i/i+Math.pow(c-r,2)/o/o,u=2*t*(l-t)/i/i+2*r*(c-r)/o/o,s=u*u-4*p*(t*t/i/i+r*r/o/o-1);if(0===s){var f=-u/2/p;return f>=0&&f<=1}if(s>0){var x=Math.sqrt(s),a=(-u+x)/2/p,g=(-u-x)/2/p;return a>=0&&a<=1||g>=0&&g<=1}return!1}},{}],22:[function(n,e,i){e.exports=function(n,e,i,o,t,r){return Math.pow(t-n,2)/(i*i)+Math.pow(r-e,2)/(o*o)<=1}},{}],23:[function(n,e,i){var o=n("./polygon-ellipse");e.exports=function(n,e,i,t,r){return o(r,n,e,i,t)}},{"./polygon-ellipse":42}],24:[function(n,e,i){e.exports={circlePoint:n("./circle-point"),circleCircle:n("./circle-circle"),circleLine:n("./circle-line"),circleBox:n("./circle-box"),circlePolygon:n("./circle-polygon"),circleEllipse:n("./circle-ellipse"),circleOutlineBox:n("./circleOutline-box"),circleOutlineLine:n("./circleOutline-line"),circleOutlinePoint:n("./circleOutline-point"),polygonPoint:n("./polygon-point"),polygonLine:n("./polygon-line"),polygonPolygon:n("./polygon-polygon"),polygonBox:n("./polygon-box"),polygonCircle:n("./polygon-circle"),polygonEllipse:n("./polygon-ellipse"),boxPoint:n("./box-point"),boxBox:n("./box-box"),boxLine:n("./box-line"),boxPolygon:n("./box-polygon"),boxCircle:n("./box-circle"),boxEllipse:n("./box-ellipse"),boxCircleOutline:n("./box-circleOutline"),pointBox:n("./point-box"),pointPolygon:n("./point-polygon"),pointCircle:n("./point-circle"),pointLine:n("./point-line"),pointEllipse:n("./point-ellipse"),pointCircleOutline:n("./point-circleOutline"),lineLine:n("./line-line"),lineBox:n("./line-box"),linePolygon:n("./line-polygon"),lineCircle:n("./line-circle"),linePoint:n("./line-point"),lineEllipse:n("./line-ellipse"),lineCircleOutline:n("./line-circleOutline"),ellipsePoint:n("./ellipse-point"),ellipseLine:n("./ellipse-line"),ellipseBox:n("./ellipse-box"),ellipseCircle:n("./ellipse-circle"),ellipseEllipse:n("./ellipse-ellipse"),ellipsePolygon:n("./ellipse-polygon")}},{"./box-box":1,"./box-circle":2,"./box-circleOutline":3,"./box-ellipse":4,"./box-line":5,"./box-point":6,"./box-polygon":7,"./circle-box":8,"./circle-circle":9,"./circle-ellipse":10,"./circle-line":11,"./circle-point":12,"./circle-polygon":13,"./circleOutline-box":14,"./circleOutline-line":15,"./circleOutline-point":16,"./ellipse-box":17,"./ellipse-circle":18,"./ellipse-ellipse":19,"./ellipse-line":21,"./ellipse-point":22,"./ellipse-polygon":23,"./line-box":25,"./line-circle":26,"./line-circleOutline":27,"./line-ellipse":28,"./line-line":29,"./line-point":30,"./line-polygon":31,"./point-box":34,"./point-circle":35,"./point-circleOutline":36,"./point-ellipse":37,"./point-line":38,"./point-polygon":39,"./polygon-box":40,"./polygon-circle":41,"./polygon-ellipse":42,"./polygon-line":43,"./polygon-point":44,"./polygon-polygon":45}],25:[function(n,e,i){"use strict";var o=n("./box-point"),t=n("./line-line");e.exports=function(n,e,i,r,l,c,p,u){return!(!o(l,c,p,u,n,e)&&!o(l,c,p,u,i,r))||(t(n,e,i,r,l,c,l+p,c)||t(n,e,i,r,l+p,c,l+p,c+u)||t(n,e,i,r,l,c+u,l+p,c+u)||t(n,e,i,r,l,c,l,c+u))}},{"./box-point":6,"./line-line":29}],26:[function(n,e,i){"use strict";function o(n,e){return n[0]*e[0]+n[1]*e[1]}e.exports=function(n,e,i,t,r,l,c){var p=[r-n,l-e],u=[i-n,t-e],s=o(u,u),f=o(p,u)/s,x=[u[0]*(f=(f=f<0?0:f)>1?1:f)+n-r,u[1]*f+e-l];return o(x,x)<=c*c}},{}],27:[function(n,e,i){var o=n("./circleOutline-line");e.exports=function(n,e,i,t,r,l,c,p){return o(r,l,c,n,e,i,t,p)}},{"./circleOutline-line":15}],28:[function(n,e,i){var o=n("./ellipse-line");e.exports=function(n,e,i,t,r,l,c,p){return o(r,l,c,p,n,e,i,t)}},{"./ellipse-line":21}],29:[function(n,e,i){"use strict";const o=n("./lineToPolygon"),t=n("./polygon-polygon"),r=n("./line-polygon"),l=n("./lineToLine");e.exports=function(n,e,i,c,p,u,s,f,x,a){return x||a?function(n,e,i,l,c,p,u,s,f,x){if(f&&x)return t(o(n,e,i,l,f),o(c,p,u,s,x));if(f)return r(c,p,u,s,o(n,e,i,l,f));if(x)return r(n,e,i,l,o(c,p,u,s,f))}(n,e,i,c,p,u,s,f,x,a):l(n,e,i,c,p,u,s,f)}},{"./line-polygon":31,"./lineToLine":32,"./lineToPolygon":33,"./polygon-polygon":45}],30:[function(n,e,i){"use strict";function o(n,e,i,o){return Math.sqrt(Math.pow(n-i,2)+Math.pow(e-o,2))}e.exports=function(n,e,i,t,r,l,c){return c=c||1,Math.abs(o(n,e,i,t)-(o(n,e,r,l)+o(i,t,r,l)))<=c}},{}],31:[function(n,e,i){var o=n("./polygon-point"),t=n("./lineToLine");e.exports=function(n,e,i,r,l,c){var p=l.length;if(o(l,n,e,c))return!0;for(var u=0;u<p;u+=2){var s=(u+2)%p;if(t(n,e,i,r,l[u],l[u+1],l[s],l[s+1]))return!0}return!1}},{"./lineToLine":32,"./polygon-point":44}],32:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t,r,l,c){var p=i-n,u=o-e,s=l-t,f=c-r,x=(-u*(n-t)+p*(e-r))/(-s*u+p*f),a=(s*(e-r)-f*(n-t))/(-s*u+p*f);return x>=0&&x<=1&&a>=0&&a<=1}},{}],33:[function(n,e,i){"use strict";e.exports=function(n,e,i,o,t){const r=Math.atan2(o-e,i-n)-Math.PI/2,l=t/2,c=Math.cos(r)*l,p=Math.sin(r)*l;return[n-c,e-p,i-c,o-p,i+c,o+p,n+c,e+p]}},{}],34:[function(n,e,i){"use strict";var o=n("./box-point");e.exports=function(n,e,i,t,r,l){return o(i,t,r,l,n,e)}},{"./box-point":6}],35:[function(n,e,i){"use strict";var o=n("./circle-point");e.exports=function(n,e,i,t,r){return o(i,t,r,n,e)}},{"./circle-point":12}],36:[function(n,e,i){var o=n("./circleOutline-point");e.exports=function(n,e,i,t,r,l){return o(n,e,i,t,r,l)}},{"./circleOutline-point":16}],37:[function(n,e,i){var o=n("./ellipse-point");e.exports=function(n,e,i,t,r,l){return o(i,t,r,l,n,e)}},{"./ellipse-point":22}],38:[function(n,e,i){"use strict";var o=n("./line-point");e.exports=function(n,e,i,t,r,l){return o(i,t,r,l,n,e)}},{"./line-point":30}],39:[function(n,e,i){"use strict";var o=n("./polygon-point");e.exports=function(n,e,i,t){return o(i,n,e,t)}},{"./polygon-point":44}],40:[function(n,e,i){"use strict";var o=n("./polygon-polygon");e.exports=function(n,e,i,t,r){return o(n,[e,i,e+t,i,e+t,i+r,e,i+r])}},{"./polygon-polygon":45}],41:[function(n,e,i){var o=n("./polygon-point"),t=n("./line-circle");e.exports=function(n,e,i,r,l){if(o(n,e,i,l))return!0;for(var c=n.length,p=0;p<c-2;p+=2)if(t(n[p],n[p+1],n[p+2],n[p+3],e,i,r))return!0;return t(n[0],n[1],n[c-2],n[c-1],e,i,r)}},{"./line-circle":26,"./polygon-point":44}],42:[function(n,e,i){var o=n("./polygon-point"),t=n("./line-ellipse");e.exports=function(n,e,i,r,l){if(o(n,e,i))return!0;for(var c=n.length,p=0;p<c-2;p+=2)if(t(n[p],n[p+1],n[p+2],n[p+3],e,i,r,l))return!0;return t(n[0],n[1],n[c-2],n[c-1],e,i,r,l)}},{"./line-ellipse":28,"./polygon-point":44}],43:[function(n,e,i){var o=n("./line-polygon");e.exports=function(n,e,i,t,r,l){return o(e,i,t,r,n,l)}},{"./line-polygon":31}],44:[function(n,e,i){"use strict";const o=n("./line-point");e.exports=function(n,e,i,t){var r,l,c=n.length,p=!1;for(r=0,l=c-2;r<c;r+=2)n[r+1]>i!=n[l+1]>i&&e<(n[l]-n[r])*(i-n[r+1])/(n[l+1]-n[r+1])+n[r]&&(p=!p),l=r;if(p)return!0;for(r=0;r<c;r+=2){var u,s,f=n[r],x=n[r+1];if(r===c-2?(u=n[0],s=n[1]):(u=n[r+2],s=n[r+3]),o(f,x,u,s,e,i,t))return!0}return!1}},{"./line-point":30}],45:[function(n,e,i){"use strict";e.exports=function(n,e){for(var i,o,t,r,l,c,p=n,u=e,s=[p,u],f=0;f<s.length;f++)for(var x=s[f],a=0;a<x.length;a+=2){var g=(a+2)%x.length,y={x:x[g+1]-x[a+1],y:x[a]-x[g]};for(i=o=null,c=0;c<p.length;c+=2)t=y.x*p[c]+y.y*p[c+1],(null===i||t<i)&&(i=t),(null===o||t>o)&&(o=t);for(r=l=null,c=0;c<u.length;c+=2)t=y.x*u[c]+y.y*u[c+1],(null===r||t<r)&&(r=t),(null===l||t>l)&&(l=t);if(o<r||l<i)return!1}return!0}},{}],46:[function(n,e,i){self.Intersects=n("./index.js")},{"./index.js":24}]},{},[46]);
+},{}],3:[function(require,module,exports){
 /*!
  * @pixi/accessibility - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -1387,7 +1389,7 @@ exports.AccessibilityManager = AccessibilityManager;
 exports.accessibleTarget = accessibleTarget;
 
 
-},{"@pixi/display":6,"@pixi/utils":35}],3:[function(require,module,exports){
+},{"@pixi/display":7,"@pixi/utils":36}],4:[function(require,module,exports){
 /*!
  * @pixi/app - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -1668,7 +1670,7 @@ Application.registerPlugin(ResizePlugin);
 exports.Application = Application;
 
 
-},{"@pixi/core":5,"@pixi/display":6}],4:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/display":7}],5:[function(require,module,exports){
 /*!
  * @pixi/constants - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -1832,7 +1834,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })(exports.MSAA_QUALITY || (exports.MSAA_QUALITY = {}));
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*!
  * @pixi/core - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -12806,7 +12808,7 @@ exports.systems = systems;
 exports.uniformParsers = uniformParsers;
 
 
-},{"@pixi/constants":4,"@pixi/math":17,"@pixi/runner":26,"@pixi/settings":27,"@pixi/ticker":34,"@pixi/utils":35}],6:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/math":18,"@pixi/runner":27,"@pixi/settings":28,"@pixi/ticker":35,"@pixi/utils":36}],7:[function(require,module,exports){
 /*!
  * @pixi/display - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -14487,7 +14489,7 @@ exports.DisplayObject = DisplayObject;
 exports.TemporaryDisplayObject = TemporaryDisplayObject;
 
 
-},{"@pixi/math":17,"@pixi/settings":27,"@pixi/utils":35}],7:[function(require,module,exports){
+},{"@pixi/math":18,"@pixi/settings":28,"@pixi/utils":36}],8:[function(require,module,exports){
 /*!
  * @pixi/extract - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -14715,7 +14717,7 @@ var Extract = /** @class */ (function () {
 exports.Extract = Extract;
 
 
-},{"@pixi/core":5,"@pixi/math":17,"@pixi/utils":35}],8:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/math":18,"@pixi/utils":36}],9:[function(require,module,exports){
 /*!
  * @pixi/filter-alpha - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -14810,7 +14812,7 @@ var AlphaFilter = /** @class */ (function (_super) {
 exports.AlphaFilter = AlphaFilter;
 
 
-},{"@pixi/core":5}],9:[function(require,module,exports){
+},{"@pixi/core":6}],10:[function(require,module,exports){
 /*!
  * @pixi/filter-blur - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -15645,7 +15647,7 @@ exports.BlurFilter = BlurFilter;
 exports.BlurFilterPass = BlurFilterPass;
 
 
-},{"@pixi/core":5,"@pixi/settings":27}],10:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/settings":28}],11:[function(require,module,exports){
 /*!
  * @pixi/filter-color-matrix - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -16183,7 +16185,7 @@ ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 exports.ColorMatrixFilter = ColorMatrixFilter;
 
 
-},{"@pixi/core":5}],11:[function(require,module,exports){
+},{"@pixi/core":6}],12:[function(require,module,exports){
 /*!
  * @pixi/filter-displacement - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -16324,7 +16326,7 @@ var DisplacementFilter = /** @class */ (function (_super) {
 exports.DisplacementFilter = DisplacementFilter;
 
 
-},{"@pixi/core":5,"@pixi/math":17}],12:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/math":18}],13:[function(require,module,exports){
 /*!
  * @pixi/filter-fxaa - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -16394,7 +16396,7 @@ var FXAAFilter = /** @class */ (function (_super) {
 exports.FXAAFilter = FXAAFilter;
 
 
-},{"@pixi/core":5}],13:[function(require,module,exports){
+},{"@pixi/core":6}],14:[function(require,module,exports){
 /*!
  * @pixi/filter-noise - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -16504,7 +16506,7 @@ var NoiseFilter = /** @class */ (function (_super) {
 exports.NoiseFilter = NoiseFilter;
 
 
-},{"@pixi/core":5}],14:[function(require,module,exports){
+},{"@pixi/core":6}],15:[function(require,module,exports){
 /*!
  * @pixi/graphics - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -19757,7 +19759,7 @@ exports.LineStyle = LineStyle;
 exports.graphicsUtils = index;
 
 
-},{"@pixi/constants":4,"@pixi/core":5,"@pixi/display":6,"@pixi/math":17,"@pixi/utils":35}],15:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/core":6,"@pixi/display":7,"@pixi/math":18,"@pixi/utils":36}],16:[function(require,module,exports){
 /*!
  * @pixi/interaction - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -21969,7 +21971,7 @@ exports.InteractionTrackingData = InteractionTrackingData;
 exports.interactiveTarget = interactiveTarget;
 
 
-},{"@pixi/display":6,"@pixi/math":17,"@pixi/ticker":34,"@pixi/utils":35}],16:[function(require,module,exports){
+},{"@pixi/display":7,"@pixi/math":18,"@pixi/ticker":35,"@pixi/utils":36}],17:[function(require,module,exports){
 /*!
  * @pixi/loaders - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -22299,7 +22301,7 @@ exports.LoaderResource = LoaderResource;
 exports.TextureLoader = TextureLoader;
 
 
-},{"@pixi/core":5,"resource-loader":64}],17:[function(require,module,exports){
+},{"@pixi/core":6,"resource-loader":65}],18:[function(require,module,exports){
 /*!
  * @pixi/math - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -24233,7 +24235,7 @@ exports.Transform = Transform;
 exports.groupD8 = groupD8;
 
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /*!
  * @pixi/mesh-extras - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -24969,7 +24971,7 @@ exports.SimplePlane = SimplePlane;
 exports.SimpleRope = SimpleRope;
 
 
-},{"@pixi/constants":4,"@pixi/core":5,"@pixi/mesh":19}],19:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/core":6,"@pixi/mesh":20}],20:[function(require,module,exports){
 /*!
  * @pixi/mesh - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -25694,7 +25696,7 @@ exports.MeshGeometry = MeshGeometry;
 exports.MeshMaterial = MeshMaterial;
 
 
-},{"@pixi/constants":4,"@pixi/core":5,"@pixi/display":6,"@pixi/math":17,"@pixi/settings":27,"@pixi/utils":35}],20:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/core":6,"@pixi/display":7,"@pixi/math":18,"@pixi/settings":28,"@pixi/utils":36}],21:[function(require,module,exports){
 /*!
  * @pixi/mixin-cache-as-bitmap - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -26028,7 +26030,7 @@ display.DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapD
 exports.CacheData = CacheData;
 
 
-},{"@pixi/core":5,"@pixi/display":6,"@pixi/math":17,"@pixi/settings":27,"@pixi/sprite":30,"@pixi/utils":35}],21:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/display":7,"@pixi/math":18,"@pixi/settings":28,"@pixi/sprite":31,"@pixi/utils":36}],22:[function(require,module,exports){
 /*!
  * @pixi/mixin-get-child-by-name - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -26080,7 +26082,7 @@ display.Container.prototype.getChildByName = function getChildByName(name, deep)
 };
 
 
-},{"@pixi/display":6}],22:[function(require,module,exports){
+},{"@pixi/display":7}],23:[function(require,module,exports){
 /*!
  * @pixi/mixin-get-global-position - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -26118,7 +26120,7 @@ display.DisplayObject.prototype.getGlobalPosition = function getGlobalPosition(p
 };
 
 
-},{"@pixi/display":6,"@pixi/math":17}],23:[function(require,module,exports){
+},{"@pixi/display":7,"@pixi/math":18}],24:[function(require,module,exports){
 /*!
  * @pixi/particles - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -26935,7 +26937,7 @@ exports.ParticleContainer = ParticleContainer;
 exports.ParticleRenderer = ParticleRenderer;
 
 
-},{"@pixi/constants":4,"@pixi/core":5,"@pixi/display":6,"@pixi/math":17,"@pixi/utils":35}],24:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/core":6,"@pixi/display":7,"@pixi/math":18,"@pixi/utils":36}],25:[function(require,module,exports){
 /*!
  * @pixi/polyfill - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -27054,7 +27056,7 @@ if (!window.Int32Array) {
 }
 
 
-},{"es6-promise-polyfill":39,"object-assign":44}],25:[function(require,module,exports){
+},{"es6-promise-polyfill":40,"object-assign":45}],26:[function(require,module,exports){
 /*!
  * @pixi/prepare - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -27697,7 +27699,7 @@ exports.Prepare = Prepare;
 exports.TimeLimiter = TimeLimiter;
 
 
-},{"@pixi/core":5,"@pixi/display":6,"@pixi/graphics":14,"@pixi/settings":27,"@pixi/text":33,"@pixi/ticker":34}],26:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/display":7,"@pixi/graphics":15,"@pixi/settings":28,"@pixi/text":34,"@pixi/ticker":35}],27:[function(require,module,exports){
 /*!
  * @pixi/runner - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -27901,7 +27903,7 @@ Object.defineProperties(Runner.prototype, {
 exports.Runner = Runner;
 
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*!
  * @pixi/settings - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -28191,7 +28193,7 @@ exports.isMobile = isMobile;
 exports.settings = settings;
 
 
-},{"ismobilejs":41}],28:[function(require,module,exports){
+},{"ismobilejs":42}],29:[function(require,module,exports){
 /*!
  * @pixi/sprite-animated - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -28652,7 +28654,7 @@ var AnimatedSprite = /** @class */ (function (_super) {
 exports.AnimatedSprite = AnimatedSprite;
 
 
-},{"@pixi/core":5,"@pixi/sprite":30,"@pixi/ticker":34}],29:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/sprite":31,"@pixi/ticker":35}],30:[function(require,module,exports){
 /*!
  * @pixi/sprite-tiling - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -29067,7 +29069,7 @@ exports.TilingSprite = TilingSprite;
 exports.TilingSpriteRenderer = TilingSpriteRenderer;
 
 
-},{"@pixi/constants":4,"@pixi/core":5,"@pixi/math":17,"@pixi/sprite":30,"@pixi/utils":35}],30:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/core":6,"@pixi/math":18,"@pixi/sprite":31,"@pixi/utils":36}],31:[function(require,module,exports){
 /*!
  * @pixi/sprite - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -29662,7 +29664,7 @@ var Sprite = /** @class */ (function (_super) {
 exports.Sprite = Sprite;
 
 
-},{"@pixi/constants":4,"@pixi/core":5,"@pixi/display":6,"@pixi/math":17,"@pixi/settings":27,"@pixi/utils":35}],31:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/core":6,"@pixi/display":7,"@pixi/math":18,"@pixi/settings":28,"@pixi/utils":36}],32:[function(require,module,exports){
 /*!
  * @pixi/spritesheet - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -30006,7 +30008,7 @@ exports.Spritesheet = Spritesheet;
 exports.SpritesheetLoader = SpritesheetLoader;
 
 
-},{"@pixi/core":5,"@pixi/loaders":16,"@pixi/math":17,"@pixi/utils":35}],32:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/loaders":17,"@pixi/math":18,"@pixi/utils":36}],33:[function(require,module,exports){
 /*!
  * @pixi/text-bitmap - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -31702,7 +31704,7 @@ exports.BitmapFontLoader = BitmapFontLoader;
 exports.BitmapText = BitmapText;
 
 
-},{"@pixi/core":5,"@pixi/display":6,"@pixi/loaders":16,"@pixi/math":17,"@pixi/mesh":19,"@pixi/settings":27,"@pixi/text":33,"@pixi/utils":35}],33:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/display":7,"@pixi/loaders":17,"@pixi/math":18,"@pixi/mesh":20,"@pixi/settings":28,"@pixi/text":34,"@pixi/utils":36}],34:[function(require,module,exports){
 /*!
  * @pixi/text - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -33760,7 +33762,7 @@ exports.TextMetrics = TextMetrics;
 exports.TextStyle = TextStyle;
 
 
-},{"@pixi/core":5,"@pixi/math":17,"@pixi/settings":27,"@pixi/sprite":30,"@pixi/utils":35}],34:[function(require,module,exports){
+},{"@pixi/core":6,"@pixi/math":18,"@pixi/settings":28,"@pixi/sprite":31,"@pixi/utils":36}],35:[function(require,module,exports){
 /*!
  * @pixi/ticker - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -34612,7 +34614,7 @@ exports.Ticker = Ticker;
 exports.TickerPlugin = TickerPlugin;
 
 
-},{"@pixi/settings":27}],35:[function(require,module,exports){
+},{"@pixi/settings":28}],36:[function(require,module,exports){
 /*!
  * @pixi/utils - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -35549,9 +35551,9 @@ exports.trimCanvas = trimCanvas;
 exports.uid = uid;
 
 
-},{"@pixi/constants":4,"@pixi/settings":27,"earcut":38,"eventemitter3":40,"url":74}],36:[function(require,module,exports){
+},{"@pixi/constants":5,"@pixi/settings":28,"earcut":39,"eventemitter3":41,"url":75}],37:[function(require,module,exports){
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  * @file index.js
  * @summary calculate font-size for a given bounding box
@@ -35621,7 +35623,7 @@ module.exports = function FontSize(text, options)
     }
     return size - 1
 }
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -36302,7 +36304,7 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (global,setImmediate){
 (function(global){
 
@@ -36652,7 +36654,7 @@ Promise.reject = function(reason){
 })(typeof window != 'undefined' ? window : typeof global != 'undefined' ? global : typeof self != 'undefined' ? self : this);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("timers").setImmediate)
-},{"timers":73}],40:[function(require,module,exports){
+},{"timers":74}],41:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty
@@ -36990,7 +36992,7 @@ if ('undefined' !== typeof module) {
   module.exports = EventEmitter;
 }
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -37000,7 +37002,7 @@ __export(require("./isMobile"));
 var isMobile_1 = require("./isMobile");
 exports["default"] = isMobile_1["default"];
 
-},{"./isMobile":42}],42:[function(require,module,exports){
+},{"./isMobile":43}],43:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var appleIphone = /iPhone/i;
@@ -37129,7 +37131,7 @@ function isMobile(param) {
 }
 exports["default"] = isMobile;
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -37296,7 +37298,7 @@ MiniSignal.MiniSignalBinding = MiniSignalBinding;
 exports['default'] = MiniSignal;
 module.exports = exports['default'];
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -37388,7 +37390,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict'
 
 module.exports = function parseURI (str, opts) {
@@ -37420,7 +37422,7 @@ module.exports = function parseURI (str, opts) {
   return uri
 }
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 
 /*
 	Copyright © 2001 Robert Penner
@@ -37688,7 +37690,7 @@ module.exports = function parseURI (str, opts) {
 
 }).call(this);
 
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -37776,7 +37778,7 @@ var angle = function (_wait) {
 
 module.exports = angle;
 
-},{"./wait":57}],48:[function(require,module,exports){
+},{"./wait":58}],49:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -37863,7 +37865,7 @@ var face = function (_wait) {
 
 module.exports = face;
 
-},{"./wait":57,"yy-angle":76}],49:[function(require,module,exports){
+},{"./wait":58,"yy-angle":77}],50:[function(require,module,exports){
 'use strict';
 
 var Ease = {
@@ -37881,7 +37883,7 @@ var Ease = {
 
 module.exports = Ease;
 
-},{"./angle":47,"./face":48,"./list":50,"./load":51,"./movie":52,"./shake":53,"./target":54,"./tint":55,"./to":56,"./wait":57}],50:[function(require,module,exports){
+},{"./angle":48,"./face":49,"./list":51,"./load":52,"./movie":53,"./shake":54,"./target":55,"./tint":56,"./to":57,"./wait":58}],51:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -38262,7 +38264,7 @@ var Ease = function (_Events) {
 
 module.exports = Ease;
 
-},{"./angle":47,"./face":48,"./load":51,"./movie":52,"./shake":53,"./target":54,"./tint":55,"./to":56,"./wait":57,"eventemitter3":40,"pixi.js":58}],51:[function(require,module,exports){
+},{"./angle":48,"./face":49,"./load":52,"./movie":53,"./shake":54,"./target":55,"./tint":56,"./to":57,"./wait":58,"eventemitter3":41,"pixi.js":59}],52:[function(require,module,exports){
 'use strict';
 
 var wait = require('./wait');
@@ -38305,7 +38307,7 @@ function load(object, load) {
 
 module.exports = load;
 
-},{"./angle":47,"./face":48,"./movie":52,"./shake":53,"./target":54,"./tint":55,"./to":56,"./wait":57}],52:[function(require,module,exports){
+},{"./angle":48,"./face":49,"./movie":53,"./shake":54,"./target":55,"./tint":56,"./to":57,"./wait":58}],53:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -38424,7 +38426,7 @@ var movie = function (_wait) {
 
 module.exports = movie;
 
-},{"./wait":57}],53:[function(require,module,exports){
+},{"./wait":58}],54:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -38540,7 +38542,7 @@ var shake = function (_wait) {
 
 module.exports = shake;
 
-},{"./wait":57}],54:[function(require,module,exports){
+},{"./wait":58}],55:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -38629,7 +38631,7 @@ var target = function (_wait) {
 
 module.exports = target;
 
-},{"./wait":57}],55:[function(require,module,exports){
+},{"./wait":58}],56:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -38791,7 +38793,7 @@ var tint = function (_wait) {
 
 module.exports = tint;
 
-},{"./wait":57,"yy-color":77}],56:[function(require,module,exports){
+},{"./wait":58,"yy-color":78}],57:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -38990,7 +38992,7 @@ var to = function (_wait) {
 
 module.exports = to;
 
-},{"./wait":57}],57:[function(require,module,exports){
+},{"./wait":58}],58:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -39199,7 +39201,7 @@ var wait = function (_EventEmitter) {
 
 module.exports = wait;
 
-},{"eventemitter3":40,"penner":46}],58:[function(require,module,exports){
+},{"eventemitter3":41,"penner":47}],59:[function(require,module,exports){
 /*!
  * pixi.js - v5.3.0
  * Compiled Thu, 18 Jun 2020 23:27:40 UTC
@@ -40765,7 +40767,7 @@ exports.filters = filters;
 exports.useDeprecated = useDeprecated;
 
 
-},{"@pixi/accessibility":2,"@pixi/app":3,"@pixi/constants":4,"@pixi/core":5,"@pixi/display":6,"@pixi/extract":7,"@pixi/filter-alpha":8,"@pixi/filter-blur":9,"@pixi/filter-color-matrix":10,"@pixi/filter-displacement":11,"@pixi/filter-fxaa":12,"@pixi/filter-noise":13,"@pixi/graphics":14,"@pixi/interaction":15,"@pixi/loaders":16,"@pixi/math":17,"@pixi/mesh":19,"@pixi/mesh-extras":18,"@pixi/mixin-cache-as-bitmap":20,"@pixi/mixin-get-child-by-name":21,"@pixi/mixin-get-global-position":22,"@pixi/particles":23,"@pixi/polyfill":24,"@pixi/prepare":25,"@pixi/runner":26,"@pixi/settings":27,"@pixi/sprite":30,"@pixi/sprite-animated":28,"@pixi/sprite-tiling":29,"@pixi/spritesheet":31,"@pixi/text":33,"@pixi/text-bitmap":32,"@pixi/ticker":34,"@pixi/utils":35}],59:[function(require,module,exports){
+},{"@pixi/accessibility":3,"@pixi/app":4,"@pixi/constants":5,"@pixi/core":6,"@pixi/display":7,"@pixi/extract":8,"@pixi/filter-alpha":9,"@pixi/filter-blur":10,"@pixi/filter-color-matrix":11,"@pixi/filter-displacement":12,"@pixi/filter-fxaa":13,"@pixi/filter-noise":14,"@pixi/graphics":15,"@pixi/interaction":16,"@pixi/loaders":17,"@pixi/math":18,"@pixi/mesh":20,"@pixi/mesh-extras":19,"@pixi/mixin-cache-as-bitmap":21,"@pixi/mixin-get-child-by-name":22,"@pixi/mixin-get-global-position":23,"@pixi/particles":24,"@pixi/polyfill":25,"@pixi/prepare":26,"@pixi/runner":27,"@pixi/settings":28,"@pixi/sprite":31,"@pixi/sprite-animated":29,"@pixi/sprite-tiling":30,"@pixi/spritesheet":32,"@pixi/text":34,"@pixi/text-bitmap":33,"@pixi/ticker":35,"@pixi/utils":36}],60:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -40951,7 +40953,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.3.2 by @mathias */
 ;(function(root) {
@@ -41485,7 +41487,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -41571,7 +41573,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -41658,13 +41660,13 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":61,"./encode":62}],64:[function(require,module,exports){
+},{"./decode":62,"./encode":63}],65:[function(require,module,exports){
 /*!
  * resource-loader - v3.0.1
  * https://github.com/pixijs/pixi-sound
@@ -44015,7 +44017,7 @@ exports.encodeBinary = encodeBinary;
 exports.middleware = index;
 
 
-},{"mini-signals":43,"parse-uri":45}],65:[function(require,module,exports){
+},{"mini-signals":44,"parse-uri":46}],66:[function(require,module,exports){
 // A library of seedable RNGs implemented in Javascript.
 //
 // Usage:
@@ -44077,7 +44079,7 @@ sr.tychei = tychei;
 
 module.exports = sr;
 
-},{"./lib/alea":66,"./lib/tychei":67,"./lib/xor128":68,"./lib/xor4096":69,"./lib/xorshift7":70,"./lib/xorwow":71,"./seedrandom":72}],66:[function(require,module,exports){
+},{"./lib/alea":67,"./lib/tychei":68,"./lib/xor128":69,"./lib/xor4096":70,"./lib/xorshift7":71,"./lib/xorwow":72,"./seedrandom":73}],67:[function(require,module,exports){
 // A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
 // http://baagoe.com/en/RandomMusings/javascript/
 // https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
@@ -44193,7 +44195,7 @@ if (module && module.exports) {
 
 
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 // A Javascript implementaion of the "Tyche-i" prng algorithm by
 // Samuel Neves and Filipe Araujo.
 // See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
@@ -44298,7 +44300,7 @@ if (module && module.exports) {
 
 
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 // A Javascript implementaion of the "xor128" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -44381,7 +44383,7 @@ if (module && module.exports) {
 
 
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 // A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
 //
 // This fast non-cryptographic random number generator is designed for
@@ -44529,7 +44531,7 @@ if (module && module.exports) {
   (typeof define) == 'function' && define   // present with an AMD loader
 );
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 // A Javascript implementaion of the "xorshift7" algorithm by
 // François Panneton and Pierre L'ecuyer:
 // "On the Xorgshift Random Number Generators"
@@ -44628,7 +44630,7 @@ if (module && module.exports) {
 );
 
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 // A Javascript implementaion of the "xorwow" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
@@ -44716,7 +44718,7 @@ if (module && module.exports) {
 
 
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 /*
 Copyright 2019 David Bau.
 
@@ -44971,7 +44973,7 @@ if ((typeof module) == 'object' && module.exports) {
   Math    // math: package containing random, pow, and seedrandom
 );
 
-},{"crypto":36}],73:[function(require,module,exports){
+},{"crypto":37}],74:[function(require,module,exports){
 (function (setImmediate,clearImmediate){
 var nextTick = require('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -45050,7 +45052,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
-},{"process/browser.js":59,"timers":73}],74:[function(require,module,exports){
+},{"process/browser.js":60,"timers":74}],75:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -45784,7 +45786,7 @@ Url.prototype.parseHost = function() {
   if (host) this.hostname = host;
 };
 
-},{"./util":75,"punycode":60,"querystring":63}],75:[function(require,module,exports){
+},{"./util":76,"punycode":61,"querystring":64}],76:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -45802,7 +45804,7 @@ module.exports = {
   }
 };
 
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 // angle.js <https://github.com/davidfig/anglejs>
 // Released under MIT license <https://github.com/davidfig/angle/blob/master/LICENSE>
 // Author: David Figatner
@@ -46085,7 +46087,7 @@ module.exports = {
     equals: equals,
     explain: explain
 }
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 // yy-color
 // by David Figatner
 // MIT License
@@ -46405,7 +46407,7 @@ module.exports = {
     randomHSL: randomHSL,
     randomGoldenRatioHSL: randomGoldenRatioHSL
 }
-},{"yy-random":78}],78:[function(require,module,exports){
+},{"yy-random":79}],79:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -46851,1250 +46853,4 @@ var Random = function () {
 
 module.exports = new Random();
 
-},{"seedrandom":65}],79:[function(require,module,exports){
-'use strict'
-
-/**
- * box-box collision
- * @param {number} x1 top-left corner of first box
- * @param {number} y1 top-left corner of first box
- * @param {number} w1 width of first box
- * @param {number} h1 height of first box
- * @param {number} x2 top-left corner of second box
- * @param {number} y2 top-left corner of second box
- * @param {number} w2 width of second box
- * @param {number} h2 height of second box
- */
-module.exports = function boxBox(x1, y1, w1, h1, x2, y2, w2, h2)
-{
-    return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2
-}
-
-},{}],80:[function(require,module,exports){
-'use strict'
-
-/**
- * box-circle collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- */
-module.exports = function boxCircle(xb, yb, wb, hb, xc, yc, rc)
-{
-    var hw = wb / 2
-    var hh = hb / 2
-    var distX = Math.abs(xc - (xb + wb / 2))
-    var distY = Math.abs(yc - (yb + hb / 2))
-
-    if (distX > hw + rc || distY > hh + rc)
-    {
-        return false
-    }
-
-    if (distX <= hw || distY <= hh)
-    {
-        return true
-    }
-
-    var x = distX - hw
-    var y = distY - hh
-    return x * x + y * y <= rc * rc
-}
-
-},{}],81:[function(require,module,exports){
-var circleOutlineBox = require('./circleOutline-box')
-
-/**
- * circleOutline-box (axis-aligned) collision
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x top-left corner of box
- * @param {number} y top-left corner of box
- * @param {number} width of box
- * @param {number} height of box
- * @param {number} thickness of circle outline
- */
-module.exports = function boxCircleOutline(x, y, width, height, xc, yc, rc, thickness)
-{
-    return circleOutlineBox(xc, yc, rc, x, y, width, height, thickness)
-}
-},{"./circleOutline-box":92}],82:[function(require,module,exports){
-var ellipseBox = require('./ellipse-box')
-
-/**
- * box-ellipse (axis-oriented rectangle) collision
- * @param {number} xb top-left corner of rectangle
- * @param {number} yb top-left corner of rectangle
- * @param {number} wb width of rectangle
- * @param {number} hb height of rectangle
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {radius} rex radius-x of ellipse
- * @param {radius} rey radius-y of ellipse
- */
-module.exports = function boxEllipse(xb, yb, wb, hb, xe, ye, rex, rey)
-{
-    return ellipseBox(xe, ye, rex, rey, xb, yb, wb, hb)
-}
-},{"./ellipse-box":95}],83:[function(require,module,exports){
-'use strict'
-
-var lineBox = require('./line-box')
-
-/**
- * box-line collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- */
-module.exports = function boxLine(xb, yb, wb, hb, x1, y1, x2, y2)
-{
-    return lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
-}
-
-},{"./line-box":103}],84:[function(require,module,exports){
-'use strict'
-
-/**
- * box-point collision
- * @param {number} x1 top-left corner of box
- * @param {number} y1 top-left corner of box
- * @param {number} w1 width of box
- * @param {number} h1 height of box
- * @param {number} x2 of point
- * @param {number} y2 of point
- * @return {boolean}
- */
-module.exports = function boxPoint(x1, y1, w1, h1, x2, y2)
-{
-    return x2 >= x1 && x2 <= x1 + w1 && y2 >= y1 && y2 <= y1 + h1
-}
-
-},{}],85:[function(require,module,exports){
-'use strict'
-
-var polygonBox = require('./polygon-box')
-
-/**
- * box-polygon collision
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @param {number[]} points of polygon
- */
-module.exports = function boxPolygon(xb, yb, wb, hb, points)
-{
-    return polygonBox(points, xb, yb, wb, hb)
-}
-
-},{"./polygon-box":118}],86:[function(require,module,exports){
-'use strict'
-
-var boxCircle = require('./box-circle')
-
-/**
- * circle-box (axis-oriented rectangle) collision
- * from http://stackoverflow.com/a/402010/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} xb top-left corner of rectangle
- * @param {number} yb top-left corner of rectangle
- * @param {number} wb width of rectangle
- * @param {number} hb height of rectangle
- */
-module.exports = function circleBox(xc, yc, rc, xb, yb, wb, hb)
-{
-    return boxCircle(xb, yb, wb, hb, xc, yc, rc)
-}
-
-},{"./box-circle":80}],87:[function(require,module,exports){
-'use strict'
-
-/**
- * circle-circle collision
- * @param {number} x1 center of circle 1
- * @param {number} y1 center of circle 1
- * @param {number} r1 radius of circle 1
- * @param {number} x2 center of circle 2
- * @param {number} y2 center of circle 2
- * @param {number} r2 radius of circle 2
- * @return {boolean}
- */
-module.exports = function circleCircle(x1, y1, r1, x2, y2, r2)
-{
-    var x = x1 - x2
-    var y = y2 - y1
-    var radii = r1 + r2
-    return x * x + y * y <= radii * radii
-}
-
-},{}],88:[function(require,module,exports){
-var ellipseCircle = require('./ellipse-circle')
-
-/**
- * circle-ellipse collision
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {number} rex radius-x of ellipse
- * @param {number} rey radius-y of ellipse
- * @return {boolean}
- */
-module.exports = function circleEllipse(xc, yc, rc, xe, ye, rex, rey)
-{
-    return ellipseCircle(xe, ye, rex, rey, xc, yc, rc)
-}
-
-},{"./ellipse-circle":96}],89:[function(require,module,exports){
-'use strict'
-
-var lineCircle = require('./line-circle')
-
-/**
- * circle-line collision
- * from http://stackoverflow.com/a/10392860/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- * @return {boolean}
- */
-module.exports = function circleLine(xc, yc, rc, x1, y1, x2, y2)
-{
-    return lineCircle(x1, y1, x2, y2, xc, yc, rc)
-}
-
-},{"./line-circle":104}],90:[function(require,module,exports){
-'use strict'
-
-/**
- * circle-point collision
- * @param {number} x1 center of circle
- * @param {number} y1 center of circle
- * @param {radius} r1 radius of circle
- * @param {number} x2 point
- * @param {number} y2 point
- * @return {boolean}
- */
-module.exports = function circlePoint(x1, y1, r1, x2, y2)
-{
-    var x = x2 - x1
-    var y = y2 - y1
-    return x * x + y * y <= r1 * r1
-}
-
-},{}],91:[function(require,module,exports){
-'use strict'
-
-var polygonCircle = require('./polygon-circle')
-
-/**
- * circle-polygon collision
- * from http://stackoverflow.com/a/402019/1955997
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- */
-module.exports = function circlePolygon(xc, yc, rc, points, tolerance)
-{
-    return polygonCircle(points, xc, yc, rc, tolerance)
-}
-
-},{"./polygon-circle":119}],92:[function(require,module,exports){
-var circlePoint = require('./circle-point')
-var boxCircle = require('./box-circle')
-
-/**
- * circleOutline-box (axis-aligned) collision
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x top-left corner of box
- * @param {number} y top-left corner of box
- * @param {number} width of box
- * @param {number} height of box
- * @param {number} thickness of circle outline
- */
-module.exports = function circleOutlineBox(xc, yc, rc, x, y, width, height, thickness)
-{
-    thickness = thickness || 1
-    var count = 0
-    count += circlePoint(xc, yc, rc, x, y) ? 1 : 0
-    count += circlePoint(xc, yc, rc, x + width, y) ? 1 : 0
-    count += circlePoint(xc, yc, rc, x, y + height) ? 1 : 0
-    count += circlePoint(xc, yc, rc, x + width, y + height) ? 1 : 0
-
-    // if no corners are inside the circle, then intersects only if box encloses circle-outline
-    if (count === 0)
-    {
-        return boxCircle(x, y, width, height, xc, yc, rc)
-    }
-
-    // if one corner is inside and one corner is outside then box intersects circle-outline
-    if (count >= 1 && count <= 3)
-    {
-        return true
-    }
-
-    // last check is if box is inside circle, need to check that a corner is not inside the inner circle
-    if (count === 4)
-    {
-        return !circlePoint(xc, yc, rc - thickness, x, y) ||
-            !circlePoint(xc, yc, rc - thickness, x + width, y) ||
-            !circlePoint(xc, yc, rc - thickness, x, y + height) ||
-            !circlePoint(xc, yc, rc - thickness, x + width, y + height)
-    }
-}
-},{"./box-circle":80,"./circle-point":90}],93:[function(require,module,exports){
-var lineCircle = require('./line-circle')
-var circlePoint = require('./circle-point')
-
-/**
- * circleOutline-line collision
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x1 of point 1 of line
- * @param {number} y1 of point 1 of line
- * @param {number} x2 of point 2 of line
- * @param {number} y2 of point 2 of line
- * @param {number} thickness of circle outline
- */
-module.exports = function circleOutlineLine(xc, yc, rc, x1, y1, x2, y2, thickness)
-{
-    thickness = thickness || 1
-    return lineCircle(x1, y1, x2, y2, xc, yc, rc) && !(circlePoint(xc, yc, rc - thickness, x1, y1) && circlePoint(xc, yc, rc - thickness, x2, y2))
-}
-},{"./circle-point":90,"./line-circle":104}],94:[function(require,module,exports){
-var circlePoint = require('./circle-point')
-
-/**
- * circleOutline-point collision
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} x of point
- * @param {number} y of point
- * @param {number} thickness of circle outline
- */
-module.exports = function circleOutlinePoint(xc, yc, rc, x, y, thickness)
-{
-    thickness = thickness || 1
-    return circlePoint(xc, yc, rc, x, y) && !circlePoint(xc, yc, rc - thickness, x, y)
-}
-},{"./circle-point":90}],95:[function(require,module,exports){
-var ellipseLine = require('./ellipse-line')
-var boxPoint = require('./box-point')
-
-/**
- * ellipse-box (axis-oriented rectangle) collision
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {radius} rex radius-x of ellipse
- * @param {radius} rey radius-y of ellipse
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- */
-module.exports = function ellipseBox(xe, ye, rex, rey, xb, yb, wb, hb)
-{
-    return boxPoint(xb, yb, wb, hb, xe, ye) ||
-        ellipseLine(xe, ye, rex, rey, xb, yb, xb + wb, yb) ||
-        ellipseLine(xe, ye, rex, rey, xb, yb + hb, xb + wb, yb + hb) ||
-        ellipseLine(xe, ye, rex, rey, xb, yb, xb, yb + hb) ||
-        ellipseLine(xe, ye, rex, rey, xb + wb, yb, xb + wb, yb + hb)
-}
-},{"./box-point":84,"./ellipse-line":99}],96:[function(require,module,exports){
-var ellipseHelper = require('./ellipse-helper')
-
-/**
- * ellipse-circle collision
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {number} rex radius-x of ellipse
- * @param {number} rey radius-y of ellipse
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- * @return {boolean}
- */
-module.exports = function ellipseCircle(xe, ye, rex, rey, xc, yc, rc)
-{
-    return ellipseHelper.ellipseCircle(xe, ye, rex, rey, xc, yc, rc)
-}
-
-},{"./ellipse-helper":98}],97:[function(require,module,exports){
-var ellipseHelper = require('./ellipse-helper')
-
-/**
- * ellipse-ellipse collision
- * @param {number} x1 center of ellipse 1
- * @param {number} y1 center of ellipse 1
- * @param {number} r1x radius-x of ellipse 1
- * @param {number} r1y radius-y of ellipse 1
- * @param {number} x2 center of ellipse 2
- * @param {number} y2 center of ellipse 2
- * @param {number} r2x radius of ellipse 2
- * @param {number} r2y radius of ellipse 2
- * @return {boolean}
- */
-module.exports = function ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y)
-{
-    return ellipseHelper.ellipseEllipse(x1, y1, r1x, r1y, x2, y2, r2x, r2y)
-}
-
-},{"./ellipse-helper":98}],98:[function(require,module,exports){
-// from http://yehar.com/blog/?p=2926
-
-var MAX_ITERATIONS = 10
-var innerPolygonCoef, outerPolygonCoef, initialized
-
-function initialize()
-{
-    innerPolygonCoef = []
-    outerPolygonCoef = []
-    for (var t = 0; t <= MAX_ITERATIONS; t++)
-    {
-        var numNodes = 4 << t
-        innerPolygonCoef[t] = 0.5 / Math.cos(4 * Math.acos(0) / numNodes)
-        outerPolygonCoef[t] = 0.5 / (Math.cos(2 * Math.acos(0) / numNodes) * Math.cos(2 * Math.acos(0) / numNodes))
-    }
-    initialized = true
-}
-
-function iterate(x, y, c0x, c0y, c2x, c2y, rr)
-{
-    for (var t = 1; t <= MAX_ITERATIONS; t++)
-    {
-        var c1x = (c0x + c2x) * innerPolygonCoef[t]
-        var c1y = (c0y + c2y) * innerPolygonCoef[t]
-        var tx = x - c1x
-        var ty = y - c1y
-        if (tx * tx + ty * ty <= rr)
-        {
-            return true
-        }
-        var t2x = c2x - c1x
-        var t2y = c2y - c1y
-        if (tx * t2x + ty * t2y >= 0 && tx * t2x + ty * t2y <= t2x * t2x + t2y * t2y &&
-            (ty * t2x - tx * t2y >= 0 || rr * (t2x * t2x + t2y * t2y) >= (ty * t2x - tx * t2y) * (ty * t2x - tx * t2y)))
-        {
-            return true
-        }
-        var t0x = c0x - c1x
-        var t0y = c0y - c1y
-        if (tx * t0x + ty * t0y >= 0 && tx * t0x + ty * t0y <= t0x * t0x + t0y * t0y &&
-            (ty * t0x - tx * t0y <= 0 || rr * (t0x * t0x + t0y * t0y) >= (ty * t0x - tx * t0y) * (ty * t0x - tx * t0y)))
-        {
-            return true
-        }
-        var c3x = (c0x + c1x) * outerPolygonCoef[t]
-        var c3y = (c0y + c1y) * outerPolygonCoef[t]
-        if ((c3x - x) * (c3x - x) + (c3y - y) * (c3y - y) < rr)
-        {
-            c2x = c1x
-            c2y = c1y
-            continue
-        }
-        var c4x = c1x - c3x + c1x
-        var c4y = c1y - c3y + c1y
-        if ((c4x - x) * (c4x - x) + (c4y - y) * (c4y - y) < rr)
-        {
-            c0x = c1x
-            c0y = c1y
-            continue
-        }
-        var t3x = c3x - c1x
-        var t3y = c3y - c1y
-        if (ty * t3x - tx * t3y <= 0 || rr * (t3x * t3x + t3y * t3y) > (ty * t3x - tx * t3y) * (ty * t3x - tx * t3y))
-        {
-            if (tx * t3x + ty * t3y > 0)
-            {
-                if (Math.abs(tx * t3x + ty * t3y) <= t3x * t3x + t3y * t3y || (x - c3x) * (c0x - c3x) + (y - c3y) * (c0y - c3y) >= 0)
-                {
-                    c2x = c1x
-                    c2y = c1y
-                    continue
-                }
-            } else if (-(tx * t3x + ty * t3y) <= t3x * t3x + t3y * t3y || (x - c4x) * (c2x - c4x) + (y - c4y) * (c2y - c4y) >= 0)
-            {
-                c0x = c1x
-                c0y = c1y
-                continue
-            }
-        }
-        return false
-    }
-    return false // Out of iterations so it is unsure if there was a collision. But have to return something.
-}
-
-// Test for collision between an ellipse of horizontal radius w0 and vertical radius h0 at (x0, y0) and
-// an ellipse of horizontal radius w1 and vertical radius h1 at (x1, y1)
-function ellipseEllipse(x0, y0, w0, h0, x1, y1, w1, h1)
-{
-    if (!initialized)
-    {
-        initialize()
-    }
-
-    var x = Math.abs(x1 - x0) * h1
-    var y = Math.abs(y1 - y0) * w1
-    w0 *= h1
-    h0 *= w1
-    var r = w1 * h1
-
-    if (x * x + (h0 - y) * (h0 - y) <= r * r || (w0 - x) * (w0 - x) + y * y <= r * r || x * h0 + y * w0 <= w0 * h0
-        || ((x * h0 + y * w0 - w0 * h0) * (x * h0 + y * w0 - w0 * h0) <= r * r * (w0 * w0 + h0 * h0) && x * w0 - y * h0 >= -h0 * h0 && x * w0 - y * h0 <= w0 * w0))
-    {
-        return true
-    }
-    else
-    {
-        if ((x - w0) * (x - w0) + (y - h0) * (y - h0) <= r * r || (x <= w0 && y - r <= h0) || (y <= h0 && x - r <= w0))
-        {
-            return iterate(x, y, w0, 0, 0, h0, r * r)
-        }
-        return false
-    }
-}
-
-// Test for collision between an ellipse of horizontal radius w and vertical radius h at (x0, y0) and
-// a circle of radius r at (x1, y1)
-function ellipseCircle(x0, y0, w, h, x1, y1, r)
-{
-    if (!initialized)
-    {
-        initialize()
-    }
-    var x = Math.abs(x1 - x0)
-    var y = Math.abs(y1 - y0)
-
-    if (x * x + (h - y) * (h - y) <= r * r || (w - x) * (w - x) + y * y <= r * r || x * h + y * w <= w * h
-        || ((x * h + y * w - w * h) * (x * h + y * w - w * h) <= r * r * (w * w + h * h) && x * w - y * h >= -h * h && x * w - y * h <= w * w))
-    {
-        return true
-    }
-    else
-    {
-        if ((x - w) * (x - w) + (y - h) * (y - h) <= r * r || (x <= w && y - r <= h) || (y <= h && x - r <= w))
-        {
-            return iterate(x, y, w, 0, 0, h, r * r)
-        }
-        return false
-    }
-}
-
-module.exports = {
-    ellipseCircle: ellipseCircle,
-    ellipseEllipse: ellipseEllipse
-}
-},{}],99:[function(require,module,exports){
-/**
- * ellipse-line collision
- * adapted from http://csharphelper.com/blog/2017/08/calculate-where-a-line-segment-and-an-ellipse-intersect-in-c/
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {number} rex radius-x of ellipse
- * @param {number} rey radius-y of ellipse
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- */
-module.exports = function ellipseLine(xe, ye, rex, rey, x1, y1, x2, y2)
-{
-    x1 -= xe
-    x2 -= xe
-    y1 -= ye
-    y2 -= ye
-
-    var A = Math.pow(x2 - x1, 2) / rex / rex + Math.pow(y2 - y1, 2) / rey / rey
-    var B = 2 * x1 * (x2 - x1) / rex / rex + 2 * y1 * (y2 - y1) / rey / rey
-    var C = x1 * x1 / rex / rex + y1 * y1 / rey / rey - 1
-    var D = B * B - 4 * A * C
-    if (D === 0)
-    {
-        var t = -B / 2 / A
-        return t >= 0 && t <= 1
-    }
-    else if (D > 0)
-    {
-        var sqrt = Math.sqrt(D)
-        var t1 = (-B + sqrt) / 2 / A
-        var t2 = (-B - sqrt) / 2 / A
-        return (t1 >= 0 && t1 <= 1) || (t2 >= 0 && t2 <= 1)
-    }
-    else
-    {
-        return false
-    }
-}
-},{}],100:[function(require,module,exports){
-/**
- * ellipse-point collision
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {radius} rex radius-x of ellipse
- * @param {radius} rey radius-y of ellipse
- * @param {number} x1 point
- * @param {number} y1 point
- * @return {boolean}
- */
-module.exports = function ellipsePoint(xe, ye, rex, rey, x1, y1)
-{
-    var x = Math.pow(x1 - xe, 2) / (rex * rex)
-    var y = Math.pow(y1 - ye, 2) / (rey * rey)
-    return x + y <= 1
-}
-
-},{}],101:[function(require,module,exports){
-var polygonEllipse = require('./polygon-ellipse')
-
-/**
- * ellipse-polygon collision
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {number} rex radius-x of ellipse
- * @param {number} rey radius-y of ellipse
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- */
-module.exports = function ellipsePolygon(xe, ye, rex, rey, points)
-{
-    return polygonEllipse(points, xe, ye, rex, rey)
-}
-},{"./polygon-ellipse":120}],102:[function(require,module,exports){
-module.exports = {
-    circlePoint: require('./circle-point'),
-    circleCircle: require('./circle-circle'),
-    circleLine: require('./circle-line'),
-    circleBox: require('./circle-box'),
-    circlePolygon: require('./circle-polygon'),
-    circleEllipse: require('./circle-ellipse'),
-    // circleCircleOutline: require('./circle-circleOutline'),
-
-    circleOutlineBox: require('./circleOutline-box'),
-    circleOutlineLine: require('./circleOutline-line'),
-    circleOutlinePoint: require('./circleOutline-point'),
-    // circleOutlineCircle: require('./circleOutline-circle'),
-
-    polygonPoint: require('./polygon-point'),
-    polygonLine: require('./polygon-line'),
-    polygonPolygon: require('./polygon-polygon'),
-    polygonBox: require('./polygon-box'),
-    polygonCircle: require('./polygon-circle'),
-    polygonEllipse: require('./polygon-ellipse'),
-
-    boxPoint: require('./box-point'),
-    boxBox: require('./box-box'),
-    boxLine: require('./box-line'),
-    boxPolygon: require('./box-polygon'),
-    boxCircle: require('./box-circle'),
-    boxEllipse: require('./box-ellipse'),
-    boxCircleOutline: require('./box-circleOutline'),
-
-    pointBox: require('./point-box'),
-    pointPolygon: require('./point-polygon'),
-    pointCircle: require('./point-circle'),
-    pointLine: require('./point-line'),
-    pointEllipse: require('./point-ellipse'),
-    pointCircleOutline: require('./point-circleOutline'),
-
-    lineLine: require('./line-line'),
-    lineBox: require('./line-box'),
-    linePolygon: require('./line-polygon'),
-    lineCircle: require('./line-circle'),
-    linePoint: require('./line-point'),
-    lineEllipse: require('./line-ellipse'),
-    lineCircleOutline: require('./line-circleOutline'),
-
-    ellipsePoint: require('./ellipse-point'),
-    ellipseLine: require('./ellipse-line'),
-    ellipseBox: require('./ellipse-box'),
-    ellipseCircle: require('./ellipse-circle'),
-    ellipseEllipse: require('./ellipse-ellipse'),
-    ellipsePolygon: require('./ellipse-polygon')
-}
-},{"./box-box":79,"./box-circle":80,"./box-circleOutline":81,"./box-ellipse":82,"./box-line":83,"./box-point":84,"./box-polygon":85,"./circle-box":86,"./circle-circle":87,"./circle-ellipse":88,"./circle-line":89,"./circle-point":90,"./circle-polygon":91,"./circleOutline-box":92,"./circleOutline-line":93,"./circleOutline-point":94,"./ellipse-box":95,"./ellipse-circle":96,"./ellipse-ellipse":97,"./ellipse-line":99,"./ellipse-point":100,"./ellipse-polygon":101,"./line-box":103,"./line-circle":104,"./line-circleOutline":105,"./line-ellipse":106,"./line-line":107,"./line-point":108,"./line-polygon":109,"./point-box":112,"./point-circle":113,"./point-circleOutline":114,"./point-ellipse":115,"./point-line":116,"./point-polygon":117,"./polygon-box":118,"./polygon-circle":119,"./polygon-ellipse":120,"./polygon-line":121,"./polygon-point":122,"./polygon-polygon":123}],103:[function(require,module,exports){
-'use strict'
-
-var boxPoint = require('./box-point')
-var lineLine = require('./line-line')
-
-/**
- * line-box collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xb top-left of box
- number @param {number} yb top-left of box
- number @param {number} wb width of box
- number @param {number} hb height of box
- */
-module.exports = function lineBox(x1, y1, x2, y2, xb, yb, wb, hb)
-{
-    if (boxPoint(xb, yb, wb, hb, x1, y1) || boxPoint(xb, yb, wb, hb, x2, y2))
-    {
-        return true
-    }
-    return lineLine(x1, y1, x2, y2, xb, yb, xb + wb, yb) ||
-        lineLine(x1, y1, x2, y2, xb + wb, yb, xb + wb, yb + hb) ||
-        lineLine(x1, y1, x2, y2, xb, yb + hb, xb + wb, yb + hb) ||
-        lineLine(x1, y1, x2, y2, xb, yb, xb, yb + hb)
-}
-
-},{"./box-point":84,"./line-line":107}],104:[function(require,module,exports){
-'use strict'
-
-/**
- * line-circle collision
- number @param {number} x1 point 1 of line
- number @param {number} y1 point 1 of line
- number @param {number} x2 point 2 of line
- number @param {number} y2 point 2 of line
- number @param {number} xc center of circle
- number @param {number} yc center of circle
- number @param {number} rc radius of circle
- */
-module.exports = function lineCircle(x1, y1, x2, y2, xc, yc, rc)
-{
-    var ac = [xc - x1, yc - y1]
-    var ab = [x2 - x1, y2 - y1]
-    var ab2 = dot(ab, ab)
-    var acab = dot(ac, ab)
-    var t = acab / ab2
-    t = (t < 0) ? 0 : t
-    t = (t > 1) ? 1 : t
-    var h = [(ab[0] * t + x1) - xc, (ab[1] * t + y1) - yc]
-    var h2 = dot(h, h)
-    return h2 <= rc * rc
-}
-
-function dot(v1, v2)
-{
-    return (v1[0] * v2[0]) + (v1[1] * v2[1])
-}
-
-},{}],105:[function(require,module,exports){
-var circleOutlineLine = require('./circleOutline-line')
-
-/**
- * line-circleOutline collision
- * @param {number} x1 of point 1 of line
- * @param {number} y1 of point 1 of line
- * @param {number} x2 of point 2 of line
- * @param {number} y2 of point 2 of line
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} thickness of circle outline
- */
-module.exports = function lineCircleOutline(x1, y1, x2, y2, xc, yc, rc, thickness)
-{
-    return circleOutlineLine(xc, yc, rc, x1, y1, x2, y2, thickness)
-}
-},{"./circleOutline-line":93}],106:[function(require,module,exports){
-var ellipseLine = require('./ellipse-line')
-
-/**
- * line-ellipse collision
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {number} rx radius-x of ellipse
- * @param {number} ry radius-y of ellipse
- */
-module.exports = function lineEllipse(x1, y1, x2, y2, xe, ye, rex, rey)
-{
-    return ellipseLine(xe, ye, rex, rey, x1, y1, x2, y2)
-}
-},{"./ellipse-line":99}],107:[function(require,module,exports){
-'use strict'
-
-const lineToPolygon = require('./lineToPolygon')
-const polygonPolygon = require('./polygon-polygon')
-const linePolygon = require('./line-polygon')
-const lineToLine = require('./lineToLine')
-
-/**
- * line-line collision
- * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
- * @param {number} x1 first point in line 1
- * @param {number} y1 first point in line 1
- * @param {number} x2 second point in line 1
- * @param {number} y2 second point in line 1
- * @param {number} x3 first point in line 2
- * @param {number} y3 first point in line 2
- * @param {number} x4 second point in line 2
- * @param {number} y4 second point in line 2
- * @param {number} [thickness1] of line 1 (the line is centered in its thickness--see demo)
- * @param {number} [thickness2] of line 2 (the line is centered in its thickness--see demo)
- * @return {boolean}
- */
-module.exports = function lineLine(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
-{
-    if (thickness1 || thickness2)
-    {
-        return lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
-    }
-    else
-    {
-        return lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
-    }
-}
-
-function lineLineThickness(x1, y1, x2, y2, x3, y3, x4, y4, thickness1, thickness2)
-{
-    if (thickness1 && thickness2)
-    {
-        return polygonPolygon(lineToPolygon(x1, y1, x2, y2, thickness1), lineToPolygon(x3, y3, x4, y4, thickness2))
-    }
-    else if (thickness1)
-    {
-        return linePolygon(x3, y3, x4, y4, lineToPolygon(x1, y1, x2, y2, thickness1))
-    }
-    else if (thickness2)
-    {
-        return linePolygon(x1, y1, x2, y2, lineToPolygon(x3, y3, x4, y4, thickness1))
-    }
-}
-},{"./line-polygon":109,"./lineToLine":110,"./lineToPolygon":111,"./polygon-polygon":123}],108:[function(require,module,exports){
-'use strict'
-
-function distanceSquared(x1, y1, x2, y2)
-{
-    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2))
-}
-
-/**
- * line-point collision
- * from https://stackoverflow.com/a/17693146/1955997
- * @param {number} x1 first point in line
- * @param {number} y1 first point in line
- * @param {number} x2 second point in line
- * @param {number} y2 second point in line
- * @param {number} xp point
- * @param {number} yp point
- * @param {number} [tolerance=1]
- * @return {boolean}
- */
-module.exports = function linePoint(x1, y1, x2, y2, xp, yp, tolerance)
-{
-    tolerance = tolerance || 1
-    return Math.abs(distanceSquared(x1, y1, x2, y2) - (distanceSquared(x1, y1, xp, yp) + distanceSquared(x2, y2, xp, yp))) <= tolerance
-}
-},{}],109:[function(require,module,exports){
-var polygonPoint = require('./polygon-point')
-var lineLine = require('./lineToLine')
-
-/**
- * line-polygon collision
- @param {number} x1 point 1 of line
- @param {number} y1 point 1 of line
- @param {number} x2 point 2 of line
- @param {number} y2 point 2 of line
- @param {number[]} points of polygon
- @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
- */
-module.exports = function linePolygon(x1, y1, x2, y2, points, tolerance)
-{
-    var length = points.length
-
-    // check if first point is inside the shape (this covers if the line is completely enclosed by the shape)
-    if (polygonPoint(points, x1, y1, tolerance))
-    {
-        return true
-    }
-
-    // check for intersections for all of the sides
-    for (var i = 0; i < length; i += 2)
-    {
-        var j = (i + 2) % length
-        if (lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
-        {
-            return true
-        }
-    }
-    return false
-}
-
-},{"./lineToLine":110,"./polygon-point":122}],110:[function(require,module,exports){
-'use strict'
-
-/**
- * lineToLine helper function (to avoid circular dependencies)
- * from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
- * @param {number} x1 first point in line 1
- * @param {number} y1 first point in line 1
- * @param {number} x2 second point in line 1
- * @param {number} y2 second point in line 1
- * @param {number} x3 first point in line 2
- * @param {number} y3 first point in line 2
- * @param {number} x4 second point in line 2
- * @param {number} y4 second point in line 2
- * @return {boolean}
- */
-module.exports = function lineToLine(x1, y1, x2, y2, x3, y3, x4, y4)
-{
-    var s1_x = x2 - x1
-    var s1_y = y2 - y1
-    var s2_x = x4 - x3
-    var s2_y = y4 - y3
-    var s = (-s1_y * (x1 - x3) + s1_x * (y1 - y3)) / (-s2_x * s1_y + s1_x * s2_y)
-    var t = (s2_x * (y1 - y3) - s2_y * (x1 - x3)) / (-s2_x * s1_y + s1_x * s2_y)
-    return s >= 0 && s <= 1 && t >= 0 && t <= 1
-}
-},{}],111:[function(require,module,exports){
-'use strict'
-
-/**
- * turns a line into a polygon using thickness
- * @param {number} x1 first point of line
- * @param {number} y1 first point of line
- * @param {number} x2 second point of line
- * @param {number} y2 second point of line
- * @param {number} thickness of line
- */
-module.exports = function lineToPolygon(x1, y1, x2, y2, thickness)
-{
-    const angle = Math.atan2(y2 - y1, x2 - x1) - Math.PI / 2
-    const half = thickness / 2
-    const cos = Math.cos(angle) * half
-    const sin = Math.sin(angle) * half
-    return [
-        x1 - cos, y1 - sin,
-        x2 - cos, y2 - sin,
-        x2 + cos, y2 + sin,
-        x1 + cos, y1 + sin
-    ]
-}
-},{}],112:[function(require,module,exports){
-'use strict'
-
-var boxPoint = require('./box-point')
-
-/**
- * point-box collision
- * @param {number} x1 point
- * @param {number} y1 point
- * @param {number} xb top-left corner of box
- * @param {number} yb top-left corner of box
- * @param {number} wb width of box
- * @param {number} hb height of box
- * @return {boolean}
- */
-module.exports = function pointBox(x1, y1, xb, yb, wb, hb)
-{
-    return boxPoint(xb, yb, wb, hb, x1, y1)
-}
-
-},{"./box-point":84}],113:[function(require,module,exports){
-'use strict'
-
-var circlePoint = require('./circle-point')
-
-module.exports = function pointCircle(x1, y1, xc, yc, rc)
-{
-    return circlePoint(xc, yc, rc, x1, y1)
-}
-
-},{"./circle-point":90}],114:[function(require,module,exports){
-var circleOutlinePoint = require('./circleOutline-point')
-
-/**
- * point-circleOutline collision
- * @param {number} x of point
- * @param {number} y of point
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {radius} rc radius of circle
- * @param {number} thickness of circle outline
- */
-module.exports = function pointCircleOutline(x, y, xc, yc, rc, thickness)
-{
-    return circleOutlinePoint(x, y, xc, yc, rc, thickness)
-}
-},{"./circleOutline-point":94}],115:[function(require,module,exports){
-var ellipsePoint = require('./ellipse-point')
-
-/**
- * point-ellipse collision
- * @param {number} x1 point
- * @param {number} y1 point
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {radius} rex radius-x of ellipse
- * @param {radius} rey radius-y of ellipse
- * @return {boolean}
- */
-module.exports = function pointEllipse(x1, y1, xe, ye, rex, rey)
-{
-    return ellipsePoint(xe, ye, rex, rey, x1, y1)
-}
-},{"./ellipse-point":100}],116:[function(require,module,exports){
-'use strict'
-
-var linePoint = require('./line-point')
-
-/**
- * point-line collision
- * @param {number} xp point
- * @param {number} yp point
- * @param {number} x1 first point in line
- * @param {number} y1 first point in line
- * @param {number} x2 second point in line
- * @param {number} y2 second point in line
- * @return {boolean}
- */
-module.exports = function pointLine(xp, yp, x1, y1, x2, y2)
-{
-    return linePoint(x1, y1, x2, y2, xp, yp)
-}
-
-},{"./line-point":108}],117:[function(require,module,exports){
-'use strict'
-
-var polygonPoint = require('./polygon-point')
-
-/**
- * polygon-point collision
- * based on https://stackoverflow.com/a/17490923/1955997
- * @param {number} x1
- * @param {number} y1
- * @param {number[]} points
- * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
- * @return {boolean}
- */
-module.exports = function pointPolygon(x1, y1, points, tolerance)
-{
-    return polygonPoint(points, x1, y1, tolerance)
-}
-
-},{"./polygon-point":122}],118:[function(require,module,exports){
-'use strict'
-
-var polygonPolygon = require('./polygon-polygon')
-
-/**
- * polygon-box collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of box
- * @param {number} y of box
- * @param {number} w of box
- * @param {number} h of box
- */
-module.exports = function polygonBox(points, x, y, w, h)
-{
-    var points2 = [x, y, x + w, y, x + w, y + h, x, y + h]
-    return polygonPolygon(points, points2)
-}
-
-},{"./polygon-polygon":123}],119:[function(require,module,exports){
-var polygonPoint = require('./polygon-point')
-var lineCircle = require('./line-circle')
-
-/**
- * polygon-circle collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} xc center of circle
- * @param {number} yc center of circle
- * @param {number} rc radius of circle
- * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
- */
-module.exports = function polygonCircle(points, xc, yc, rc, tolerance)
-{
-    if (polygonPoint(points, xc, yc, tolerance))
-    {
-        return true
-    }
-    var count = points.length
-    for (var i = 0; i < count - 2; i += 2)
-    {
-        if (lineCircle(points[i], points[i + 1], points[i + 2], points[i + 3], xc, yc, rc))
-        {
-            return true
-        }
-    }
-    return lineCircle(points[0], points[1], points[count - 2], points[count - 1], xc, yc, rc)
-}
-
-},{"./line-circle":104,"./polygon-point":122}],120:[function(require,module,exports){
-var polygonPoint = require('./polygon-point')
-var lineEllipse = require('./line-ellipse')
-
-/**
- * polygon-ellipse collision
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} xe center of ellipse
- * @param {number} ye center of ellipse
- * @param {number} rex radius-x of ellipse
- * @param {number} rey radius-y of ellipse
- */
-module.exports = function polygonEllipse(points, xe, ye, rex, rey)
-{
-    if (polygonPoint(points, xe, ye))
-    {
-        return true
-    }
-    var count = points.length
-    for (var i = 0; i < count - 2; i += 2)
-    {
-        if (lineEllipse(points[i], points[i + 1], points[i + 2], points[i + 3], xe, ye, rex, rey))
-        {
-            return true
-        }
-    }
-    return lineEllipse(points[0], points[1], points[count - 2], points[count - 1], xe, ye, rex, rey)
-}
-},{"./line-ellipse":106,"./polygon-point":122}],121:[function(require,module,exports){
-var linePolygon = require('./line-polygon')
-
-/**
- * polygon-line collisions
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x1 first point in line
- * @param {number} y1 first point in line
- * @param {number} x2 second point in line
- * @param {number} y2 second point in line
- * @param {tolerance=1} maximum distance of point to polygon's edges that triggers collision (see pointLine)
- * @return {boolean}
- */
-module.exports = function polygonLine(points, x1, y1, x2, y2, tolerance)
-{
-    return linePolygon(x1, y1, x2, y2, points, tolerance)
-}
-
-},{"./line-polygon":109}],122:[function(require,module,exports){
-'use strict'
-
-const linePoint = require('./line-point')
-
-/**
- * polygon-point collision
- * based on https://stackoverflow.com/a/17490923/1955997
- * @param {number[]} points [x1, y1, x2, y2, ... xn, yn] of polygon
- * @param {number} x of point
- * @param {number} y of point
- * @param {number} [tolerance=1] maximum distance of point to polygon's edges that triggers collision (see pointLine)
- */
-module.exports = function polygonPoint(points, x, y, tolerance)
-{
-    var length = points.length
-    var c = false
-    var i, j
-    for (i = 0, j = length - 2; i < length; i += 2)
-    {
-        if (((points[i + 1] > y) !== (points[j + 1] > y)) && (x < (points[j] - points[i]) * (y - points[i + 1]) / (points[j + 1] - points[i + 1]) + points[i]))
-        {
-            c = !c
-        }
-        j = i
-    }
-    if (c)
-    {
-        return true
-    }
-    for (i = 0; i < length; i += 2)
-    {
-        var p1x = points[i]
-        var p1y = points[i + 1]
-        var p2x, p2y
-        if (i === length - 2)
-        {
-            p2x = points[0]
-            p2y = points[1]
-        }
-        else
-        {
-            p2x = points[i + 2]
-            p2y = points[i + 3]
-        }
-        if (linePoint(p1x, p1y, p2x, p2y, x, y, tolerance))
-        {
-            return true
-        }
-    }
-    return false
-}
-
-},{"./line-point":108}],123:[function(require,module,exports){
-'use strict'
-
-/**
- * polygon-polygon collision
- * based on http://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
- * @param {number[]} points1 [x1, y1, x2, y2, ... xn, yn] of first polygon
- * @param {number[]} points2 [x1, y1, x2, y2, ... xn, yn] of second polygon
- * @return {boolean}
- */
-module.exports = function polygonPolygon(points1, points2)
-{
-    var a = points1
-    var b = points2
-    var polygons = [a, b]
-    var minA, maxA, projected, minB, maxB, j
-    for (var i = 0; i < polygons.length; i++)
-    {
-        var polygon = polygons[i]
-        for (var i1 = 0; i1 < polygon.length; i1 += 2)
-        {
-            var i2 = (i1 + 2) % polygon.length
-            var normal = { x: polygon[i2 + 1] - polygon[i1 + 1], y: polygon[i1] - polygon[i2] }
-            minA = maxA = null
-            for (j = 0; j < a.length; j += 2)
-            {
-                projected = normal.x * a[j] + normal.y * a[j + 1]
-                if (minA === null || projected < minA)
-                {
-                    minA = projected
-                }
-                if (maxA === null || projected > maxA)
-                {
-                    maxA = projected
-                }
-            }
-            minB = maxB = null
-            for (j = 0; j < b.length; j += 2)
-            {
-                projected = normal.x * b[j] + normal.y * b[j + 1]
-                if (minB === null || projected < minB)
-                {
-                    minB = projected
-                }
-                if (maxB === null || projected > maxB)
-                {
-                    maxB = projected
-                }
-            }
-            if (maxA < minB || maxB < minA)
-            {
-                return false
-            }
-        }
-    }
-    return true
-}
-
-},{}]},{},[1]);
+},{"seedrandom":66}]},{},[1]);
