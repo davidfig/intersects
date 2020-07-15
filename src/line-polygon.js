@@ -1,5 +1,5 @@
 import {polygonPoint} from './polygon-point';
-import {lineLine} from './lineToLine';
+import {lineToLine} from './lineToLine';
 
 /**
  * line-polygon collision
@@ -24,7 +24,7 @@ export function linePolygon(x1, y1, x2, y2, points, tolerance)
     for (var i = 0; i < length; i += 2)
     {
         var j = (i + 2) % length
-        if (lineLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
+        if (lineToLine(x1, y1, x2, y2, points[i], points[i + 1], points[j], points[j + 1]))
         {
             return true
         }

@@ -3,7 +3,7 @@ const Ease = require('pixi-ease')
 const Random = require('yy-random')
 const calcFontSize = require('calc-fontsize')
 
-require('./intersects.min.js');
+const Intersects = require('../dist/intersects.cjs.min.js').Intersects;
 
 const TESTS = 20, TIME = 1500
 

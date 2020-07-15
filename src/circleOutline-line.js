@@ -1,4 +1,4 @@
-import {lineCircle} from './circle-circle';
+import {lineCircle} from './circle-line';
 import {circlePoint} from './circle-point';
 
 /**

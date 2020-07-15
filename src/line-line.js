@@ -1,8 +1,9 @@
-import {lineToPolygon} from './lineToPolygon';
-import {polygonPolygon} from './polygon-polygon';
-
-import {linePolygon} from './line-polygon';
 import {lineToLine} from './lineToLine';
+import {lineToPolygon} from './lineToPolygon';
+
+import {polygonPolygon} from './polygon-polygon';
+import {linePolygon} from './line-polygon';
+
 
 /**
  * line-line collision
